@@ -210,6 +210,50 @@ tr:hover td{background:rgba(30,122,86,0.03);}
   .bulan-grid{grid-template-columns:repeat(2,1fr);}
   .form-grid{grid-template-columns:1fr;}
 }
+
+.laporan-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;}
+.lh-left h2{font-family:'Playfair Display',serif;font-size:18px;color:var(--primary);}
+.lh-left p{font-size:11px;color:var(--text-light);margin-top:2px;}
+.lh-right{display:flex;gap:8px;align-items:center;}
+.btn-pdf{padding:9px 18px;background:linear-gradient(135deg,#c0392b,#e74c3c);color:#fff;border:none;border-radius:9px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.btn-pdf:hover{transform:translateY(-1px);}
+.lap-ppk-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;}
+.lap-ppk-card{background:var(--white);border-radius:14px;padding:18px;border:1px solid var(--border);box-shadow:var(--shadow-sm);}
+.lap-ppk-card.r{border-top:4px solid #e91e63;}
+.lap-ppk-card.j{border-top:4px solid var(--blue);}
+.lap-ppk-card.a{border-top:4px solid var(--primary-bright);}
+.lap-av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;margin-bottom:10px;}
+.av-r{background:linear-gradient(135deg,#e91e63,#f06292);}
+.av-j{background:linear-gradient(135deg,#1a6eb5,#5ba3e0);}
+.av-a{background:linear-gradient(135deg,#1e7a56,#3daa7a);}
+.lap-nm{font-size:14px;font-weight:700;color:var(--text);margin-bottom:12px;}
+.lap-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;padding:6px 8px;background:var(--cream);border-radius:6px;}
+.lap-row-lbl{font-size:11px;color:var(--text-light);}
+.lap-row-val{font-size:12px;font-weight:700;color:var(--text);}
+.lap-total{background:var(--primary-pale);border:1px solid rgba(30,122,86,0.2);border-radius:8px;padding:10px;margin-top:10px;text-align:center;}
+.lap-total .rm{font-size:18px;font-weight:700;color:var(--primary-bright);}
+.lap-total .sub{font-size:10px;color:var(--text-light);}
+.pct-bar{height:8px;background:var(--cream);border-radius:4px;margin-top:4px;overflow:hidden;}
+.pct-fill{height:100%;border-radius:4px;}
+@media print{
+  .sidebar,.topbar,.btn-pdf,.nav-item,select{display:none!important;}
+  .main{margin-left:0!important;}
+  #pdf-area{display:block!important;}
+  #pg-laporan{display:none!important;}
+  body{background:#fff;}
+  .pdf-cover{text-align:center;padding:40px 20px;border-bottom:3px solid #0a3d2e;margin-bottom:30px;}
+  .pdf-cover img{margin-bottom:16px;}
+  .pdf-cover h1{font-size:24px;color:#0a3d2e;margin-bottom:8px;}
+  .pdf-cover h2{font-size:16px;color:#555;}
+  .pdf-section{margin-bottom:24px;}
+  .pdf-section h3{font-size:14px;font-weight:700;color:#0a3d2e;border-bottom:2px solid #0a3d2e;padding-bottom:6px;margin-bottom:12px;}
+  .pdf-table{width:100%;border-collapse:collapse;font-size:11px;}
+  .pdf-table th{background:#0a3d2e;color:#fff;padding:8px;text-align:left;}
+  .pdf-table td{padding:7px 8px;border-bottom:1px solid #eee;}
+  .pdf-table tr:nth-child(even) td{background:#f8f8f8;}
+  .pdf-highlight{background:#e8f7f0!important;font-weight:700;}
+}
+
 </style>
 </head>
 <body>
@@ -251,6 +295,7 @@ tr:hover td{background:rgba(30,122,86,0.03);}
       <div class="nav-item" onclick="showPage('usahawan',this)"><span class="icon">💼</span><span class="label">Usahawan</span></div>
       <div class="nav-item" onclick="showPage('programkhas',this)"><span class="icon">⭐</span><span class="label">Program Khas</span></div>
       <div class="nav-label" id="kpi-label" style="display:none;">Pemantauan</div>
+      <div class="nav-item" onclick="showPage('laporan',this)"><span class="icon">📊</span><span class="label">Laporan Kerja PPK</span></div>
       <div class="nav-item kpi-nav" id="kpi-nav" style="display:none;" onclick="showPage('kpi',this)"><span class="icon">🏆</span><span class="label">KPI PPK — Prestasi</span></div>
       <div class="nav-label">Pengurusan</div>
       <div class="nav-item" id="nav-users" onclick="showPage('users',this)"><span class="icon">👥</span><span class="label">Urus Pengguna</span></div>
@@ -560,7 +605,93 @@ tr:hover td{background:rgba(30,122,86,0.03);}
         </div>
       </div>
 
-      <!-- KPI -->
+      
+<!-- LAPORAN PPK PAGE -->
+<div class="page" id="pg-laporan">
+  <div id="lap-role-banner" style="margin-bottom:12px;padding:10px 16px;border-radius:10px;font-size:12px;font-weight:600;display:none;"></div>
+  <div class="laporan-header">
+    <div class="lh-left">
+      <h2>📊 Laporan Kerja PPK</h2>
+      <p id="lap-subtitle">Perbandingan prestasi PPK</p>
+    </div>
+    <div class="lh-right">
+      <button class="btn-pdf" onclick="exportPDF()">🖨️ Export PDF</button>
+      <select id="lap-tahun" onchange="loadLaporan()" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:12px;background:var(--white);">
+        <option value="2026">2026</option>
+        <option value="2025">2025</option>
+        <option value="2024">2024</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- RINGKASAN 3 PPK -->
+  <div class="section-hdr">Ringkasan Prestasi 3 PPK</div>
+  <div class="lap-ppk-grid" id="lap-ppk-grid">
+    <div style="text-align:center;padding:30px;color:var(--text-light);">⏳ Memuatkan...</div>
+  </div>
+
+  <!-- TANAM SEMULA -->
+  <div class="section-hdr">🌿 Tanam Semula — Lawatan & Ansuran</div>
+  <div class="tbl-panel">
+    <table>
+      <thead><tr><th>PPK</th><th>Bil Pekebun</th><th>Jumlah Luas (ha)</th><th>Sudah Dilawati</th><th>Belum Dilawati</th><th>% Lawatan</th><th>Jumlah Ansuran (RM)</th></tr></thead>
+      <tbody id="tbody-lap-tanam"></tbody>
+    </table>
+  </div>
+
+  <!-- PGT -->
+  <div class="section-hdr">🌳 PGT — Peserta & Hasil Jualan</div>
+  <div class="tbl-panel">
+    <table>
+      <thead><tr><th>PPK</th><th>Bil Peserta</th><th>Jumlah Luas (ha)</th><th>Lulus</th><th>Dalam Proses</th><th>Jumlah Hasil (RM)</th></tr></thead>
+      <tbody id="tbody-lap-pgt"></tbody>
+    </table>
+  </div>
+
+  <!-- USAHAWAN -->
+  <div class="section-hdr">💼 Usahawan AET — Status & Pendapatan</div>
+  <div class="tbl-panel">
+    <table>
+      <thead><tr><th>PPK</th><th>Bil Usahawan</th><th>Aktif</th><th>Tidak Aktif</th><th>Jumlah Pendapatan (RM)</th></tr></thead>
+      <tbody id="tbody-lap-usa"></tbody>
+    </table>
+  </div>
+
+  <!-- DETAIL LAWATAN -->
+  <div class="section-hdr">📋 Senarai Detail Lawatan Pekebun</div>
+  <div class="tbl-panel">
+    <div class="tbl-top">
+      <h3>Status Lawatan By PPK</h3>
+      <select id="filter-ppk-lawatan" onchange="filterLawatan()" style="padding:7px 12px;border:1px solid var(--border);border-radius:8px;font-size:12px;">
+        <option value="">Semua PPK</option>
+        <option>Rozaimah</option>
+        <option>Jude Hyden</option>
+        <option>Armizi</option>
+      </select>
+    </div>
+    <div style="overflow-x:auto;">
+      <table id="tbl-lawatan">
+        <thead><tr><th>Nama Pekebun</th><th>No. Lot</th><th>Luas (ha)</th><th>Kumpulan</th><th>PPK</th><th>Status Lawatan</th><th>Tarikh Lawatan</th></tr></thead>
+        <tbody id="tbody-lawatan"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- PDF PRINT AREA -->
+<div id="pdf-area" style="display:none;">
+  <div class="pdf-cover">
+    <img src="data:image/jpeg;base64,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" style="width:80px;height:80px;border-radius:50%;border:3px solid #c8921a;" />
+    <h1>LAPORAN KERJA PPK</h1>
+    <h2>Pejabat RISDA Stesen Lundu</h2>
+    <p id="pdf-date-title"></p>
+    <p style="font-size:13px;color:#666;margin-top:8px;">Dijana oleh Sistem i-Ris</p>
+  </div>
+  <div id="pdf-content"></div>
+</div>
+
+
+<!-- KPI -->
       <div class="page" id="pg-kpi">
         <div class="kpi-header">
           <div><h2>🏆 Dashboard KPI PPK</h2><p>Pemantauan prestasi — Rozaimah • Jude Hyden • Armizi</p></div>
@@ -678,7 +809,6 @@ function loadPGT(){
 }
 
 function renderLaporanPGT(data){
-  const ppks=['Rozaimah','Jude Hyden','Armizi'];
   const months=['jan','feb','mac','apr','mei','jun','jul','ogos','sep','okt','nov','dis'];
   const ids=['r','j','a'];
   ppks.forEach((ppk,pi)=>{
@@ -901,6 +1031,197 @@ window.doLogin=async function(){
   },{onlyOnce:true});
 };
 
+
+let allTanam=[], allPGT=[], allUsa=[];
+
+function loadLaporan(){
+  const role = window.currentUser?.role || '';
+  const username = window.currentUser?.username || '';
+  const nama = window.currentUser?.nama || '';
+  
+  // Determine which PPKs to show
+  let allowedPPKs = [];
+  if(role === 'admin' || role === 'ketua' || role === 'pegawai'){
+    allowedPPKs = ['Rozaimah','Jude Hyden','Armizi']; // see all
+  } else {
+    // PPK — only see their own name
+    // Match by nama field
+    const ppkNames = ['Rozaimah','Jude Hyden','Armizi'];
+    const matched = ppkNames.find(p => nama.toLowerCase().includes(p.toLowerCase()) || p.toLowerCase().includes(nama.toLowerCase()));
+    allowedPPKs = matched ? [matched] : [nama];
+  }
+  window._allowedPPKs = allowedPPKs;
+  window._isKetua = (role === 'admin' || role === 'ketua' || role === 'pegawai');
+  
+  // Update banner
+  const banner = document.getElementById('lap-role-banner');
+  const sub = document.getElementById('lap-subtitle');
+  if(role === 'admin' || role === 'ketua'){
+    banner.style.display='block';
+    banner.style.background='linear-gradient(135deg,#0a3d2e,#1e7a56)';
+    banner.style.color='#fff';
+    banner.innerHTML='🏆 Akses Ketua Stesen — Paparan Laporan Keseluruhan 3 PPK';
+    sub.textContent='Perbandingan prestasi — Rozaimah • Jude Hyden • Armizi';
+  } else if(role === 'pegawai'){
+    banner.style.display='block';
+    banner.style.background='linear-gradient(135deg,#1a6eb5,#5ba3e0)';
+    banner.style.color='#fff';
+    banner.innerHTML='👔 Akses Pegawai Daerah — Paparan Laporan Keseluruhan';
+    sub.textContent='Perbandingan prestasi — Rozaimah • Jude Hyden • Armizi';
+  } else {
+    banner.style.display='block';
+    banner.style.background='var(--primary-pale)';
+    banner.style.color='var(--primary)';
+    banner.innerHTML='👤 Laporan Peribadi — '+nama+' (PPK)';
+    sub.textContent='Paparan laporan kerja awk sahaja';
+  }
+  _loadLaporanData(allowedPPKs);
+}
+
+function _loadLaporanData(ppks){
+  const months=['jan','feb','mac','apr','mei','jun','jul','ogos','sep','okt','nov','dis'];
+  const monthNames=['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogos','Sep','Okt','Nov','Dis'];
+  const colors=['r','j','a'];
+  const avCls=['av-r','av-j','av-a'];
+  const initials=['RZ','JH','AR'];
+  const borderColors=['#e91e63','#1a6eb5','#1e7a56'];
+
+  // Load all data
+  Promise.all([
+    new Promise(res=>onValue(ref(db,'tanam'),s=>{allTanam=s.exists()?Object.values(s.val()):[];res()},{onlyOnce:true})),
+    new Promise(res=>onValue(ref(db,'pgt'),s=>{allPGT=s.exists()?Object.values(s.val()):[];res()},{onlyOnce:true})),
+    new Promise(res=>onValue(ref(db,'usahawan'),s=>{allUsa=s.exists()?Object.values(s.val()):[];res()},{onlyOnce:true}))
+  ]).then(()=>{
+    // PPK Cards
+    const grid=document.getElementById('lap-ppk-grid');
+    grid.innerHTML=ppks.map((ppk,pi)=>{
+      const t=allTanam.filter(r=>r.ppk===ppk);
+      const p=allPGT.filter(r=>r.ppk===ppk);
+      const u=allUsa.filter(r=>r.ppk===ppk);
+      const lawati=t.filter(r=>r.lawatan==='Sudah Dilawati').length;
+      const pctLawat=t.length>0?Math.round(lawati/t.length*100):0;
+      const totalPGT=p.reduce((s,v)=>s+months.reduce((ss,m)=>ss+(parseFloat(v[m])||0),0),0);
+      const totalUsa=u.reduce((s,v)=>s+months.reduce((ss,m)=>ss+(parseFloat(v[m])||0),0),0);
+      const totalRM=totalPGT+totalUsa;
+      return `<div class="lap-ppk-card ${colors[pi]}">
+        <div class="lap-av ${avCls[pi]}">${initials[pi]}</div>
+        <div class="lap-nm">${ppk}</div>
+        <div class="lap-row"><span class="lap-row-lbl">🌿 Pekebun Tanam Semula</span><span class="lap-row-val">${t.length} orang</span></div>
+        <div class="lap-row"><span class="lap-row-lbl">✅ Sudah Dilawati</span><span class="lap-row-val" style="color:var(--primary-bright)">${lawati} orang</span></div>
+        <div class="pct-bar"><div class="pct-fill" style="width:${pctLawat}%;background:${borderColors[pi]};"></div></div>
+        <div style="font-size:10px;color:var(--text-light);text-align:right;margin-bottom:6px;">${pctLawat}% dilawati</div>
+        <div class="lap-row"><span class="lap-row-lbl">🌳 Peserta PGT</span><span class="lap-row-val">${p.length} orang</span></div>
+        <div class="lap-row"><span class="lap-row-lbl">💼 Usahawan AET</span><span class="lap-row-val">${u.length} orang</span></div>
+        <div class="lap-total"><div class="rm">RM ${totalRM.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',')}</div><div class="sub">Jumlah Hasil (PGT + Usahawan)</div></div>
+      </div>`;
+    }).join('');
+
+    // Tanam table
+    let tanamTotal={ppk:'JUMLAH',bil:0,luas:0,lawat:0,belum:0,ansuran:0};
+    document.getElementById('tbody-lap-tanam').innerHTML=ppks.map((ppk,pi)=>{
+      const t=allTanam.filter(r=>r.ppk===ppk);
+      const luas=t.reduce((s,v)=>s+(parseFloat(v.luas)||0),0);
+      const lawat=t.filter(r=>r.lawatan==='Sudah Dilawati').length;
+      const belum=t.filter(r=>r.lawatan!=='Sudah Dilawati').length;
+      const ans=t.reduce((s,v)=>s+(parseFloat(v.bayar)||0),0);
+      const pct=t.length>0?Math.round(lawat/t.length*100):0;
+      tanamTotal.bil+=t.length;tanamTotal.luas+=luas;tanamTotal.lawat+=lawat;tanamTotal.belum+=belum;tanamTotal.ansuran+=ans;
+      return `<tr><td><strong>${ppk}</strong></td><td>${t.length}</td><td>${luas.toFixed(2)}</td>
+      <td style="color:var(--primary-bright);font-weight:600;">${lawat} (${pct}%)</td>
+      <td style="color:var(--red);">${belum}</td>
+      <td><div style="height:8px;background:#eee;border-radius:4px;overflow:hidden;width:80px;display:inline-block;vertical-align:middle;margin-right:6px;"><div style="height:100%;width:${pct}%;background:var(--primary-bright);border-radius:4px;"></div></div>${pct}%</td>
+      <td><strong>RM ${ans.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',')}</strong></td></tr>`;
+    }).join('')+`<tr style="background:var(--primary-pale);font-weight:700;"><td>JUMLAH</td><td>${tanamTotal.bil}</td><td>${tanamTotal.luas.toFixed(2)}</td><td style="color:var(--primary-bright);">${tanamTotal.lawat}</td><td style="color:var(--red);">${tanamTotal.belum}</td><td>—</td><td>RM ${tanamTotal.ansuran.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',')}</td></tr>`;
+
+    // PGT table
+    let pgtTotal={bil:0,luas:0,lulus:0,proses:0,hasil:0};
+    document.getElementById('tbody-lap-pgt').innerHTML=ppks.map((ppk)=>{
+      const p=allPGT.filter(r=>r.ppk===ppk);
+      const luas=p.reduce((s,v)=>s+(parseFloat(v.luas)||0),0);
+      const lulus=p.filter(r=>r.status==='Lulus').length;
+      const proses=p.filter(r=>r.status!=='Lulus').length;
+      const hasil=p.reduce((s,v)=>s+months.reduce((ss,m)=>ss+(parseFloat(v[m])||0),0),0);
+      pgtTotal.bil+=p.length;pgtTotal.luas+=luas;pgtTotal.lulus+=lulus;pgtTotal.proses+=proses;pgtTotal.hasil+=hasil;
+      return `<tr><td><strong>${ppk}</strong></td><td>${p.length}</td><td>${luas.toFixed(2)}</td>
+      <td style="color:var(--primary-bright);font-weight:600;">${lulus}</td>
+      <td style="color:var(--gold);">${proses}</td>
+      <td><strong>RM ${hasil.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',')}</strong></td></tr>`;
+    }).join('')+`<tr style="background:var(--primary-pale);font-weight:700;"><td>JUMLAH</td><td>${pgtTotal.bil}</td><td>${pgtTotal.luas.toFixed(2)}</td><td style="color:var(--primary-bright);">${pgtTotal.lulus}</td><td style="color:var(--gold);">${pgtTotal.proses}</td><td>RM ${pgtTotal.hasil.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',')}</td></tr>`;
+
+    // Usahawan table
+    let usaTotal={bil:0,aktif:0,tidak:0,pendapatan:0};
+    document.getElementById('tbody-lap-usa').innerHTML=ppks.map((ppk)=>{
+      const u=allUsa.filter(r=>r.ppk===ppk);
+      const aktif=u.filter(r=>r.status&&r.status.includes('Aktif')).length;
+      const tidak=u.filter(r=>!r.status||!r.status.includes('Aktif')).length;
+      const pendapatan=u.reduce((s,v)=>s+months.reduce((ss,m)=>ss+(parseFloat(v[m])||0),0),0);
+      usaTotal.bil+=u.length;usaTotal.aktif+=aktif;usaTotal.tidak+=tidak;usaTotal.pendapatan+=pendapatan;
+      return `<tr><td><strong>${ppk}</strong></td><td>${u.length}</td>
+      <td style="color:var(--primary-bright);font-weight:600;">${aktif}</td>
+      <td style="color:var(--red);">${tidak}</td>
+      <td><strong>RM ${pendapatan.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',')}</strong></td></tr>`;
+    }).join('')+`<tr style="background:var(--primary-pale);font-weight:700;"><td>JUMLAH</td><td>${usaTotal.bil}</td><td style="color:var(--primary-bright);">${usaTotal.aktif}</td><td style="color:var(--red);">${usaTotal.tidak}</td><td>RM ${usaTotal.pendapatan.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',')}</td></tr>`;
+
+    // Lawatan detail
+    loadLawatanTable('');
+  });
+}
+
+function loadLawatanTable(filterPPK){
+  const data=filterPPK?allTanam.filter(r=>r.ppk===filterPPK):allTanam;
+  const tb=document.getElementById('tbody-lawatan');
+  if(!data.length){tb.innerHTML='<tr><td colspan="7" class="tbl-empty">Tiada data</td></tr>';return;}
+  tb.innerHTML=data.map(v=>`<tr>
+    <td><strong>${v.nama||''}</strong></td><td>${v.lot||''}</td><td>${v.luas||''}</td>
+    <td><small>${v.kumpulan||'—'}</small></td><td>${v.ppk||''}</td>
+    <td><span class="status-badge ${v.lawatan==='Sudah Dilawati'?'sb-lulus':'sb-belum'}">${v.lawatan||'Belum Dilawati'}</span></td>
+    <td>${v.tarikhLawatan||'—'}</td>
+  </tr>`).join('');
+}
+
+function filterLawatan(){
+  loadLawatanTable(document.getElementById('filter-ppk-lawatan').value);
+}
+
+window.exportPDF=function(){
+  const months=['jan','feb','mac','apr','mei','jun','jul','ogos','sep','okt','nov','dis'];
+  const now=new Date();
+  document.getElementById('pdf-date-title').textContent='Tarikh: '+now.getDate()+'/'+(now.getMonth()+1)+'/'+now.getFullYear()+' | Masa: '+now.getHours()+':'+String(now.getMinutes()).padStart(2,'0');
+  
+  let html='';
+  
+  // Ringkasan
+  html+=`<div class="pdf-section"><h3>RINGKASAN PRESTASI PPK</h3><table class="pdf-table"><thead><tr><th>PPK</th><th>Pekebun</th><th>Lawatan (%)</th><th>Peserta PGT</th><th>Usahawan</th><th>Jumlah Hasil (RM)</th></tr></thead><tbody>`;
+  ppks.forEach(ppk=>{
+    const t=allTanam.filter(r=>r.ppk===ppk);
+    const p=allPGT.filter(r=>r.ppk===ppk);
+    const u=allUsa.filter(r=>r.ppk===ppk);
+    const lawat=t.filter(r=>r.lawatan==='Sudah Dilawati').length;
+    const pct=t.length>0?Math.round(lawat/t.length*100):0;
+    const totalRM=(p.reduce((s,v)=>s+months.reduce((ss,m)=>ss+(parseFloat(v[m])||0),0),0)+u.reduce((s,v)=>s+months.reduce((ss,m)=>ss+(parseFloat(v[m])||0),0),0));
+    html+=`<tr><td><strong>${ppk}</strong></td><td>${t.length}</td><td>${lawat}/${t.length} (${pct}%)</td><td>${p.length}</td><td>${u.length}</td><td>RM ${totalRM.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',')}</td></tr>`;
+  });
+  html+=`</tbody></table></div>`;
+
+  // Tanam Semula
+  html+=`<div class="pdf-section"><h3>TANAM SEMULA — STATUS LAWATAN</h3><table class="pdf-table"><thead><tr><th>Nama Pekebun</th><th>No. Lot</th><th>Luas (ha)</th><th>Kumpulan</th><th>PPK</th><th>Status Lawatan</th><th>Tarikh Lawatan</th></tr></thead><tbody>`;
+  allTanam.forEach(v=>{
+    html+=`<tr${v.lawatan==='Sudah Dilawati'?' class="pdf-highlight"':''}><td>${v.nama||''}</td><td>${v.lot||''}</td><td>${v.luas||''}</td><td>${v.kumpulan||''}</td><td>${v.ppk||''}</td><td>${v.lawatan||'Belum Dilawati'}</td><td>${v.tarikhLawatan||'—'}</td></tr>`;
+  });
+  html+=`</tbody></table></div>`;
+
+  // PGT
+  html+=`<div class="pdf-section"><h3>PGT — PESERTA & STATUS</h3><table class="pdf-table"><thead><tr><th>Nama</th><th>No. Lot</th><th>Luas (ha)</th><th>Jenis</th><th>PPK</th><th>Status</th><th>Jumlah Hasil (RM)</th></tr></thead><tbody>`;
+  allPGT.forEach(v=>{
+    const total=months.reduce((s,m)=>s+(parseFloat(v[m])||0),0);
+    html+=`<tr><td>${v.nama||''}</td><td>${v.lot||''}</td><td>${v.luas||''}</td><td>${v.jenis||''}</td><td>${v.ppk||''}</td><td>${v.status||''}</td><td>RM ${total.toFixed(2)}</td></tr>`;
+  });
+  html+=`</tbody></table></div>`;
+
+  document.getElementById('pdf-content').innerHTML=html;
+  setTimeout(()=>window.print(),300);
+};
+
 window.doLogout=function(){document.getElementById('app-screen').style.display='none';document.getElementById('login-screen').style.display='flex';document.getElementById('login-user').value='';document.getElementById('login-pass').value='';};
 
 let toastTimer;
@@ -910,10 +1231,12 @@ window.calcTotalPGT=function(){const months=['jan','feb','mac','apr','mei','jun'
 
 <script>
 window.showPage=function(id,navEl){
+  if(id==='laporan') setTimeout(()=>loadLaporan(),100);
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   const pg=document.getElementById('pg-'+id);if(pg)pg.classList.add('active');
   if(navEl){document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));navEl.classList.add('active');}
-  const titles={dashboard:['Dashboard Utama','Paparan keseluruhan sistem i-Ris'],tanam:['Tanam Semula & Bekalan','Rekod pekebun, lot & ansuran'],produktiviti:['Produktiviti & Pemasaran','Program Getah Matang (PGT) — Jualan Bulanan'],pengembangan:['Pengembangan','Aktiviti, peserta & laporan PPK'],usahawan:['Usahawan AET','Pendapatan bulanan usahawan'],programkhas:['Program Khas','Pelaksanaan & status program'],kpi:['KPI PPK — Dashboard Prestasi','🔒 Akses Ketua Stesen Sahaja'],users:['Urus Pengguna','Daftar & urus akaun pengguna']};
+  const titles={dashboard:['Dashboard Utama','Paparan keseluruhan sistem i-Ris'],tanam:['Tanam Semula & Bekalan','Rekod pekebun, lot & ansuran'],produktiviti:['Produktiviti & Pemasaran','Program Getah Matang (PGT) — Jualan Bulanan'],pengembangan:['Pengembangan','Aktiviti, peserta & laporan PPK'],usahawan:['Usahawan AET','Pendapatan bulanan usahawan'],programkhas:['Program Khas','Pelaksanaan & status program'],laporan:['Laporan Kerja PPK','Perbandingan prestasi & status lawatan PPK'],
+kpi:['KPI PPK — Dashboard Prestasi','🔒 Akses Ketua Stesen Sahaja'],users:['Urus Pengguna','Daftar & urus akaun pengguna']};
   if(titles[id]){document.getElementById('page-title').textContent=titles[id][0];document.getElementById('page-sub').textContent=titles[id][1];}
 };
 window.showForm=function(id){document.getElementById(id).style.display='block';document.getElementById(id).scrollIntoView({behavior:'smooth'});};
