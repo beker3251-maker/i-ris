@@ -639,10 +639,10 @@ function loadTanam(){
     Object.entries(snap.val()).forEach(function(entry){
       var k=entry[0], v=entry[1];
       var badge=v.lawatan==='Sudah Dilawati'?'sb-lulus':'sb-belum';
-      var safeNama=(v.nama||'').replace(/'/g,"\'");
+      var safeNama=(v.nama||'').replace(/['\"`]/g,'');
       rows+='<tr><td><strong>'+(v.nama||'')+'</strong></td><td>'+(v.ic||'')+'</td><td>'+(v.lot||'')+'</td><td>'+(v.luas||'')+'</td><td><small>'+(v.kumpulan||'—')+'</small></td><td>'+(v.ppk||'')+'</td>';
       rows+='<td><span class="status-badge '+badge+'">'+(v.lawatan||'—')+'</span></td>';
-      rows+='<td><button class="btn-edit" onclick="editTanam(''+k+'')">✏️ Edit</button><button class="btn-del" onclick="openDelModal('tanam',''+k+'',''+safeNama+'')">🗑️</button></td></tr>';
+      rows+='<td><button class="btn-edit" data-id="'+k+'" onclick="window.editById(this)">&#9998; Edit</button> <button class="btn-del" data-id="'+k+'" data-path="unknown" onclick="window.delById(this)">&#128465;</button></td></tr>';
     });
     tb.innerHTML=rows;
   });
@@ -658,11 +658,11 @@ function loadPGT(){
       var k=entry[0], v=entry[1];
       var total=months.reduce(function(s,m){ return s+(parseFloat(v[m])||0); },0);
       var badge=v.status==='Lulus'?'sb-lulus':'sb-proses';
-      var safeNama=(v.nama||'').replace(/'/g,"\'");
+      var safeNama=(v.nama||'').replace(/['\"`]/g,'');
       rows+='<tr><td><strong>'+(v.nama||'')+'</strong></td><td>'+(v.ic||'')+'</td><td>'+(v.lot||'')+'</td><td>'+(v.luas||'')+'</td><td>'+(v.jenis||'')+'</td><td>'+(v.ppk||'')+'</td>';
       rows+='<td><span class="status-badge '+badge+'">'+(v.status||'—')+'</span></td>';
       rows+='<td><strong>RM '+total.toFixed(2)+'</strong></td>';
-      rows+='<td><button class="btn-edit" onclick="editPGT(''+k+'')">✏️ Edit</button><button class="btn-del" onclick="openDelModal('pgt',''+k+'',''+safeNama+'')">🗑️</button></td></tr>';
+      rows+='<td><button class="btn-edit" data-id="'+k+'" onclick="window.editById(this)">&#9998; Edit</button> <button class="btn-del" data-id="'+k+'" data-path="unknown" onclick="window.delById(this)">&#128465;</button></td></tr>';
     });
     tb.innerHTML=rows;
     renderLaporanPGT(snap.val());
@@ -702,10 +702,10 @@ function loadPeng(){
     Object.entries(snap.val()).forEach(function(entry){
       var k=entry[0], v=entry[1];
       var badge=v.status==='Dihantar'?'sb-hantar':v.status==='Draf'?'sb-draf':'sb-belum';
-      var safeNama=(v.nama||'').replace(/'/g,"\'");
+      var safeNama=(v.nama||'').replace(/['\"`]/g,'');
       rows+='<tr><td><strong>'+(v.nama||'')+'</strong></td><td>'+(v.tarikh||'')+'</td><td>'+(v.lokasi||'')+'</td><td>'+(v.peserta||'')+'</td><td>'+(v.ppk||'')+'</td>';
       rows+='<td><span class="status-badge '+badge+'">'+(v.status||'—')+'</span></td>';
-      rows+='<td><button class="btn-edit" onclick="editPeng(''+k+'')">✏️ Edit</button><button class="btn-del" onclick="openDelModal('pengembangan',''+k+'',''+safeNama+'')">🗑️</button></td></tr>';
+      rows+='<td><button class="btn-edit" data-id="'+k+'" onclick="window.editById(this)">&#9998; Edit</button> <button class="btn-del" data-id="'+k+'" data-path="unknown" onclick="window.delById(this)">&#128465;</button></td></tr>';
     });
     tb.innerHTML=rows;
   });
@@ -719,10 +719,10 @@ function loadUsa(){
     Object.entries(snap.val()).forEach(function(entry){
       var k=entry[0], v=entry[1];
       var badge=v.status&&v.status.includes('Aktif')?'sb-aktif':'sb-tidak';
-      var safeNama=(v.nama||'').replace(/'/g,"\'");
+      var safeNama=(v.nama||'').replace(/['\"`]/g,'');
       rows+='<tr><td><strong>'+(v.nama||'')+'</strong></td><td>'+(v.ic||'')+'</td><td>'+(v.jenis||'')+'</td><td>'+(v.alamat||'')+'</td><td>'+(v.ppk||'')+'</td>';
       rows+='<td><span class="status-badge '+badge+'">'+(v.status||'—')+'</span></td>';
-      rows+='<td><button class="btn-edit" onclick="editUsa(''+k+'')">✏️ Edit</button><button class="btn-del" onclick="openDelModal('usahawan',''+k+'',''+safeNama+'')">🗑️</button></td></tr>';
+      rows+='<td><button class="btn-edit" data-id="'+k+'" onclick="window.editById(this)">&#9998; Edit</button> <button class="btn-del" data-id="'+k+'" data-path="unknown" onclick="window.delById(this)">&#128465;</button></td></tr>';
     });
     tb.innerHTML=rows;
   });
@@ -736,10 +736,10 @@ function loadProg(){
     Object.entries(snap.val()).forEach(function(entry){
       var k=entry[0], v=entry[1];
       var badge=v.status==='Sedang Berjalan'?'sb-hantar':v.status==='Selesai'?'sb-aktif':'sb-draf';
-      var safeNama=(v.nama||'').replace(/'/g,"\'");
+      var safeNama=(v.nama||'').replace(/['\"`]/g,'');
       rows+='<tr><td><strong>'+(v.nama||'')+'</strong></td><td>'+(v.mula||'')+'</td><td>'+(v.tamat||'')+'</td><td>'+(v.lokasi||'')+'</td><td>'+(v.ppk||'')+'</td>';
       rows+='<td><span class="status-badge '+badge+'">'+(v.status||'—')+'</span></td>';
-      rows+='<td><button class="btn-edit" onclick="editProg(''+k+'')">✏️ Edit</button><button class="btn-del" onclick="openDelModal('programkhas',''+k+'',''+safeNama+'')">🗑️</button></td></tr>';
+      rows+='<td><button class="btn-edit" data-id="'+k+'" onclick="window.editById(this)">&#9998; Edit</button> <button class="btn-del" data-id="'+k+'" data-path="unknown" onclick="window.delById(this)">&#128465;</button></td></tr>';
     });
     tb.innerHTML=rows;
   });
@@ -753,7 +753,7 @@ function loadUsers(){
     Object.entries(snap.val()).forEach(function(entry){
       var k=entry[0], v=entry[1];
       rows+='<tr><td>'+k+'</td><td>'+(v.nama||'')+'</td><td>'+(v.role||'')+'</td>';
-      rows+='<td>'+(k!=='admin'?'<button class="btn-del" onclick="openDelModal('users',''+k+'',''+k+'')">🗑️ Padam</button>':'—')+'</td></tr>';
+      rows+='<td>'+(k!=='admin'?'<button class="btn-del" data-id="'+k+'" data-path="users" onclick="window.delById(this)">&#128465; Padam</button>':'&mdash;')+'</td></tr>';
     });
     tb.innerHTML=rows;
   });
@@ -923,6 +923,23 @@ window.editProg = function(id){
     setVal('fpg-spesifikasi',v.spesifikasi); setVal('fpg-status',v.status); setVal('fpg-ppk',v.ppk);
     showForm('form-prog');
   },{onlyOnce:true});
+};
+
+
+window.editById = function(btn){
+  var id=btn.getAttribute('data-id');
+  var path=btn.closest('tr').querySelector('.btn-del').getAttribute('data-path');
+  if(path==='tanam') editTanam(id);
+  else if(path==='pgt') editPGT(id);
+  else if(path==='pengembangan') editPeng(id);
+  else if(path==='usahawan') editUsa(id);
+  else if(path==='programkhas') editProg(id);
+};
+window.delById = function(btn){
+  var id=btn.getAttribute('data-id');
+  var path=btn.getAttribute('data-path');
+  var name=btn.closest('tr').querySelector('td strong').textContent||id;
+  openDelModal(path,id,name);
 };
 
 window.doLogin = function(){
