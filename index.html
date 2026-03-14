@@ -114,6 +114,57 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--cream);color:va
 .fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--primary-bright);background:var(--white);}
 .fg textarea{resize:vertical;min-height:70px;}
 .bulan-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px;}
+/* TANAM SEMULA V2 */
+.ts-tab-bar{display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;border:1px solid var(--border);}
+.ts-tab{flex:1;padding:11px;border:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;background:var(--white);color:var(--text-light);}
+.ts-tab.semasa.active{background:linear-gradient(135deg,#1e7a56,#3daa7a);color:#fff;}
+.ts-tab.berturut.active{background:linear-gradient(135deg,#1a6eb5,#5ba3e0);color:#fff;}
+.ts-badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;margin-left:6px;}
+.badge-semasa{background:rgba(30,122,86,0.15);color:#1e7a56;}
+.badge-berturut{background:rgba(26,110,181,0.15);color:#1a6eb5;}
+.ts-sub-tab-bar{display:flex;gap:4px;margin-bottom:14px;background:var(--white);padding:5px;border-radius:10px;border:1px solid var(--border);}
+.ts-sub-tab{flex:1;padding:7px;border:none;border-radius:7px;font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer;color:var(--text-light);background:transparent;transition:all 0.2s;}
+.ts-sub-tab.active{background:var(--primary);color:#fff;}
+.form-section-title{font-size:12px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:0.5px;margin:14px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+.bantuan-box{background:linear-gradient(135deg,var(--primary-pale),#d4f5e5);border:1px solid rgba(30,122,86,0.2);border-radius:10px;padding:14px;margin-top:12px;}
+.bantuan-box .bb-title{font-size:11px;font-weight:700;color:var(--primary);margin-bottom:8px;text-transform:uppercase;}
+.bantuan-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;}
+.bantuan-row span{font-size:12px;color:var(--text);}
+.bantuan-row strong{font-size:12px;font-weight:700;color:var(--primary);}
+.bantuan-total{display:flex;align-items:center;justify-content:space-between;padding-top:8px;border-top:1px solid rgba(30,122,86,0.2);margin-top:4px;}
+.bantuan-total span{font-size:13px;font-weight:700;color:var(--primary);}
+.bantuan-total strong{font-size:18px;font-weight:800;color:var(--primary-bright);}
+.lap-ts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+.lap-ts-card{background:var(--white);border-radius:12px;padding:16px;border:1px solid var(--border);}
+.lap-ts-card.roz{border-top:3px solid #e91e63;}
+.lap-ts-card.jude{border-top:3px solid #1a6eb5;}
+.lap-ts-card.armi{border-top:3px solid #1e7a56;}
+.lap-ts-card h4{font-size:12px;font-weight:700;margin-bottom:10px;}
+.lap-ts-stat{display:flex;justify-content:space-between;margin-bottom:4px;font-size:11px;}
+.lap-ts-stat span{color:var(--text-light);}
+.lap-ts-stat strong{color:var(--text);}
+.progress-bar{width:100%;height:6px;background:var(--cream);border-radius:3px;margin-top:6px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#1e7a56,#3daa7a);transition:width 0.5s;}
+.tertahan-row td{background:#fff5f0 !important;}
+.tertahan-row td:first-child::before{content:'⚠️ ';font-size:11px;}
+.kpi-hektar-box{background:linear-gradient(135deg,#061f17,#0a3d2e);border-radius:13px;padding:18px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.kpi-hektar-box h3{font-family:'Playfair Display',serif;font-size:16px;color:#fff;}
+.kpi-hektar-box p{font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px;}
+.kpi-hektar-meter{text-align:right;}
+.kpi-hektar-meter .num{font-size:28px;font-weight:800;color:var(--gold-light);}
+.kpi-hektar-meter .denom{font-size:13px;color:rgba(255,255,255,0.5);}
+.kpi-hektar-track{width:200px;height:10px;background:rgba(255,255,255,0.15);border-radius:5px;margin-top:6px;overflow:hidden;}
+.kpi-hektar-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--gold),var(--gold-light));transition:width 0.8s;}
+.rollover-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:300;align-items:center;justify-content:center;}
+.rollover-modal.show{display:flex;}
+.rollover-box{background:#fff;border-radius:16px;padding:28px;width:460px;max-width:95vw;}
+.rollover-box h3{font-size:16px;font-weight:700;color:var(--primary);margin-bottom:8px;}
+.rollover-box p{font-size:13px;color:var(--text-light);margin-bottom:16px;}
+.rollover-list{max-height:280px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;margin-bottom:16px;}
+.rollover-item{padding:10px 14px;border-bottom:1px solid var(--border);font-size:12px;display:flex;justify-content:space-between;align-items:center;}
+.rollover-item:last-child{border-bottom:none;}
+.rollover-item.will-selesai{background:#fff0f0;}
+.btn-rollover-go{width:100%;padding:12px;background:linear-gradient(135deg,var(--primary),var(--primary-bright));color:#fff;border:none;border-radius:9px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;}
 .bulan-item{background:var(--cream);border-radius:8px;padding:10px;}
 .bulan-item label{font-size:10px;font-weight:700;color:var(--primary);text-transform:uppercase;display:block;margin-bottom:6px;}
 .bulan-item input{width:100%;padding:6px 8px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;background:var(--white);outline:none;}
@@ -283,27 +334,133 @@ tr:hover td{background:rgba(30,122,86,0.03);}
         </div>
       </div>
 
-      <!-- TANAM SEMULA -->
+      <!-- TANAM SEMULA V2 -->
       <div class="page" id="pg-tanam">
-        <div class="tbl-panel">
-          <div class="tbl-top">
-            <h3>🌿 Senarai Pekebun — Tanam Semula &amp; Bekalan</h3>
-            <div class="tbl-actions">
-              <input class="search-box" placeholder="🔍 Cari nama/IC..." oninput="filterTable('tbl-tanam',this.value)" />
-              <button class="btn-add" onclick="showForm('form-tanam');clearForm('ft')">+ Tambah Pekebun</button>
+
+        <!-- Tab Utama: Semasa / Berturut / Laporan -->
+        <div class="ts-tab-bar">
+          <button class="ts-tab semasa active" onclick="switchTSTab('semasa',this)">🟢 Semasa (2026) <span class="ts-badge badge-semasa" id="badge-semasa">0</span></button>
+          <button class="ts-tab berturut" onclick="switchTSTab('berturut',this)">🔵 Berturut (2025 ke bawah) <span class="ts-badge badge-berturut" id="badge-berturut">0</span></button>
+          <button class="ts-tab" style="" onclick="switchTSTab('laporan-ts',this)">📊 Laporan PPK</button>
+        </div>
+
+        <!-- ===== SEMASA ===== -->
+        <div id="ts-semasa">
+          <div class="ts-sub-tab-bar">
+            <button class="ts-sub-tab active" onclick="switchTSSubTab('semasa-senarai',this)">📋 Senarai Pekebun</button>
+            <button class="ts-sub-tab" onclick="switchTSSubTab('semasa-bantuan',this)">💰 Bahagian B — Bantuan</button>
+          </div>
+
+          <!-- Bahagian A: Senarai -->
+          <div id="semasa-senarai">
+            <div class="tbl-panel">
+              <div class="tbl-top">
+                <h3>🌿 Pekebun Semasa 2026</h3>
+                <div class="tbl-actions">
+                  <input class="search-box" placeholder="🔍 Cari nama/IC..." oninput="filterTable('tbl-tanam-semasa',this.value)" />
+                  <button class="btn-add" onclick="openFormTanam('semasa')">+ Tambah Pekebun</button>
+                </div>
+              </div>
+              <div style="overflow-x:auto;">
+                <table id="tbl-tanam-semasa">
+                  <thead><tr><th>Nama</th><th>No. IC</th><th>No. Lot</th><th>Luas (ha)</th><th>Kategori</th><th>Status Permohonan</th><th>PPK</th><th>Lawatan</th><th>Tindakan</th></tr></thead>
+                  <tbody id="tbody-tanam-semasa"><tr><td colspan="9" class="tbl-empty">⏳ Memuatkan...</td></tr></tbody>
+                </table>
+              </div>
             </div>
           </div>
-          <div style="overflow-x:auto;">
-            <table id="tbl-tanam">
-              <thead><tr><th>Nama</th><th>No. IC</th><th>No. Lot</th><th>Luas (ha)</th><th>Kumpulan</th><th>PPK</th><th>Status Lawatan</th><th>Tindakan</th></tr></thead>
-              <tbody id="tbody-tanam"><tr><td colspan="8" class="tbl-empty">⏳ Memuatkan data...</td></tr></tbody>
-            </table>
+
+          <!-- Bahagian B: Bantuan (bila Lulus) -->
+          <div id="semasa-bantuan" style="display:none;">
+            <div class="tbl-panel">
+              <div class="tbl-top">
+                <h3>💰 Bahagian B — Ansuran & Bantuan Input Pertanian</h3>
+                <div class="tbl-actions">
+                  <input class="search-box" placeholder="🔍 Cari nama..." oninput="filterTable('tbl-bantuan',this.value)" />
+                </div>
+              </div>
+              <div style="overflow-x:auto;">
+                <table id="tbl-bantuan">
+                  <thead><tr><th>Nama</th><th>No. Lot</th><th>Luas (ha)</th><th>Ansuran 1 (RM)</th><th>Bil Baja RP</th><th>Bil Baja R1</th><th>Bil Benih</th><th>Jumlah Bantuan (RM)</th><th>Status Lawatan</th><th>Tarikh Lawatan</th><th>Tindakan</th></tr></thead>
+                  <tbody id="tbody-bantuan"><tr><td colspan="11" class="tbl-empty">⏳ Memuatkan...</td></tr></tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
+
+        <!-- ===== BERTURUT ===== -->
+        <div id="ts-berturut" style="display:none;">
+          <div class="tbl-panel">
+            <div class="tbl-top">
+              <h3>🔵 Pekebun Berturut (2025 ke bawah)</h3>
+              <div class="tbl-actions">
+                <input class="search-box" placeholder="🔍 Cari nama/IC..." oninput="filterTable('tbl-tanam-berturut',this.value)" />
+                <button class="btn-add" onclick="openFormTanam('berturut')">+ Tambah Pekebun</button>
+              </div>
+            </div>
+            <div style="overflow-x:auto;">
+              <table id="tbl-tanam-berturut">
+                <thead><tr><th>Nama</th><th>No. IC</th><th>No. Lot</th><th>Luas (ha)</th><th>Kategori</th><th>Ansuran</th><th>Status Kebun</th><th>PPK</th><th>Lawatan</th><th>Tindakan</th></tr></thead>
+                <tbody id="tbody-tanam-berturut"><tr><td colspan="10" class="tbl-empty">⏳ Memuatkan...</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== LAPORAN PPK ===== -->
+        <div id="ts-laporan-ts" style="display:none;">
+          <div style="background:linear-gradient(135deg,#061f17,#0a3d2e);border-radius:14px;padding:20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;">
+            <div><h2 style="font-family:'Playfair Display',serif;font-size:18px;color:#fff;">📊 Laporan Tanam Semula — By PPK</h2><p style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:3px;">Semasa & Berturut • Semua Kumpulan</p></div>
+            <button class="btn-export-excel" onclick="exportTanamExcel()" style="padding:9px 16px;background:#1a6eb5;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;">📊 Export Excel</button>
+          </div>
+
+          <!-- Summary cards -->
+          <div class="lap-ts-grid" id="lap-ts-cards"></div>
+
+          <!-- Table Perbandingan PPK -->
+          <div class="tbl-panel">
+            <div class="tbl-top"><h3>📋 Perbandingan PPK — Keseluruhan</h3></div>
+            <div style="overflow-x:auto;">
+              <table id="tbl-lap-ts-ppk">
+                <thead>
+                  <tr style="background:var(--primary);color:#fff;">
+                    <th style="color:#fff;">PPK</th>
+                    <th style="color:#fff;">Jumlah Pekebun</th>
+                    <th style="color:#fff;">Semasa</th>
+                    <th style="color:#fff;">Berturut</th>
+                    <th style="color:#fff;">Luas (ha)</th>
+                    <th style="color:#fff;">Sudah Dilawati</th>
+                    <th style="color:#fff;">Belum Dilawati</th>
+                    <th style="color:#fff;">% Lawatan</th>
+                    <th style="color:#fff;">Jumlah Bantuan (RM)</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-lap-ts-ppk"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Table by Kumpulan -->
+          <div class="tbl-panel" style="margin-top:12px;">
+            <div class="tbl-top"><h3>📂 Pecahan by Kumpulan</h3></div>
+            <div style="overflow-x:auto;">
+              <table id="tbl-lap-ts-kumpulan">
+                <thead><tr><th>Kumpulan</th><th>Bil Lot</th><th>Luas (ha)</th><th>Sudah Dilawati</th><th>Belum Dilawati</th><th>Baki Ansuran</th></tr></thead>
+                <tbody id="tbody-lap-ts-kumpulan"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== FORM TAMBAH/EDIT ===== -->
         <div id="form-tanam" style="display:none;">
           <div class="form-panel">
-            <h3 id="form-tanam-title">📝 Tambah Rekod Pekebun</h3>
+            <h3 id="form-tanam-title">📝 Tambah Pekebun Semasa</h3>
             <input type="hidden" id="ft-id" />
+            <input type="hidden" id="ft-jenis-tanam" value="semasa" />
+
+            <div class="form-section-title">👤 Maklumat Pekebun</div>
             <div class="form-grid">
               <div class="fg"><label>Nama Penuh</label><input id="ft-nama" placeholder="Nama penuh pekebun" /></div>
               <div class="fg"><label>No. IC</label><input id="ft-ic" placeholder="XXXXXX-XX-XXXX" /></div>
@@ -311,24 +468,59 @@ tr:hover td{background:rgba(30,122,86,0.03);}
               <div class="fg"><label>No. Telefon</label><input id="ft-tel" placeholder="01X-XXXXXXX" /></div>
               <div class="fg"><label>Kampung</label><input id="ft-kampung" placeholder="Nama kampung" /></div>
               <div class="fg full"><label>Alamat</label><input id="ft-alamat" placeholder="Alamat penuh" /></div>
-              <div class="fg"><label>DUN</label><input id="ft-dun" placeholder="DUN" /></div>
-              <div class="fg"><label>Parlimen</label><input id="ft-parlimen" placeholder="Parlimen" /></div>
+            </div>
+
+            <div class="form-section-title">🌿 Maklumat Kebun</div>
+            <div class="form-grid">
               <div class="fg"><label>No. Lot</label><input id="ft-lot" placeholder="No. Lot" /></div>
               <div class="fg"><label>No. Geran</label><input id="ft-geran" placeholder="No. Geran" /></div>
-              <div class="fg"><label>Luas Kebun (hektar)</label><input id="ft-luas" type="number" step="0.01" placeholder="0.00" /></div>
+              <div class="fg"><label>Luas Kebun (hektar)</label><input id="ft-luas" type="number" step="0.01" placeholder="0.00" oninput="calcBantuan()" /></div>
               <div class="fg"><label>Mukim</label><input id="ft-mukim" placeholder="Mukim" /></div>
-              <div class="fg"><label>Kumpulan</label><select id="ft-kumpulan"><option value="">— Pilih —</option><option>TSB Jantan Fasa A - Kebun Bersih</option><option>TSB Jantan Fasa A - Tahan Kekal</option><option>TSB Jantan Fasa B - Kebun Bersih</option><option>TSB Jantan Fasa B - Kebun Semak</option><option>TSB NCR Semadu</option><option>Tanam Semula Individu (TSI)</option></select></div>
-              <div class="fg"><label>Ansuran Ke-</label><select id="ft-ansuran"><option value="">— Pilih —</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+              <div class="fg"><label>DUN</label><input id="ft-dun" placeholder="DUN" /></div>
+              <div class="fg"><label>Parlimen</label><input id="ft-parlimen" placeholder="Parlimen" /></div>
+              <div class="fg"><label>Kategori</label><select id="ft-kumpulan" onchange="calcBantuan()"><option value="">— Pilih —</option><option>TSB Jantan Fasa A - Kebun Bersih</option><option>TSB Jantan Fasa A - Tahan Kekal</option><option>TSB Jantan Fasa B - Kebun Bersih</option><option>TSB Jantan Fasa B - Kebun Semak</option><option>TSB NCR Semadu</option><option>Tanam Semula Individu (TSI)</option></select></div>
+              <div class="fg"><label>Status Permohonan</label><select id="ft-status-permohonan" onchange="toggleBahagianB()"><option value="">— Pilih —</option><option>Dalam Proses</option><option>Lulus</option><option>Ditolak</option></select></div>
+              <div class="fg" id="fg-status-kebun" style="display:none;"><label>Status Kebun</label><select id="ft-status-kebun"><option value="">— Pilih —</option><option>Kebun Bersih</option><option>Tertahan</option></select></div>
+            </div>
+
+            <div class="form-section-title">📋 Pengurusan</div>
+            <div class="form-grid">
+              <div class="fg"><label>Nama PPK</label><select id="ft-ppk"><option value="">— Pilih —</option><option>Rozaimah</option><option>Jude Hyden</option><option>Armizi</option></select></div>
               <div class="fg"><label>Status Lawatan</label><select id="ft-lawatan"><option value="">— Pilih —</option><option>Sudah Dilawati</option><option>Belum Dilawati</option></select></div>
               <div class="fg"><label>Tarikh Lawatan</label><input id="ft-tarikh-lawatan" type="date" /></div>
-              <div class="fg"><label>Nama PPK</label><select id="ft-ppk"><option value="">— Pilih —</option><option>Rozaimah</option><option>Jude Hyden</option><option>Armizi</option></select></div>
+              <div class="fg" id="fg-ansuran"><label>Ansuran Ke-</label><select id="ft-ansuran"><option value="">— Pilih —</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
             </div>
+
+            <!-- Bahagian B: Bantuan (muncul bila Lulus) -->
+            <div id="bahagian-b" style="display:none;">
+              <div class="form-section-title">💰 Bahagian B — Ansuran & Input Pertanian</div>
+              <div class="form-grid">
+                <div class="fg"><label>Ansuran 1 (RM)</label><input id="ft-ansuran1" type="number" step="0.01" placeholder="0.00" oninput="calcBantuan()" /></div>
+                <div class="fg"><label>Bil Baja RP (beg)</label><input id="ft-baja-rp" type="number" placeholder="0" oninput="calcBantuan()" /></div>
+                <div class="fg"><label>Bil Baja R1 (beg)</label><input id="ft-baja-r1" type="number" placeholder="0" oninput="calcBantuan()" /></div>
+                <div class="fg"><label>Bil Benih (pokok)</label><input id="ft-benih" type="number" placeholder="0" oninput="calcBantuan()" /></div>
+              </div>
+              <div class="bantuan-box">
+                <div class="bb-title">💰 Pengiraan Jumlah Bantuan</div>
+                <div class="bantuan-row"><span>Perkara A (Ansuran 1)</span><strong id="bb-ansuran1">RM 0.00</strong></div>
+                <div class="bantuan-row"><span>Baja RP</span><strong id="bb-baja-rp">RM 0.00</strong></div>
+                <div class="bantuan-row"><span>Baja R1</span><strong id="bb-baja-r1">RM 0.00</strong></div>
+                <div class="bantuan-row"><span>Benih</span><strong id="bb-benih">RM 0.00</strong></div>
+                <div class="bantuan-total"><span>Jumlah Bantuan</span><strong id="bb-total">RM 0.00</strong></div>
+                <div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                  <span style="font-size:11px;color:var(--text-light);">Override manual:</span>
+                  <input id="ft-jumlah-bantuan" type="number" step="0.01" placeholder="Masukkan jumlah manual" style="padding:5px 8px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;width:160px;outline:none;" oninput="document.getElementById('bb-total').textContent='RM '+(parseFloat(this.value)||0).toFixed(2)" />
+                </div>
+              </div>
+            </div>
+
             <div class="form-actions">
               <button class="btn-save" onclick="saveTanam()">💾 Simpan</button>
               <button class="btn-cancel" onclick="hideForm('form-tanam')">Batal</button>
             </div>
           </div>
         </div>
+
       </div>
 
       <!-- PRODUKTIVITI -->
@@ -527,6 +719,31 @@ tr:hover td{background:rgba(30,122,86,0.03);}
           <div><h2>🏆 Dashboard KPI PPK</h2><p>Pemantauan prestasi — Rozaimah • Jude Hyden • Armizi</p></div>
           <div class="kpi-lock">🔒 Ketua Stesen Sahaja</div>
         </div>
+
+        <!-- KPI 100 Hektar -->
+        <div class="kpi-hektar-box">
+          <div>
+            <h3>🎯 KPI Tanam Semula Semasa — 100 Hektar</h3>
+            <p>Hanya mengira pekebun Semasa (Ansuran 1) tahun semasa</p>
+          </div>
+          <div class="kpi-hektar-meter">
+            <div><span class="num" id="kpi-hektar-val">0</span><span class="denom"> / 100 ha</span></div>
+            <div class="kpi-hektar-track"><div class="kpi-hektar-fill" id="kpi-hektar-fill" style="width:0%;"></div></div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.5);margin-top:4px;" id="kpi-hektar-pct">0% daripada sasaran</div>
+          </div>
+        </div>
+
+        <!-- Rollover button (admin/ketua sahaja) -->
+        <div id="rollover-section" style="display:none;margin-bottom:16px;">
+          <div style="background:var(--gold-pale);border:1px solid rgba(200,146,26,0.3);border-radius:12px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--gold);">🔄 Rollover Tahunan</div>
+              <div style="font-size:11px;color:var(--text-light);margin-top:2px;">Pindah pekebun Semasa → Berturut (Ansuran 2) untuk tahun baru</div>
+            </div>
+            <button onclick="openRolloverModal()" style="padding:9px 18px;background:var(--gold);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">🔄 Semak & Rollover</button>
+          </div>
+        </div>
+
         <div class="section-hdr">Prestasi Keseluruhan By PPK</div>
         <div class="kpi-grid" id="kpi-grid-data"><div style="text-align:center;padding:30px;color:var(--text-light);">⏳ Memuatkan...</div></div>
         <div class="section-hdr">Status Laporan By Unit</div>
@@ -564,6 +781,19 @@ tr:hover td{background:rgba(30,122,86,0.03);}
     <div class="modal-actions">
       <button class="btn-cancel-del" onclick="closeModal()">Batal</button>
       <button class="btn-confirm-del" onclick="confirmDelete()">Ya, Padam!</button>
+    </div>
+  </div>
+</div>
+
+<!-- ROLLOVER MODAL -->
+<div class="rollover-modal" id="modal-rollover">
+  <div class="rollover-box">
+    <h3>🔄 Rollover Tahunan — Tanam Semula</h3>
+    <p>Pekebun berikut akan dipindah dari <strong>Semasa → Berturut</strong> dan ansuran akan dinaikkan. Pekebun Ansuran 5 akan ditanda <strong>Selesai</strong>.</p>
+    <div class="rollover-list" id="rollover-list">⏳ Memuatkan...</div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn-rollover-go" onclick="doRollover()">✅ Laksanakan Rollover</button>
+      <button onclick="closeRolloverModal()" style="padding:12px 20px;background:var(--cream);border:1px solid var(--border);border-radius:9px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;cursor:pointer;white-space:nowrap;">Batal</button>
     </div>
   </div>
 </div>
@@ -629,23 +859,6 @@ function loadStats(){
   onValue(ref(db,'pgt'),function(s){ document.getElementById('st-pgt').textContent=s.exists()?Object.keys(s.val()).length:0; });
   onValue(ref(db,'usahawan'),function(s){ document.getElementById('st-usahawan').textContent=s.exists()?Object.keys(s.val()).length:0; });
   onValue(ref(db,'programkhas'),function(s){ document.getElementById('st-program').textContent=s.exists()?Object.keys(s.val()).length:0; });
-}
-
-function loadTanam(){
-  onValue(ref(db,'tanam'),function(snap){
-    var tb=document.getElementById('tbody-tanam');
-    if(!snap.exists()){ tb.innerHTML='<tr><td colspan="8" class="tbl-empty">Tiada rekod. Klik "+ Tambah Pekebun"</td></tr>'; return; }
-    var rows='';
-    Object.entries(snap.val()).forEach(function(entry){
-      var k=entry[0], v=entry[1];
-      var badge=v.lawatan==='Sudah Dilawati'?'sb-lulus':'sb-belum';
-      var safeNama=(v.nama||'').replace(/['\"`]/g,'');
-      rows+='<tr><td><strong>'+(v.nama||'')+'</strong></td><td>'+(v.ic||'')+'</td><td>'+(v.lot||'')+'</td><td>'+(v.luas||'')+'</td><td><small>'+(v.kumpulan||'—')+'</small></td><td>'+(v.ppk||'')+'</td>';
-      rows+='<td><span class="status-badge '+badge+'">'+(v.lawatan||'—')+'</span></td>';
-      rows+='<td><button class="btn-edit" data-id="'+k+'" onclick="window.editById(this)">&#9998; Edit</button> <button class="btn-del" data-id="'+k+'" data-path="unknown" onclick="window.delById(this)">&#128465;</button></td></tr>';
-    });
-    tb.innerHTML=rows;
-  });
 }
 
 function loadPGT(){
@@ -807,12 +1020,321 @@ function loadKPI(){
   });
 }
 
+// ===== TANAM SEMULA V2 =====
+window.switchTSTab = function(tab, el){
+  ['ts-semasa','ts-berturut','ts-laporan-ts'].forEach(function(id){
+    var el2=document.getElementById(id); if(el2) el2.style.display='none';
+  });
+  var show=document.getElementById('ts-'+tab); if(show) show.style.display='block';
+  document.querySelectorAll('.ts-tab').forEach(function(b){ b.classList.remove('active'); });
+  if(el) el.classList.add('active');
+  if(tab==='laporan-ts') loadLaporanTS();
+};
+
+window.switchTSSubTab = function(tab, el){
+  ['semasa-senarai','semasa-bantuan'].forEach(function(id){
+    var e=document.getElementById(id); if(e) e.style.display='none';
+  });
+  var show=document.getElementById(tab); if(show) show.style.display='block';
+  document.querySelectorAll('.ts-sub-tab').forEach(function(b){ b.classList.remove('active'); });
+  if(el) el.classList.add('active');
+};
+
+window.openFormTanam = function(jenis){
+  document.getElementById('ft-id').value='';
+  document.getElementById('ft-jenis-tanam').value=jenis;
+  document.getElementById('form-tanam-title').textContent = jenis==='semasa'?'📝 Tambah Pekebun Semasa':'📝 Tambah Pekebun Berturut';
+  document.getElementById('fg-status-kebun').style.display = jenis==='berturut'?'block':'none';
+  document.getElementById('fg-ansuran').style.display = jenis==='berturut'?'block':'none';
+  document.getElementById('bahagian-b').style.display='none';
+  document.querySelectorAll('[id^="ft-"]').forEach(function(el){ if(el.type!=='hidden'){ el.value=''; if(el.tagName==='SELECT') el.selectedIndex=0; }});
+  document.getElementById('bb-total').textContent='RM 0.00';
+  showForm('form-tanam');
+};
+
+window.toggleBahagianB = function(){
+  var status=getVal('ft-status-permohonan');
+  document.getElementById('bahagian-b').style.display = status==='Lulus'?'block':'none';
+};
+
+window.calcBantuan = function(){
+  var ansuran1=parseFloat(getVal('ft-ansuran1'))||0;
+  var bajaRP=(parseFloat(getVal('ft-baja-rp'))||0)*45;
+  var bajaR1=(parseFloat(getVal('ft-baja-r1'))||0)*38;
+  var benih=(parseFloat(getVal('ft-benih'))||0)*12;
+  var total=ansuran1+bajaRP+bajaR1+benih;
+  document.getElementById('bb-ansuran1').textContent='RM '+ansuran1.toFixed(2);
+  document.getElementById('bb-baja-rp').textContent='RM '+bajaRP.toFixed(2);
+  document.getElementById('bb-baja-r1').textContent='RM '+bajaR1.toFixed(2);
+  document.getElementById('bb-benih').textContent='RM '+benih.toFixed(2);
+  document.getElementById('bb-total').textContent='RM '+total.toFixed(2);
+  document.getElementById('ft-jumlah-bantuan').value=total.toFixed(2);
+};
+
 window.saveTanam = function(){
   var id=getVal('ft-id');
-  var data={nama:getVal('ft-nama'),ic:getVal('ft-ic'),jantina:getVal('ft-jantina'),tel:getVal('ft-tel'),kampung:getVal('ft-kampung'),alamat:getVal('ft-alamat'),dun:getVal('ft-dun'),parlimen:getVal('ft-parlimen'),lot:getVal('ft-lot'),geran:getVal('ft-geran'),luas:getVal('ft-luas'),mukim:getVal('ft-mukim'),kumpulan:getVal('ft-kumpulan'),ansuran:getVal('ft-ansuran'),lawatan:getVal('ft-lawatan'),tarikhLawatan:getVal('ft-tarikh-lawatan'),ppk:getVal('ft-ppk'),masa:new Date().toISOString()};
+  var jenis=getVal('ft-jenis-tanam')||'semasa';
+  var jumlahBantuan=parseFloat(getVal('ft-jumlah-bantuan'))||0;
+  var data={
+    nama:getVal('ft-nama'),ic:getVal('ft-ic'),jantina:getVal('ft-jantina'),tel:getVal('ft-tel'),
+    kampung:getVal('ft-kampung'),alamat:getVal('ft-alamat'),dun:getVal('ft-dun'),parlimen:getVal('ft-parlimen'),
+    lot:getVal('ft-lot'),geran:getVal('ft-geran'),luas:getVal('ft-luas'),mukim:getVal('ft-mukim'),
+    kumpulan:getVal('ft-kumpulan'),statusPermohonan:getVal('ft-status-permohonan'),
+    statusKebun:getVal('ft-status-kebun'),ansuran:getVal('ft-ansuran'),
+    lawatan:getVal('ft-lawatan'),tarikhLawatan:getVal('ft-tarikh-lawatan'),
+    ppk:getVal('ft-ppk'),jenisTanam:jenis,
+    ansuran1:getVal('ft-ansuran1'),bajaRP:getVal('ft-baja-rp'),bajaR1:getVal('ft-baja-r1'),
+    benih:getVal('ft-benih'),jumlahBantuan:jumlahBantuan,
+    masa:new Date().toISOString()
+  };
+  if(!id) data.tahunDaftar=new Date().getFullYear();
   if(!data.nama){ showToast('Sila isi Nama Penuh!',true); return; }
   var r=id?ref(db,'tanam/'+id):push(ref(db,'tanam'));
   (id?update(r,data):set(r,data)).then(function(){ showToast('✅ Rekod berjaya disimpan!'); hideForm('form-tanam'); });
+};
+
+function loadTanam(){
+  onValue(ref(db,'tanam'),function(snap){
+    var semasa=[], berturut=[], bantuanList=[], allRecs=[];
+    if(snap.exists()){
+      Object.entries(snap.val()).forEach(function(entry){
+        var k=entry[0], v=entry[1];
+        allRecs.push(v);
+        var jenis=v.jenisTanam||'semasa';
+        if(jenis==='berturut') berturut.push({k:k,v:v});
+        else if(jenis!=='selesai') semasa.push({k:k,v:v});
+        if(v.statusPermohonan==='Lulus') bantuanList.push({k:k,v:v});
+      });
+    }
+    // KPI Hektar update
+    updateKPIHektar(allRecs);
+    // Badge counts
+    document.getElementById('badge-semasa').textContent=semasa.length;
+    document.getElementById('badge-berturut').textContent=berturut.length;
+    // Update stats dashboard
+    var el=document.getElementById('st-tanam'); if(el) el.textContent=semasa.length+berturut.length;
+
+    // Render Semasa
+    var tb=document.getElementById('tbody-tanam-semasa');
+    if(!semasa.length){ tb.innerHTML='<tr><td colspan="9" class="tbl-empty">Tiada rekod semasa.</td></tr>'; }
+    else {
+      var rows='';
+      semasa.forEach(function(item){
+        var v=item.v,k=item.k;
+        var lawBadge=v.lawatan==='Sudah Dilawati'?'sb-lulus':'sb-tidak';
+        var statBadge=v.statusPermohonan==='Lulus'?'sb-lulus':v.statusPermohonan==='Ditolak'?'sb-tidak':'sb-proses';
+        rows+='<tr>';
+        rows+='<td><strong>'+(v.nama||'')+'</strong></td>';
+        rows+='<td>'+(v.ic||'')+'</td>';
+        rows+='<td>'+(v.lot||'')+'</td>';
+        rows+='<td>'+(v.luas||'')+'</td>';
+        rows+='<td><span style="font-size:10px;">'+(v.kumpulan||'—')+'</span></td>';
+        rows+='<td><span class="status-badge '+statBadge+'">'+(v.statusPermohonan||'—')+'</span></td>';
+        rows+='<td>'+(v.ppk||'')+'</td>';
+        rows+='<td><span class="status-badge '+lawBadge+'">'+(v.lawatan||'—')+'</span></td>';
+        rows+='<td><button class="btn-edit" data-id="'+k+'" onclick="editTanam(this)">✏️ Edit</button> <button class="btn-del" onclick="openDelModal(\'tanam\',\''+k+'\',\''+v.nama+'\')">🗑️</button></td>';
+        rows+='</tr>';
+      });
+      tb.innerHTML=rows;
+    }
+
+    // Render Berturut
+    var tb2=document.getElementById('tbody-tanam-berturut');
+    if(!berturut.length){ tb2.innerHTML='<tr><td colspan="10" class="tbl-empty">Tiada rekod berturut.</td></tr>'; }
+    else {
+      var rows2='';
+      berturut.forEach(function(item){
+        var v=item.v,k=item.k;
+        var lawBadge=v.lawatan==='Sudah Dilawati'?'sb-lulus':'sb-tidak';
+        var kebunBadge=v.statusKebun==='Kebun Bersih'?'sb-lulus':'sb-proses';
+        var tertahan=v.statusKebun==='Tertahan';
+        rows2+='<tr'+(tertahan?' class="tertahan-row" title="⚠️ Kebun Tertahan — PPK perlu tindakan!"':'')+'>'; 
+        rows2+='<td><strong>'+(v.nama||'')+'</strong></td>';
+        rows2+='<td>'+(v.ic||'')+'</td>';
+        rows2+='<td>'+(v.lot||'')+'</td>';
+        rows2+='<td>'+(v.luas||'')+'</td>';
+        rows2+='<td><span style="font-size:10px;">'+(v.kumpulan||'—')+'</span></td>';
+        rows2+='<td>Ansuran '+(v.ansuran||'—')+'</td>';
+        rows2+='<td><span class="status-badge '+kebunBadge+'">'+(v.statusKebun||'—')+'</span></td>';
+        rows2+='<td>'+(v.ppk||'')+'</td>';
+        rows2+='<td><span class="status-badge '+lawBadge+'">'+(v.lawatan||'—')+'</span></td>';
+        rows2+='<td><button class="btn-edit" data-id="'+k+'" onclick="editTanam(this)">✏️ Edit</button> <button class="btn-del" onclick="openDelModal(\'tanam\',\''+k+'\',\''+v.nama+'\')">🗑️</button></td>';
+        rows2+='</tr>';
+      });
+      tb2.innerHTML=rows2;
+    }
+
+    // Render Bantuan
+    var tb3=document.getElementById('tbody-bantuan');
+    if(!bantuanList.length){ tb3.innerHTML='<tr><td colspan="11" class="tbl-empty">Tiada rekod lulus lagi.</td></tr>'; }
+    else {
+      var rows3='';
+      bantuanList.forEach(function(item){
+        var v=item.v,k=item.k;
+        var lawBadge=v.lawatan==='Sudah Dilawati'?'sb-lulus':'sb-tidak';
+        rows3+='<tr>';
+        rows3+='<td><strong>'+(v.nama||'')+'</strong></td>';
+        rows3+='<td>'+(v.lot||'')+'</td>';
+        rows3+='<td>'+(v.luas||'')+'</td>';
+        rows3+='<td>RM '+(parseFloat(v.ansuran1)||0).toFixed(2)+'</td>';
+        rows3+='<td>'+(v.bajaRP||0)+'</td>';
+        rows3+='<td>'+(v.bajaR1||0)+'</td>';
+        rows3+='<td>'+(v.benih||0)+'</td>';
+        rows3+='<td><strong>RM '+(parseFloat(v.jumlahBantuan)||0).toFixed(2)+'</strong></td>';
+        rows3+='<td><span class="status-badge '+lawBadge+'">'+(v.lawatan||'—')+'</span></td>';
+        rows3+='<td>'+(v.tarikhLawatan||'—')+'</td>';
+        rows3+='<td><button class="btn-edit" data-id="'+k+'" onclick="editTanam(this)">✏️ Edit</button></td>';
+        rows3+='</tr>';
+      });
+      tb3.innerHTML=rows3;
+    }
+  });
+}
+
+window.editTanam = function(btn){
+  var id=btn.getAttribute('data-id');
+  onValue(ref(db,'tanam/'+id),function(snap){
+    if(!snap.exists()) return;
+    var v=snap.val();
+    setVal('ft-id',id);
+    setVal('ft-jenis-tanam',v.jenisTanam||'semasa');
+    setVal('ft-nama',v.nama); setVal('ft-ic',v.ic); setVal('ft-jantina',v.jantina);
+    setVal('ft-tel',v.tel); setVal('ft-kampung',v.kampung); setVal('ft-alamat',v.alamat);
+    setVal('ft-dun',v.dun); setVal('ft-parlimen',v.parlimen); setVal('ft-lot',v.lot);
+    setVal('ft-geran',v.geran); setVal('ft-luas',v.luas); setVal('ft-mukim',v.mukim);
+    setVal('ft-kumpulan',v.kumpulan); setVal('ft-status-permohonan',v.statusPermohonan);
+    setVal('ft-status-kebun',v.statusKebun); setVal('ft-ansuran',v.ansuran);
+    setVal('ft-lawatan',v.lawatan); setVal('ft-tarikh-lawatan',v.tarikhLawatan);
+    setVal('ft-ppk',v.ppk);
+    setVal('ft-ansuran1',v.ansuran1); setVal('ft-baja-rp',v.bajaRP);
+    setVal('ft-baja-r1',v.bajaR1); setVal('ft-benih',v.benih);
+    setVal('ft-jumlah-bantuan',v.jumlahBantuan);
+    document.getElementById('bb-total').textContent='RM '+(parseFloat(v.jumlahBantuan)||0).toFixed(2);
+    document.getElementById('form-tanam-title').textContent='✏️ Edit Rekod Pekebun';
+    document.getElementById('fg-status-kebun').style.display=(v.jenisTanam==='berturut')?'block':'none';
+    document.getElementById('fg-ansuran').style.display=(v.jenisTanam==='berturut')?'block':'none';
+    document.getElementById('bahagian-b').style.display=(v.statusPermohonan==='Lulus')?'block':'none';
+    showForm('form-tanam');
+  },{onlyOnce:true});
+};
+
+function loadLaporanTS(){
+  var ppks=['Rozaimah','Jude Hyden','Armizi'];
+  var kumpulans=['TSB Jantan Fasa A - Kebun Bersih','TSB Jantan Fasa A - Tahan Kekal','TSB Jantan Fasa B - Kebun Bersih','TSB Jantan Fasa B - Kebun Semak','TSB NCR Semadu','Tanam Semula Individu (TSI)'];
+  var userRole=window.currentUser?window.currentUser.role:'';
+  var userPPK=window.currentUser?window.currentUser.nama:'';
+
+  onValue(ref(db,'tanam'),function(snap){
+    var allRecs=snap.exists()?Object.values(snap.val()):[];
+
+    // Filter ikut role — PPK nampak sendiri je
+    var recs=allRecs;
+    if(userRole==='ppk'){
+      recs=allRecs.filter(function(r){ return r.ppk===userPPK; });
+    }
+
+    // Render cards PPK
+    var cardsHTML='';
+    var ppkList = (userRole==='ppk') ? [userPPK] : ppks;
+    var cardClasses={Rozaimah:'roz', 'Jude Hyden':'jude', Armizi:'armi'};
+
+    ppkList.forEach(function(ppk){
+      var precs=allRecs.filter(function(r){ return r.ppk===ppk; });
+      var jumlah=precs.length;
+      var luas=precs.reduce(function(s,r){ return s+(parseFloat(r.luas)||0); },0);
+      var sudah=precs.filter(function(r){ return r.lawatan==='Sudah Dilawati'; }).length;
+      var belum=jumlah-sudah;
+      var bantuan=precs.reduce(function(s,r){ return s+(parseFloat(r.jumlahBantuan)||0); },0);
+      var pct=jumlah>0?Math.round(sudah/jumlah*100):0;
+      var cls=cardClasses[ppk]||'roz';
+      cardsHTML+='<div class="lap-ts-card '+cls+'">';
+      cardsHTML+='<h4>'+ppk+'</h4>';
+      cardsHTML+='<div class="lap-ts-stat"><span>Jumlah Pekebun</span><strong>'+jumlah+'</strong></div>';
+      cardsHTML+='<div class="lap-ts-stat"><span>Luas (ha)</span><strong>'+luas.toFixed(2)+'</strong></div>';
+      cardsHTML+='<div class="lap-ts-stat"><span>Sudah Dilawati</span><strong>'+sudah+'</strong></div>';
+      cardsHTML+='<div class="lap-ts-stat"><span>Belum Dilawati</span><strong>'+belum+'</strong></div>';
+      cardsHTML+='<div class="lap-ts-stat"><span>Jumlah Bantuan</span><strong>RM '+bantuan.toFixed(2)+'</strong></div>';
+      cardsHTML+='<div class="progress-bar"><div class="progress-fill" style="width:'+pct+'%;"></div></div>';
+      cardsHTML+='<div style="font-size:10px;color:var(--text-light);margin-top:4px;">'+pct+'% lawatan selesai</div>';
+      cardsHTML+='</div>';
+    });
+    document.getElementById('lap-ts-cards').innerHTML=cardsHTML;
+
+    // Table PPK perbandingan (Ketua/Admin sahaja)
+    var tbodyPPK=document.getElementById('tbody-lap-ts-ppk');
+    if(userRole==='ppk'){
+      tbodyPPK.innerHTML='<tr><td colspan="9" class="tbl-empty">🔒 Akses terhad — hubungi Ketua Stesen</td></tr>';
+    } else {
+      var rowsPPK=''; var grandTotal={jumlah:0,semasa:0,berturut:0,luas:0,sudah:0,belum:0,bantuan:0};
+      ppks.forEach(function(ppk){
+        var pr=allRecs.filter(function(r){ return r.ppk===ppk; });
+        var j=pr.length;
+        var s=pr.filter(function(r){ return r.jenisTanam!=='berturut'; }).length;
+        var b=pr.filter(function(r){ return r.jenisTanam==='berturut'; }).length;
+        var luas=pr.reduce(function(sum,r){ return sum+(parseFloat(r.luas)||0); },0);
+        var sudah=pr.filter(function(r){ return r.lawatan==='Sudah Dilawati'; }).length;
+        var belum=j-sudah;
+        var bantuan=pr.reduce(function(sum,r){ return sum+(parseFloat(r.jumlahBantuan)||0); },0);
+        var pct=j>0?Math.round(sudah/j*100):0;
+        grandTotal.jumlah+=j; grandTotal.semasa+=s; grandTotal.berturut+=b;
+        grandTotal.luas+=luas; grandTotal.sudah+=sudah; grandTotal.belum+=belum; grandTotal.bantuan+=bantuan;
+        rowsPPK+='<tr>';
+        rowsPPK+='<td><strong>'+ppk+'</strong></td>';
+        rowsPPK+='<td><strong>'+j+'</strong></td>';
+        rowsPPK+='<td>'+s+'</td>';
+        rowsPPK+='<td>'+b+'</td>';
+        rowsPPK+='<td>'+luas.toFixed(2)+'</td>';
+        rowsPPK+='<td><span class="status-badge sb-lulus">'+sudah+'</span></td>';
+        rowsPPK+='<td><span class="status-badge sb-tidak">'+belum+'</span></td>';
+        rowsPPK+='<td><strong>'+pct+'%</strong></td>';
+        rowsPPK+='<td><strong>RM '+bantuan.toFixed(2)+'</strong></td>';
+        rowsPPK+='</tr>';
+      });
+      var gpct=grandTotal.jumlah>0?Math.round(grandTotal.sudah/grandTotal.jumlah*100):0;
+      rowsPPK+='<tr style="background:#e8f7f0;font-weight:700;">';
+      rowsPPK+='<td><strong>JUMLAH</strong></td><td><strong>'+grandTotal.jumlah+'</strong></td>';
+      rowsPPK+='<td>'+grandTotal.semasa+'</td><td>'+grandTotal.berturut+'</td>';
+      rowsPPK+='<td>'+grandTotal.luas.toFixed(2)+'</td>';
+      rowsPPK+='<td>'+grandTotal.sudah+'</td><td>'+grandTotal.belum+'</td>';
+      rowsPPK+='<td><strong>'+gpct+'%</strong></td>';
+      rowsPPK+='<td><strong>RM '+grandTotal.bantuan.toFixed(2)+'</strong></td>';
+      rowsPPK+='</tr>';
+      tbodyPPK.innerHTML=rowsPPK;
+    }
+
+    // Table by Kumpulan
+    var tbodyKump=document.getElementById('tbody-lap-ts-kumpulan');
+    var rowsKump='';
+    kumpulans.forEach(function(k){
+      var kr=recs.filter(function(r){ return r.kumpulan===k; });
+      if(!kr.length) return;
+      var luas=kr.reduce(function(s,r){ return s+(parseFloat(r.luas)||0); },0);
+      var sudah=kr.filter(function(r){ return r.lawatan==='Sudah Dilawati'; }).length;
+      var belum=kr.length-sudah;
+      var bagiAnsuran=kr.filter(function(r){ return !r.jumlahBantuan||r.jumlahBantuan==0; }).length;
+      rowsKump+='<tr>';
+      rowsKump+='<td><strong>'+k+'</strong></td>';
+      rowsKump+='<td>'+kr.length+'</td>';
+      rowsKump+='<td>'+luas.toFixed(2)+'</td>';
+      rowsKump+='<td><span class="status-badge sb-lulus">'+sudah+'</span></td>';
+      rowsKump+='<td><span class="status-badge sb-tidak">'+belum+'</span></td>';
+      rowsKump+='<td>'+bagiAnsuran+' lot</td>';
+      rowsKump+='</tr>';
+    });
+    tbodyKump.innerHTML=rowsKump||'<tr><td colspan="6" class="tbl-empty">Tiada data.</td></tr>';
+  },{onlyOnce:true});
+}
+
+window.exportTanamExcel = function(){
+  var html='<html><head><meta charset="UTF-8"></head><body>';
+  html+='<h2>Laporan Tanam Semula — i-Ris RISDA Stesen Lundu</h2>';
+  var t1=document.getElementById('tbl-lap-ts-ppk'); if(t1) html+='<h3>Perbandingan PPK</h3>'+t1.outerHTML;
+  var t2=document.getElementById('tbl-lap-ts-kumpulan'); if(t2) html+='<h3>Pecahan by Kumpulan</h3>'+t2.outerHTML;
+  html+='</body></html>';
+  var blob=new Blob([html],{type:'application/vnd.ms-excel'});
+  var a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='Laporan_TanamSemula_'+new Date().toISOString().slice(0,10)+'.xls';
+  a.click(); showToast('✅ Excel berjaya diexport!');
 };
 
 window.savePGT = function(){
@@ -959,9 +1481,12 @@ window.doLogin = function(){
       if(ud.role==='admin'||ud.role==='ketua'){
         document.getElementById('kpi-label').style.display='block';
         document.getElementById('kpi-nav').style.display='flex';
+        document.getElementById('rollover-section').style.display='block';
       }
       if(ud.role!=='admin') document.getElementById('nav-users').style.display='none';
       loadStats(); loadTanam(); loadPGT(); loadPeng(); loadUsa(); loadProg(); loadUsers(); loadKPI();
+      // Auto-detect rollover keperluan
+      checkAutoRollover(ud.role);
     } else {
       err.style.display='block'; err.textContent='Username atau password salah!';
     }
@@ -983,6 +1508,102 @@ window.showToast = function(msg,isErr){
   t.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer=setTimeout(function(){ t.classList.remove('show'); },3000);
+};
+
+// ===== KPI HEKTAR =====
+function updateKPIHektar(allRecs){
+  var tahunSemasa=new Date().getFullYear();
+  var semasa=allRecs.filter(function(r){
+    return r.jenisTanam!=='berturut' && r.statusPermohonan!=='Selesai';
+  });
+  var totalLuas=semasa.reduce(function(s,r){ return s+(parseFloat(r.luas)||0); },0);
+  var sasaran=100;
+  var pct=Math.min(100,Math.round(totalLuas/sasaran*100));
+  var el=document.getElementById('kpi-hektar-val');
+  var fill=document.getElementById('kpi-hektar-fill');
+  var pctEl=document.getElementById('kpi-hektar-pct');
+  if(el) el.textContent=totalLuas.toFixed(1);
+  if(fill) fill.style.width=pct+'%';
+  if(pctEl) pctEl.textContent=pct+'% daripada sasaran 100 ha';
+}
+
+// ===== AUTO-ROLLOVER =====
+function checkAutoRollover(role){
+  if(role!=='admin'&&role!=='ketua') return;
+  var tahunSemasa=new Date().getFullYear();
+  onValue(ref(db,'tanam'),function(snap){
+    if(!snap.exists()) return;
+    var perlu=Object.entries(snap.val()).filter(function(e){
+      var v=e[1];
+      // Rekod semasa dari tahun lepas = perlu rollover
+      if(v.jenisTanam==='berturut'||v.statusPermohonan==='Selesai') return false;
+      var tahunDaftar=v.tahunDaftar||tahunSemasa;
+      return parseInt(tahunDaftar) < tahunSemasa;
+    });
+    if(perlu.length>0){
+      showToast('⚠️ '+perlu.length+' pekebun perlu Rollover Tahunan! Pergi KPI PPK.',true);
+    }
+  },{onlyOnce:true});
+}
+
+window.openRolloverModal = function(){
+  var tahunSemasa=new Date().getFullYear();
+  var listEl=document.getElementById('rollover-list');
+  listEl.innerHTML='⏳ Memuatkan...';
+  onValue(ref(db,'tanam'),function(snap){
+    if(!snap.exists()){ listEl.innerHTML='<div style="padding:20px;text-align:center;color:var(--text-light);">Tiada rekod untuk rollover.</div>'; return; }
+    var perlu=Object.entries(snap.val()).filter(function(e){
+      var v=e[1];
+      if(v.jenisTanam==='berturut'||v.statusPermohonan==='Selesai') return false;
+      var tahunDaftar=v.tahunDaftar||tahunSemasa;
+      return parseInt(tahunDaftar) < tahunSemasa;
+    });
+    if(!perlu.length){ listEl.innerHTML='<div style="padding:20px;text-align:center;color:var(--text-light);">✅ Tiada pekebun yang perlu rollover.</div>'; }
+    else {
+      var html='';
+      perlu.forEach(function(e){
+        var v=e[1];
+        var ansCurr=parseInt(v.ansuran)||1;
+        var ansNext=ansCurr+1;
+        var selesai=ansNext>5;
+        html+='<div class="rollover-item'+(selesai?' will-selesai':'')+'"><div><strong>'+(v.nama||'')+'</strong><br><span style="color:var(--text-light);">'+v.lot+' • '+v.ppk+' • Ansuran '+ansCurr+'</span></div>';
+        html+='<span style="font-size:11px;font-weight:600;color:'+(selesai?'#c0392b':'#1a6eb5')+';">'+(selesai?'→ SELESAI':'→ Berturut Ansuran '+ansNext)+'</span></div>';
+      });
+      listEl.innerHTML=html;
+    }
+    window._rolloverData=perlu;
+  },{onlyOnce:true});
+  document.getElementById('modal-rollover').classList.add('show');
+};
+
+window.closeRolloverModal = function(){
+  document.getElementById('modal-rollover').classList.remove('show');
+};
+
+window.doRollover = function(){
+  if(!window._rolloverData||!window._rolloverData.length){
+    closeRolloverModal(); return;
+  }
+  var tahunSemasa=new Date().getFullYear();
+  var promises=window._rolloverData.map(function(e){
+    var k=e[0], v=e[1];
+    var ansCurr=parseInt(v.ansuran)||1;
+    var ansNext=ansCurr+1;
+    var selesai=ansNext>5;
+    var updateData={
+      jenisTanam: selesai?'selesai':'berturut',
+      ansuran: selesai?'5':String(ansNext),
+      statusPermohonan: selesai?'Selesai':v.statusPermohonan,
+      tahunRollover: tahunSemasa
+    };
+    return update(ref(db,'tanam/'+k), updateData);
+  });
+  Promise.all(promises).then(function(){
+    closeRolloverModal();
+    showToast('✅ Rollover berjaya! '+window._rolloverData.length+' pekebun dipindah.');
+    loadTanam();
+    loadKPI();
+  });
 };
 
 window.calcTotalPGT = function(){
