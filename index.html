@@ -1047,9 +1047,18 @@ window.openFormTanam = function(jenis){
   document.getElementById('fg-status-kebun').style.display = jenis==='berturut'?'block':'none';
   document.getElementById('fg-ansuran').style.display = jenis==='berturut'?'block':'none';
   document.getElementById('bahagian-b').style.display='none';
-  document.querySelectorAll('[id^="ft-"]').forEach(function(el){ if(el.type!=='hidden'){ el.value=''; if(el.tagName==='SELECT') el.selectedIndex=0; }});
+  // Clear semua field
+  document.querySelectorAll('[id^="ft-"]').forEach(function(el){
+    if(el.type!=='hidden'){ el.value=''; if(el.tagName==='SELECT') el.selectedIndex=0; }
+  });
   document.getElementById('bb-total').textContent='RM 0.00';
+  // Auto-set PPK kalau user adalah PPK
+  if(window.currentUser && window.currentUser.role==='ppk'){
+    setVal('ft-ppk', window.currentUser.nama);
+  }
+  // Scroll ke form dan tunjuk
   showForm('form-tanam');
+  document.getElementById('form-tanam').scrollIntoView({behavior:'smooth',block:'start'});
 };
 
 window.toggleBahagianB = function(){
@@ -1625,6 +1634,17 @@ window.showPage = function(id,navEl){
   if(navEl){
     document.querySelectorAll('.nav-item').forEach(function(i){ i.classList.remove('active'); });
     navEl.classList.add('active');
+  }
+  // Reset Tanam Semula tabs bila masuk page tanam
+  if(id==='tanam'){
+    ['ts-semasa','ts-berturut','ts-laporan-ts'].forEach(function(tid){
+      var el=document.getElementById(tid); if(el) el.style.display='none';
+    });
+    var semEl=document.getElementById('ts-semasa');
+    if(semEl) semEl.style.display='block';
+    document.querySelectorAll('.ts-tab').forEach(function(b){ b.classList.remove('active'); });
+    var firstTab=document.querySelector('.ts-tab.semasa');
+    if(firstTab) firstTab.classList.add('active');
   }
   var titles={
     dashboard:['Dashboard Utama','Paparan keseluruhan sistem i-Ris'],
