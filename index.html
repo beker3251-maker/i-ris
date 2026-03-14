@@ -478,7 +478,15 @@ tr:hover td{background:rgba(30,122,86,0.03);}
               <div class="fg"><label>Mukim</label><input id="ft-mukim" placeholder="Mukim" /></div>
               <div class="fg"><label>DUN</label><input id="ft-dun" placeholder="DUN" /></div>
               <div class="fg"><label>Parlimen</label><input id="ft-parlimen" placeholder="Parlimen" /></div>
-              <div class="fg"><label>Kategori</label><select id="ft-kumpulan" onchange="calcBantuan()"><option value="">— Pilih —</option><option>TSB Jantan Fasa A - Kebun Bersih</option><option>TSB Jantan Fasa A - Tahan Kekal</option><option>TSB Jantan Fasa B - Kebun Bersih</option><option>TSB Jantan Fasa B - Kebun Semak</option><option>TSB NCR Semadu</option><option>Tanam Semula Individu (TSI)</option></select></div>
+              <div class="fg"><label>Kategori</label>
+                <select id="ft-kumpulan-pilih" onchange="toggleKategoriInput(this)" style="padding:9px 11px;border:1.5px solid var(--border);border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--text);background:var(--cream);outline:none;width:100%;margin-bottom:6px;">
+                  <option value="">— Pilih —</option>
+                  <option value="TSB">TSB (Tanam Semula Berkelompok)</option>
+                  <option value="Individu (TSI)">Individu (TSI)</option>
+                  <option value="lain">✏️ Tulis sendiri...</option>
+                </select>
+                <input id="ft-kumpulan" placeholder="Tulis kategori..." style="padding:9px 11px;border:1.5px solid var(--border);border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--text);background:var(--cream);outline:none;width:100%;display:none;" />
+              </div>
               <div class="fg"><label>Status Permohonan</label><select id="ft-status-permohonan" onchange="toggleBahagianB()"><option value="">— Pilih —</option><option>Dalam Proses</option><option>Lulus</option><option>Ditolak</option></select></div>
               <div class="fg" id="fg-status-kebun" style="display:none;"><label>Status Kebun</label><select id="ft-status-kebun"><option value="">— Pilih —</option><option>Kebun Bersih</option><option>Tertahan</option></select></div>
             </div>
@@ -1061,6 +1069,19 @@ window.openFormTanam = function(jenis){
   document.getElementById('form-tanam').scrollIntoView({behavior:'smooth',block:'start'});
 };
 
+window.toggleKategoriInput = function(sel){
+  var input=document.getElementById('ft-kumpulan');
+  var val=sel.value;
+  if(val==='lain'){
+    input.style.display='block';
+    input.value='';
+    input.focus();
+  } else {
+    input.style.display='none';
+    input.value=val;
+  }
+};
+
 window.toggleBahagianB = function(){
   var status=getVal('ft-status-permohonan');
   document.getElementById('bahagian-b').style.display = status==='Lulus'?'block':'none';
@@ -1211,7 +1232,15 @@ window.editTanam = function(btn){
     setVal('ft-tel',v.tel); setVal('ft-kampung',v.kampung); setVal('ft-alamat',v.alamat);
     setVal('ft-dun',v.dun); setVal('ft-parlimen',v.parlimen); setVal('ft-lot',v.lot);
     setVal('ft-geran',v.geran); setVal('ft-luas',v.luas); setVal('ft-mukim',v.mukim);
-    setVal('ft-kumpulan',v.kumpulan); setVal('ft-status-permohonan',v.statusPermohonan);
+    setVal('ft-kumpulan',v.kumpulan);
+    // Restore kategori dropdown
+    var kpilih=document.getElementById('ft-kumpulan-pilih');
+    if(kpilih){
+      var stdVals=['TSB','Individu (TSI)',''];
+      if(stdVals.indexOf(v.kumpulan)>=0){ kpilih.value=v.kumpulan||''; document.getElementById('ft-kumpulan').style.display='none'; }
+      else { kpilih.value='lain'; document.getElementById('ft-kumpulan').style.display='block'; setVal('ft-kumpulan',v.kumpulan); }
+    }
+    setVal('ft-status-permohonan',v.statusPermohonan);
     setVal('ft-status-kebun',v.statusKebun); setVal('ft-ansuran',v.ansuran);
     setVal('ft-lawatan',v.lawatan); setVal('ft-tarikh-lawatan',v.tarikhLawatan);
     setVal('ft-ppk',v.ppk);
