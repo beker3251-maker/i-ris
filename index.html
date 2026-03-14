@@ -1252,7 +1252,15 @@ window.editTanam = function(btn){
     document.getElementById('fg-status-kebun').style.display=(v.jenisTanam==='berturut')?'block':'none';
     document.getElementById('fg-ansuran').style.display=(v.jenisTanam==='berturut')?'block':'none';
     document.getElementById('bahagian-b').style.display=(v.statusPermohonan==='Lulus')?'block':'none';
-    showForm('form-tanam');
+    // Pastikan page tanam active
+    document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+    var pg=document.getElementById('pg-tanam'); if(pg) pg.classList.add('active');
+    // Show form dan scroll
+    var formEl=document.getElementById('form-tanam');
+    if(formEl){
+      formEl.style.display='block';
+      setTimeout(function(){ formEl.scrollIntoView({behavior:'smooth',block:'start'}); },100);
+    }
   },{onlyOnce:true});
 };
 
