@@ -1162,7 +1162,7 @@ function loadTanam(){
         rows+='<td><span class="status-badge '+statBadge+'">'+(v.statusPermohonan||'—')+'</span></td>';
         rows+='<td>'+(v.ppk||'')+'</td>';
         rows+='<td><span class="status-badge '+lawBadge+'">'+(v.lawatan||'—')+'</span></td>';
-        rows+='<td><button class="btn-edit" data-id="'+k+'" onclick="editTanam(this)">✏️ Edit</button> <button class="btn-del" onclick="openDelModal(\'tanam\',\''+k+'\',\''+v.nama+'\')">🗑️</button></td>';
+        rows+='<td><button class="btn-edit" onclick="editTanam(\''+k+'\')" >✏️ Edit</button> <button class="btn-del" onclick="openDelModal(\'tanam\',\''+k+'\',\''+v.nama.replace(/'/g,'')+'\')">🗑️</button></td>';
         rows+='</tr>';
       });
       tb.innerHTML=rows;
@@ -1188,7 +1188,7 @@ function loadTanam(){
         rows2+='<td><span class="status-badge '+kebunBadge+'">'+(v.statusKebun||'—')+'</span></td>';
         rows2+='<td>'+(v.ppk||'')+'</td>';
         rows2+='<td><span class="status-badge '+lawBadge+'">'+(v.lawatan||'—')+'</span></td>';
-        rows2+='<td><button class="btn-edit" data-id="'+k+'" onclick="editTanam(this)">✏️ Edit</button> <button class="btn-del" onclick="openDelModal(\'tanam\',\''+k+'\',\''+v.nama+'\')">🗑️</button></td>';
+        rows2+='<td><button class="btn-edit" onclick="editTanam(\''+k+'\')">✏️ Edit</button> <button class="btn-del" onclick="openDelModal(\'tanam\',\''+k+'\',\''+v.nama.replace(/'/g,'')+'\')">🗑️</button></td>';
         rows2+='</tr>';
       });
       tb2.innerHTML=rows2;
@@ -1213,7 +1213,7 @@ function loadTanam(){
         rows3+='<td><strong>RM '+(parseFloat(v.jumlahBantuan)||0).toFixed(2)+'</strong></td>';
         rows3+='<td><span class="status-badge '+lawBadge+'">'+(v.lawatan||'—')+'</span></td>';
         rows3+='<td>'+(v.tarikhLawatan||'—')+'</td>';
-        rows3+='<td><button class="btn-edit" data-id="'+k+'" onclick="editTanam(this)">✏️ Edit</button></td>';
+        rows3+='<td><button class="btn-edit" onclick="editTanam(\''+k+'\')">✏️ Edit</button></td>';
         rows3+='</tr>';
       });
       tb3.innerHTML=rows3;
@@ -1221,8 +1221,8 @@ function loadTanam(){
   });
 }
 
-window.editTanam = function(btn){
-  var id=btn.getAttribute('data-id');
+window.editTanam = function(idOrBtn){
+  var id = (typeof idOrBtn === 'string') ? idOrBtn : idOrBtn.getAttribute('data-id');
   onValue(ref(db,'tanam/'+id),function(snap){
     if(!snap.exists()) return;
     var v=snap.val();
