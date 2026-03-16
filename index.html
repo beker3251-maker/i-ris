@@ -376,7 +376,8 @@ tr:hover td{background:rgba(30,122,86,0.03);}
         <div class="ts-tab-bar">
           <button class="ts-tab semasa active" onclick="switchTSTab('semasa',this)">🟢 Semasa (2026) <span class="ts-badge badge-semasa" id="badge-semasa">0</span></button>
           <button class="ts-tab berturut" onclick="switchTSTab('berturut',this)">🔵 Berturut (2025 ke bawah) <span class="ts-badge badge-berturut" id="badge-berturut">0</span></button>
-          <button class="ts-tab" style="" onclick="switchTSTab('laporan-ts',this)">📊 Laporan PPK</button>
+          <button class="ts-tab" onclick="switchTSTab('kewangan',this)">💰 Laporan Kewangan</button>
+          <button class="ts-tab" onclick="switchTSTab('laporan-ts',this)">📊 Laporan PPK</button>
         </div>
 
         <!-- ===== SEMASA ===== -->
@@ -398,8 +399,8 @@ tr:hover td{background:rgba(30,122,86,0.03);}
               </div>
               <div style="overflow-x:auto;">
                 <table id="tbl-tanam-semasa">
-                  <thead><tr><th>Nama</th><th>No. IC</th><th>No. Lot</th><th>Luas (ha)</th><th>Kategori</th><th>Status Permohonan</th><th>PPK</th><th>Lawatan</th><th>Tindakan</th></tr></thead>
-                  <tbody id="tbody-tanam-semasa"><tr><td colspan="9" class="tbl-empty">⏳ Memuatkan...</td></tr></tbody>
+                  <thead><tr><th>Nama</th><th>No. IC</th><th>No. Lot</th><th>Luas (ha)</th><th>TSB/Kategori</th><th>Status</th><th>PPK</th><th>Lawatan</th><th style="background:#e8f7f0;color:#1e7a56;">Kadar (RM/ha)</th><th style="background:#e8f7f0;color:#1e7a56;">Jum. Bantuan (RM)</th><th style="background:#e8f7f0;color:#1e7a56;">Baki Tunai (RM)</th><th>Tindakan</th></tr></thead>
+                  <tbody id="tbody-tanam-semasa"><tr><td colspan="12" class="tbl-empty">⏳ Memuatkan...</td></tr></tbody>
                 </table>
               </div>
             </div>
@@ -436,10 +437,69 @@ tr:hover td{background:rgba(30,122,86,0.03);}
             </div>
             <div style="overflow-x:auto;">
               <table id="tbl-tanam-berturut">
-                <thead><tr><th>Nama</th><th>No. IC</th><th>No. Lot</th><th>Luas (ha)</th><th>Kategori</th><th>Ansuran</th><th>Status Kebun</th><th>PPK</th><th>Lawatan</th><th>Tindakan</th></tr></thead>
-                <tbody id="tbody-tanam-berturut"><tr><td colspan="10" class="tbl-empty">⏳ Memuatkan...</td></tr></tbody>
+                <thead><tr><th>Nama</th><th>No. IC</th><th>No. Lot</th><th>Luas (ha)</th><th>TSB/Kategori</th><th>Ansuran</th><th>Status Kebun</th><th>PPK</th><th>Lawatan</th><th style="background:#e8f2ff;color:#1a6eb5;">Kadar (RM/ha)</th><th style="background:#e8f2ff;color:#1a6eb5;">Jum. Bantuan (RM)</th><th style="background:#e8f2ff;color:#1a6eb5;">Baki Tunai (RM)</th><th>Tindakan</th></tr></thead>
+                <tbody id="tbody-tanam-berturut"><tr><td colspan="13" class="tbl-empty">⏳ Memuatkan...</td></tr></tbody>
               </table>
             </div>
+          </div>
+        </div>
+
+        <!-- ===== LAPORAN KEWANGAN ===== -->
+        <div id="ts-kewangan" style="display:none;">
+          <!-- Summary cards -->
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;" id="kew-summary-cards"></div>
+
+          <!-- Filter -->
+          <div style="background:var(--white);border-radius:12px;padding:14px;border:1px solid var(--border);margin-bottom:14px;display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+            <div class="fg"><label style="font-size:11px;font-weight:600;text-transform:uppercase;">PPK</label>
+              <select id="kew-filter-ppk" style="padding:8px 11px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;background:var(--cream);outline:none;" onchange="renderKewangan()">
+                <option value="semua">Semua PPK</option>
+                <option>Rozaimah</option><option>Jude Hyden</option><option>Armizi</option>
+              </select>
+            </div>
+            <div class="fg"><label style="font-size:11px;font-weight:600;text-transform:uppercase;">Jenis</label>
+              <select id="kew-filter-jenis" style="padding:8px 11px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;background:var(--cream);outline:none;" onchange="renderKewangan()">
+                <option value="semua">Semua</option>
+                <option value="semasa">Semasa 2026</option>
+                <option value="berturut">Berturut</option>
+              </select>
+            </div>
+            <div class="fg"><label style="font-size:11px;font-weight:600;text-transform:uppercase;">Ansuran</label>
+              <select id="kew-filter-ansuran" style="padding:8px 11px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;background:var(--cream);outline:none;" onchange="renderKewangan()">
+                <option value="semua">Semua Ansuran</option>
+                <option value="1">Ansuran 1</option><option value="2">Ansuran 2</option>
+                <option value="3">Ansuran 3</option><option value="4">Ansuran 4</option><option value="5">Ansuran 5</option>
+              </select>
+            </div>
+            <button onclick="exportKewanganExcel()" style="padding:9px 16px;background:#1a6eb5;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;">📊 Export Excel</button>
+            <button onclick="exportKewanganPDF()" style="padding:9px 16px;background:#c0392b;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;">📄 Export PDF</button>
+          </div>
+
+          <!-- Peruntukan by Ansuran -->
+          <div class="tbl-panel" style="margin-bottom:14px;">
+            <div class="tbl-top"><h3>📋 Ringkasan Peruntukan by Ansuran & PPK</h3></div>
+            <div style="overflow-x:auto;"><table id="tbl-kew-ringkasan">
+              <thead><tr><th>Ansuran</th><th>Kadar</th><th>Rozaimah</th><th>Jude Hyden</th><th>Armizi</th><th>Jumlah Pekebun</th><th>Jumlah Luas (ha)</th><th style="background:#e8f7f0;color:#1e7a56;">Jumlah Bantuan (RM)</th></tr></thead>
+              <tbody id="tbody-kew-ringkasan"></tbody>
+            </table></div>
+          </div>
+
+          <!-- Detail per pekebun -->
+          <div class="tbl-panel">
+            <div class="tbl-top">
+              <h3>👤 Detail Bantuan Per Pekebun</h3>
+              <input class="search-box" placeholder="🔍 Cari nama..." oninput="filterTable('tbl-kew-detail',this.value)" />
+            </div>
+            <div style="overflow-x:auto;"><table id="tbl-kew-detail">
+              <thead><tr>
+                <th>Nama</th><th>No. Lot</th><th>PPK</th><th>TSB/Kategori</th>
+                <th>Luas (ha)</th><th>Ansuran</th><th>Versi Kadar</th>
+                <th style="background:#e8f7f0;color:#1e7a56;">Kadar (RM/ha)</th>
+                <th style="background:#e8f7f0;color:#1e7a56;">Jum. Bantuan (RM)</th>
+                <th style="background:#fff5e6;color:#c8921a;">Baki Tunai (RM)</th>
+              </tr></thead>
+              <tbody id="tbody-kew-detail"></tbody>
+            </table></div>
           </div>
         </div>
 
@@ -534,27 +594,61 @@ tr:hover td{background:rgba(30,122,86,0.03);}
               <div class="fg" id="fg-ansuran"><label>Ansuran Ke-</label><select id="ft-ansuran"><option value="">— Pilih —</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
             </div>
 
-            <!-- Bahagian B: Bantuan (muncul bila Lulus) -->
+            <!-- Bahagian B: Auto-Generate Kadar -->
             <div id="bahagian-b" style="display:none;">
-              <div class="form-section-title">💰 Bahagian B — Ansuran & Input Pertanian</div>
-              <div class="form-grid">
-                <div class="fg"><label>Ansuran 1 (RM)</label><input id="ft-ansuran1" type="number" step="0.01" placeholder="0.00" oninput="calcBantuan()" /></div>
-                <div class="fg"><label>Bil Baja RP (beg)</label><input id="ft-baja-rp" type="number" placeholder="0" oninput="calcBantuan()" /></div>
-                <div class="fg"><label>Bil Baja R1 (beg)</label><input id="ft-baja-r1" type="number" placeholder="0" oninput="calcBantuan()" /></div>
-                <div class="fg"><label>Bil Benih (pokok)</label><input id="ft-benih" type="number" placeholder="0" oninput="calcBantuan()" /></div>
-              </div>
-              <div class="bantuan-box">
-                <div class="bb-title">💰 Pengiraan Jumlah Bantuan</div>
-                <div class="bantuan-row"><span>Perkara A (Ansuran 1)</span><strong id="bb-ansuran1">RM 0.00</strong></div>
-                <div class="bantuan-row"><span>Baja RP</span><strong id="bb-baja-rp">RM 0.00</strong></div>
-                <div class="bantuan-row"><span>Baja R1</span><strong id="bb-baja-r1">RM 0.00</strong></div>
-                <div class="bantuan-row"><span>Benih</span><strong id="bb-benih">RM 0.00</strong></div>
-                <div class="bantuan-total"><span>Jumlah Bantuan</span><strong id="bb-total">RM 0.00</strong></div>
-                <div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-                  <span style="font-size:11px;color:var(--text-light);">Override manual:</span>
-                  <input id="ft-jumlah-bantuan" type="number" step="0.01" placeholder="Masukkan jumlah manual" style="padding:5px 8px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;width:160px;outline:none;" oninput="document.getElementById('bb-total').textContent='RM '+(parseFloat(this.value)||0).toFixed(2)" />
+              <div class="form-section-title">💰 Bahagian B — Pengiraan Kadar Ansuran</div>
+
+              <!-- Auto-generate button -->
+              <div style="background:var(--primary-pale);border:1px solid rgba(30,122,86,0.2);border-radius:10px;padding:14px;margin-bottom:14px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+                  <div>
+                    <div style="font-size:13px;font-weight:700;color:var(--primary);">🔄 Auto-Generate Kadar</div>
+                    <div style="font-size:11px;color:var(--text-light);margin-top:2px;">Kira automatik berdasarkan luas hektar × kadar ansuran</div>
+                  </div>
+                  <button type="button" onclick="autoGenerateKadar()" style="padding:9px 18px;background:var(--primary-bright);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">⚡ Jana Kadar</button>
                 </div>
               </div>
+
+              <!-- Breakdown table -->
+              <div id="bb-breakdown-wrap" style="display:none;">
+                <div style="overflow-x:auto;">
+                  <table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:12px;">
+                    <thead>
+                      <tr style="background:var(--primary);color:#fff;">
+                        <th style="padding:8px 12px;text-align:left;">Bil</th>
+                        <th style="padding:8px 12px;text-align:left;">Perkara / Jenis Kerja</th>
+                        <th style="padding:8px 12px;text-align:left;">Kuantiti/Unit</th>
+                        <th style="padding:8px 12px;text-align:right;">RM/Unit</th>
+                        <th style="padding:8px 12px;text-align:right;">Jumlah Kos (RM)</th>
+                      </tr>
+                    </thead>
+                    <tbody id="bb-breakdown-body"></tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Summary box -->
+              <div class="bantuan-box">
+                <div class="bb-title">💰 Ringkasan Pengiraan</div>
+                <div class="bantuan-row"><span>Versi Kadar</span><strong id="bb-versi-kadar" style="color:var(--primary);">—</strong></div>
+                <div class="bantuan-row"><span>Luas Kebun</span><strong id="bb-luas-kebun">— ha</strong></div>
+                <div class="bantuan-row"><span>Ansuran</span><strong id="bb-ansuran-ke">—</strong></div>
+                <div class="bantuan-row"><span>Kadar Sehektar</span><strong id="bb-kadar-ha">RM —</strong></div>
+                <div class="bantuan-row"><span>Jumlah Kos Input</span><strong id="bb-kos-input">RM 0.00</strong></div>
+                <div class="bantuan-total"><span>Baki Tunai Pekebun</span><strong id="bb-total" style="color:var(--primary-bright);">RM 0.00</strong></div>
+                <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(30,122,86,0.2);">
+                  <div style="font-size:11px;color:var(--text-light);margin-bottom:5px;">Jumlah Bantuan (boleh override manual):</div>
+                  <input id="ft-jumlah-bantuan" type="number" step="0.01" placeholder="0.00"
+                    style="padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-weight:700;width:180px;outline:none;"
+                    oninput="document.getElementById('bb-total').textContent='RM '+(parseFloat(this.value)||0).toFixed(2)" />
+                </div>
+              </div>
+
+              <!-- Hidden fields lama untuk compatibility -->
+              <input type="hidden" id="ft-ansuran1" value="0"/>
+              <input type="hidden" id="ft-baja-rp" value="0"/>
+              <input type="hidden" id="ft-baja-r1" value="0"/>
+              <input type="hidden" id="ft-benih" value="0"/>
             </div>
 
             <div class="form-actions">
@@ -1111,13 +1205,14 @@ function loadKPI(){
 
 // ===== TANAM SEMULA V2 =====
 window.switchTSTab = function(tab, el){
-  ['ts-semasa','ts-berturut','ts-laporan-ts'].forEach(function(id){
+  ['ts-semasa','ts-berturut','ts-kewangan','ts-laporan-ts'].forEach(function(id){
     var el2=document.getElementById(id); if(el2) el2.style.display='none';
   });
   var show=document.getElementById('ts-'+tab); if(show) show.style.display='block';
   document.querySelectorAll('.ts-tab').forEach(function(b){ b.classList.remove('active'); });
   if(el) el.classList.add('active');
   if(tab==='laporan-ts') loadLaporanTS();
+  if(tab==='kewangan') renderKewangan();
 };
 
 window.switchTSSubTab = function(tab, el){
@@ -1219,61 +1314,82 @@ function loadTanam(){
     }
     // KPI Hektar update
     updateKPIHektar(allRecs);
+    // Cache untuk kewangan
+    _allTanamData = allRecs;
     // Badge counts
     document.getElementById('badge-semasa').textContent=semasa.length;
     document.getElementById('badge-berturut').textContent=berturut.length;
     // Update stats dashboard
     var el=document.getElementById('st-tanam'); if(el) el.textContent=semasa.length+berturut.length;
 
-    // Render Semasa
-    var tb=document.getElementById('tbody-tanam-semasa');
-    if(!semasa.length){ tb.innerHTML='<tr><td colspan="9" class="tbl-empty">Tiada rekod semasa.</td></tr>'; }
-    else {
-      var rows='';
-      semasa.forEach(function(item){
-        var v=item.v,k=item.k;
-        var lawBadge=v.lawatan==='Sudah Dilawati'?'sb-lulus':'sb-tidak';
-        var statBadge=v.statusPermohonan==='Lulus'?'sb-lulus':v.statusPermohonan==='Ditolak'?'sb-tidak':'sb-proses';
-        rows+='<tr>';
-        rows+='<td><strong>'+(v.nama||'')+'</strong></td>';
-        rows+='<td>'+(v.ic||'')+'</td>';
-        rows+='<td>'+(v.lot||'')+'</td>';
-        rows+='<td>'+(v.luas||'')+'</td>';
-        rows+='<td><span style="font-size:10px;">'+(v.kategoriDetail||v.kumpulan||'—')+'</span></td>';
-        rows+='<td><span class="status-badge '+statBadge+'">'+(v.statusPermohonan||'—')+'</span></td>';
-        rows+='<td>'+(v.ppk||'')+'</td>';
-        rows+='<td><span class="status-badge '+lawBadge+'">'+(v.lawatan||'—')+'</span></td>';
-        rows+='<td><button class="btn-edit" onclick="editTanam(\''+k+'\')" >✏️ Edit</button> <button class="btn-del" onclick="openDelModal(\'tanam\',\''+k+'\',\''+v.nama.replace(/'/g,'')+'\')">🗑️</button></td>';
-        rows+='</tr>';
-      });
-      tb.innerHTML=rows;
-    }
+    // Load kadar untuk pengiraan
+    onValue(ref(db,'kadarAnsuran'),function(kSnap){
+      var kadarData=kSnap.exists()?kSnap.val():KADAR_DEFAULT;
 
-    // Render Berturut
-    var tb2=document.getElementById('tbody-tanam-berturut');
-    if(!berturut.length){ tb2.innerHTML='<tr><td colspan="10" class="tbl-empty">Tiada rekod berturut.</td></tr>'; }
-    else {
-      var rows2='';
-      berturut.forEach(function(item){
-        var v=item.v,k=item.k;
-        var lawBadge=v.lawatan==='Sudah Dilawati'?'sb-lulus':'sb-tidak';
-        var kebunBadge=v.statusKebun==='Kebun Bersih'?'sb-lulus':'sb-proses';
-        var tertahan=v.statusKebun==='Tertahan';
-        rows2+='<tr'+(tertahan?' class="tertahan-row" title="⚠️ Kebun Tertahan — PPK perlu tindakan!"':'')+'>'; 
-        rows2+='<td><strong>'+(v.nama||'')+'</strong></td>';
-        rows2+='<td>'+(v.ic||'')+'</td>';
-        rows2+='<td>'+(v.lot||'')+'</td>';
-        rows2+='<td>'+(v.luas||'')+'</td>';
-        rows2+='<td><span style="font-size:10px;">'+(v.kategoriDetail||v.kumpulan||'—')+'</span></td>';
-        rows2+='<td>Ansuran '+(v.ansuran||'—')+'</td>';
-        rows2+='<td><span class="status-badge '+kebunBadge+'">'+(v.statusKebun||'—')+'</span></td>';
-        rows2+='<td>'+(v.ppk||'')+'</td>';
-        rows2+='<td><span class="status-badge '+lawBadge+'">'+(v.lawatan||'—')+'</span></td>';
-        rows2+='<td><button class="btn-edit" onclick="editTanam(\''+k+'\')">✏️ Edit</button> <button class="btn-del" onclick="openDelModal(\'tanam\',\''+k+'\',\''+v.nama.replace(/'/g,'')+'\')">🗑️</button></td>';
-        rows2+='</tr>';
-      });
-      tb2.innerHTML=rows2;
-    }
+      // Render Semasa
+      var tb=document.getElementById('tbody-tanam-semasa');
+      if(!semasa.length){ tb.innerHTML='<tr><td colspan="12" class="tbl-empty">Tiada rekod semasa.</td></tr>'; }
+      else {
+        var rows='';
+        semasa.forEach(function(item){
+          var v=item.v,k=item.k;
+          var lawBadge=v.lawatan==='Sudah Dilawati'?'sb-lulus':'sb-tidak';
+          var statBadge=v.statusPermohonan==='Lulus'?'sb-lulus':v.statusPermohonan==='Ditolak'?'sb-tidak':'sb-proses';
+          var ki=getKadarForRek(v,kadarData);
+          var luas=parseFloat(v.luas)||0;
+          var bantuan=luas*ki.kadar;
+          var baki=luas*ki.baki;
+          rows+='<tr>';
+          rows+='<td><strong>'+(v.nama||'')+'</strong></td>';
+          rows+='<td>'+(v.ic||'')+'</td>';
+          rows+='<td>'+(v.lot||'')+'</td>';
+          rows+='<td>'+(v.luas||'')+'</td>';
+          rows+='<td style="font-size:10px;">'+(v.kategoriDetail||v.kumpulan||'—')+'</td>';
+          rows+='<td><span class="status-badge '+statBadge+'">'+(v.statusPermohonan||'—')+'</span></td>';
+          rows+='<td>'+(v.ppk||'')+'</td>';
+          rows+='<td><span class="status-badge '+lawBadge+'">'+(v.lawatan||'—')+'</span></td>';
+          rows+='<td style="background:#e8f7f0;font-weight:600;">RM '+ki.kadar.toLocaleString()+'</td>';
+          rows+='<td style="background:#e8f7f0;font-weight:700;">RM '+bantuan.toFixed(2)+'</td>';
+          rows+='<td style="background:#e8f7f0;color:'+(baki>=0?'#1e7a56':'#c0392b')+';font-weight:700;">RM '+baki.toFixed(2)+'</td>';
+          rows+='<td><button class="btn-edit" onclick="editTanam(\''+k+'\')" >✏️ Edit</button> <button class="btn-del" onclick="openDelModal(\'tanam\',\''+k+'\',\''+v.nama.replace(/'/g,'')+'\')">🗑️</button></td>';
+          rows+='</tr>';
+        });
+        tb.innerHTML=rows;
+      }
+
+      // Render Berturut
+      var tb2=document.getElementById('tbody-tanam-berturut');
+      if(!berturut.length){ tb2.innerHTML='<tr><td colspan="13" class="tbl-empty">Tiada rekod berturut.</td></tr>'; }
+      else {
+        var rows2='';
+        berturut.forEach(function(item){
+          var v=item.v,k=item.k;
+          var lawBadge=v.lawatan==='Sudah Dilawati'?'sb-lulus':'sb-tidak';
+          var kebunBadge=v.statusKebun==='Kebun Bersih'?'sb-lulus':'sb-proses';
+          var tertahan=v.statusKebun==='Tertahan';
+          var ki=getKadarForRek(v,kadarData);
+          var luas=parseFloat(v.luas)||0;
+          var bantuan=luas*ki.kadar;
+          var baki=luas*ki.baki;
+          rows2+='<tr'+(tertahan?' class="tertahan-row" title="⚠️ Kebun Tertahan — PPK perlu tindakan!"':'')+'>'; 
+          rows2+='<td><strong>'+(v.nama||'')+'</strong></td>';
+          rows2+='<td>'+(v.ic||'')+'</td>';
+          rows2+='<td>'+(v.lot||'')+'</td>';
+          rows2+='<td>'+(v.luas||'')+'</td>';
+          rows2+='<td style="font-size:10px;">'+(v.kategoriDetail||v.kumpulan||'—')+'</td>';
+          rows2+='<td>Ansuran '+(v.ansuran||'—')+'</td>';
+          rows2+='<td><span class="status-badge '+kebunBadge+'">'+(v.statusKebun||'—')+'</span></td>';
+          rows2+='<td>'+(v.ppk||'')+'</td>';
+          rows2+='<td><span class="status-badge '+lawBadge+'">'+(v.lawatan||'—')+'</span></td>';
+          rows2+='<td style="background:#e8f2ff;font-weight:600;">RM '+ki.kadar.toLocaleString()+'</td>';
+          rows2+='<td style="background:#e8f2ff;font-weight:700;">RM '+bantuan.toFixed(2)+'</td>';
+          rows2+='<td style="background:#e8f2ff;color:'+(baki>=0?'#1e7a56':'#c0392b')+';font-weight:700;">RM '+baki.toFixed(2)+'</td>';
+          rows2+='<td><button class="btn-edit" onclick="editTanam(\''+k+'\')">✏️ Edit</button> <button class="btn-del" onclick="openDelModal(\'tanam\',\''+k+'\',\''+v.nama.replace(/'/g,'')+'\')">🗑️</button></td>';
+          rows2+='</tr>';
+        });
+        tb2.innerHTML=rows2;
+      }
+    },{onlyOnce:true});
 
     // Render Bantuan
     var tb3=document.getElementById('tbody-bantuan');
@@ -1944,6 +2060,127 @@ function loadPeruntukan(){
     },{onlyOnce:true});
   },{onlyOnce:true});
 }
+
+// Cache data pekebun untuk kewangan
+var _allTanamData = [];
+
+function getKadarForRek(v, kadarData){
+  var ans = parseInt(v.ansuran)||1;
+  var tahun = parseInt(v.tahunDaftar)||2025;
+  var isBaruKadar = tahun >= 2026;
+  var kadarVer = isBaruKadar ? (kadarData.baru||KADAR_DEFAULT.baru) : (kadarData.lama||KADAR_DEFAULT.lama);
+  var kadarAns = kadarVer[ans] || kadarVer[1];
+  return { kadar: kadarAns.kadar||0, baki: kadarAns.bakiTunai||0, versi: isBaruKadar?'Baru 2026':'Lama RMKe-12' };
+}
+
+window.renderKewangan = function(){
+  var ppkF = (document.getElementById('kew-filter-ppk')||{}).value||'semua';
+  var jenisF = (document.getElementById('kew-filter-jenis')||{}).value||'semua';
+  var ansF = (document.getElementById('kew-filter-ansuran')||{}).value||'semua';
+
+  onValue(ref(db,'kadarAnsuran'), function(kSnap){
+    var kadarData = kSnap.exists() ? kSnap.val() : KADAR_DEFAULT;
+    var recs = _allTanamData.filter(function(v){
+      if(ppkF!=='semua' && v.ppk!==ppkF) return false;
+      if(jenisF!=='semua' && (v.jenisTanam||'semasa')!==jenisF) return false;
+      if(ansF!=='semua' && String(v.ansuran||'1')!==ansF) return false;
+      return true;
+    });
+
+    // Summary cards
+    var totalPekebun=recs.length;
+    var totalLuas=recs.reduce(function(s,v){ return s+(parseFloat(v.luas)||0); },0);
+    var totalBantuan=0, totalBaki=0;
+    recs.forEach(function(v){
+      var k=getKadarForRek(v,kadarData);
+      var luas=parseFloat(v.luas)||0;
+      totalBantuan+=luas*k.kadar;
+      totalBaki+=luas*k.baki;
+    });
+    var ppks=['Rozaimah','Jude Hyden','Armizi'];
+    var ppkColors=['#e91e63','#1a6eb5','#1e7a56'];
+    var cardHTML='';
+    [{lbl:'Jumlah Pekebun',val:totalPekebun,sub:'rekod',color:'#0a3d2e'},
+     {lbl:'Jumlah Luas',val:totalLuas.toFixed(2)+' ha',sub:'keseluruhan',color:'#1a6eb5'},
+     {lbl:'Jumlah Bantuan',val:'RM '+totalBantuan.toFixed(2),sub:'diperlukan',color:'#1e7a56'},
+     {lbl:'Baki Tunai',val:'RM '+totalBaki.toFixed(2),sub:totalBaki>=0?'lebihan':'kekurangan',color:totalBaki>=0?'#1e7a56':'#c0392b'}
+    ].forEach(function(c){
+      cardHTML+='<div style="background:var(--white);border-radius:12px;padding:14px;border:1px solid var(--border);text-align:center;">';
+      cardHTML+='<div style="font-size:10px;color:var(--text-light);text-transform:uppercase;margin-bottom:4px;">'+c.lbl+'</div>';
+      cardHTML+='<div style="font-size:16px;font-weight:800;color:'+c.color+';">'+c.val+'</div>';
+      cardHTML+='<div style="font-size:10px;color:var(--text-light);">'+c.sub+'</div></div>';
+    });
+    var el=document.getElementById('kew-summary-cards'); if(el) el.innerHTML=cardHTML;
+
+    // Ringkasan by Ansuran & PPK
+    var ansRows=''; var grandJumPekebun=0,grandLuas=0,grandBantuan=0;
+    for(var a=1;a<=5;a++){
+      var ansRecs=_allTanamData.filter(function(v){ return parseInt(v.ansuran||1)===a; });
+      if(ansRecs.length===0) continue;
+      var k2026=KADAR_DEFAULT.baru[a]||{kadar:0};
+      var kLama=KADAR_DEFAULT.lama[a]||{kadar:0};
+      var ppkCounts=ppks.map(function(p){ return ansRecs.filter(function(v){ return v.ppk===p; }).length; });
+      var ansLuas=ansRecs.reduce(function(s,v){ return s+(parseFloat(v.luas)||0); },0);
+      var ansBantuan=ansRecs.reduce(function(s,v){
+        var ki=getKadarForRek(v,kadarData);
+        return s+(parseFloat(v.luas)||0)*ki.kadar;
+      },0);
+      grandJumPekebun+=ansRecs.length; grandLuas+=ansLuas; grandBantuan+=ansBantuan;
+      ansRows+='<tr>';
+      ansRows+='<td><strong>Ansuran '+a+'</strong></td>';
+      ansRows+='<td style="font-size:10px;">Baru: RM '+k2026.kadar+' | Lama: RM '+kLama.kadar+'</td>';
+      ppkCounts.forEach(function(c,i){ ansRows+='<td style="color:'+ppkColors[i]+'"><strong>'+c+'</strong></td>'; });
+      ansRows+='<td>'+ansRecs.length+'</td>';
+      ansRows+='<td>'+ansLuas.toFixed(2)+'</td>';
+      ansRows+='<td style="background:#e8f7f0;color:#1e7a56;font-weight:700;">RM '+ansBantuan.toFixed(2)+'</td>';
+      ansRows+='</tr>';
+    }
+    ansRows+='<tr style="background:#e8f7f0;font-weight:700;"><td><strong>JUMLAH</strong></td><td></td><td></td><td></td><td></td><td><strong>'+grandJumPekebun+'</strong></td><td><strong>'+grandLuas.toFixed(2)+'</strong></td><td style="color:#1e7a56;"><strong>RM '+grandBantuan.toFixed(2)+'</strong></td></tr>';
+    var rt=document.getElementById('tbody-kew-ringkasan'); if(rt) rt.innerHTML=ansRows;
+
+    // Detail per pekebun
+    var detailRows='';
+    recs.forEach(function(v){
+      var ki=getKadarForRek(v,kadarData);
+      var luas=parseFloat(v.luas)||0;
+      var bantuan=luas*ki.kadar;
+      var baki=luas*ki.baki;
+      var bakiColor=baki>=0?'#1e7a56':'#c0392b';
+      detailRows+='<tr>';
+      detailRows+='<td><strong>'+(v.nama||'')+'</strong></td>';
+      detailRows+='<td>'+(v.lot||'')+'</td>';
+      detailRows+='<td>'+(v.ppk||'')+'</td>';
+      detailRows+='<td style="font-size:10px;">'+(v.kategoriDetail||v.kumpulan||'—')+'</td>';
+      detailRows+='<td>'+luas.toFixed(4)+'</td>';
+      detailRows+='<td>Ansuran '+(v.ansuran||1)+'</td>';
+      detailRows+='<td><span class="status-badge '+(ki.versi==='Baru 2026'?'sb-lulus':'sb-proses')+'">'+ki.versi+'</span></td>';
+      detailRows+='<td style="background:#e8f7f0;font-weight:600;">RM '+ki.kadar.toLocaleString()+'</td>';
+      detailRows+='<td style="background:#e8f7f0;font-weight:700;">RM '+bantuan.toFixed(2)+'</td>';
+      detailRows+='<td style="background:#fff5e6;font-weight:700;color:'+bakiColor+';">RM '+baki.toFixed(2)+'</td>';
+      detailRows+='</tr>';
+    });
+    var dt=document.getElementById('tbody-kew-detail');
+    if(dt) dt.innerHTML=detailRows||'<tr><td colspan="10" class="tbl-empty">Tiada rekod.</td></tr>';
+  },{onlyOnce:true});
+};
+
+window.exportKewanganExcel = function(){
+  var t1=document.getElementById('tbl-kew-ringkasan');
+  var t2=document.getElementById('tbl-kew-detail');
+  var html='<html><head><meta charset="UTF-8"></head><body>';
+  html+='<h2>Laporan Kewangan Ansuran Tanam Semula — i-Ris RISDA Stesen Lundu</h2>';
+  if(t1) html+='<h3>Ringkasan Peruntukan by Ansuran & PPK</h3>'+t1.outerHTML;
+  if(t2) html+='<h3>Detail Bantuan Per Pekebun</h3>'+t2.outerHTML;
+  html+='</body></html>';
+  var blob=new Blob([html],{type:'application/vnd.ms-excel'});
+  var a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='Laporan_Kewangan_TanamSemula_'+new Date().toISOString().slice(0,10)+'.xls';
+  a.click(); showToast('✅ Excel berjaya diexport!');
+};
+
+window.exportKewanganPDF = function(){
+  window.print();
+};
 
 window.calcTotalPGT = function(){
   var months=['jan','feb','mac','apr','mei','jun','jul','ogos','sep','okt','nov','dis'];
