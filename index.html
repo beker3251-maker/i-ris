@@ -114,7 +114,41 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--cream);color:va
 .fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--primary-bright);background:var(--white);}
 .fg textarea{resize:vertical;min-height:70px;}
 .bulan-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px;}
-/* TANAM SEMULA V2 */
+/* KADAR ANSURAN */
+.kadar-version-tabs{display:flex;gap:8px;margin-bottom:16px;}
+.kadar-vtab{padding:10px 20px;border:2px solid var(--border);border-radius:10px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;background:var(--white);transition:all 0.2s;}
+.kadar-vtab.active-baru{border-color:#1e7a56;background:#e8f7f0;color:#1e7a56;}
+.kadar-vtab.active-lama{border-color:#1a6eb5;background:#e8f2ff;color:#1a6eb5;}
+.kadar-ansuran-card{background:var(--white);border-radius:13px;border:1px solid var(--border);box-shadow:var(--shadow-sm);margin-bottom:14px;overflow:hidden;}
+.kadar-card-hdr{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+.kadar-card-hdr.ans1{background:linear-gradient(135deg,#0a3d2e,#1e7a56);color:#fff;}
+.kadar-card-hdr.ans2{background:linear-gradient(135deg,#1a4a8a,#1a6eb5);color:#fff;}
+.kadar-card-hdr.ans3{background:linear-gradient(135deg,#5a2d82,#8e44ad);color:#fff;}
+.kadar-card-hdr.ans4{background:linear-gradient(135deg,#b5410c,#e67e22);color:#fff;}
+.kadar-card-hdr.ans5{background:linear-gradient(135deg,#880000,#c0392b);color:#fff;}
+.kadar-card-hdr h3{font-size:14px;font-weight:700;}
+.kadar-jumlah{font-size:18px;font-weight:800;}
+.kadar-baki{font-size:11px;opacity:0.8;margin-top:2px;}
+.kadar-table{width:100%;border-collapse:collapse;font-size:12px;}
+.kadar-table th{padding:8px 12px;background:var(--cream);font-size:10px;font-weight:700;color:var(--text-light);text-transform:uppercase;border-bottom:1px solid var(--border);}
+.kadar-table td{padding:8px 12px;border-bottom:1px solid var(--border);}
+.kadar-table tr:last-child td{border-bottom:none;}
+.kadar-table input{width:100%;padding:5px 8px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;font-family:'Plus Jakarta Sans',sans-serif;outline:none;}
+.kadar-table input:focus{border-color:var(--primary-bright);}
+.kadar-summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+.kadar-sum-card{background:var(--white);border-radius:10px;padding:14px;border:1px solid var(--border);text-align:center;}
+.kadar-sum-card .ks-label{font-size:10px;color:var(--text-light);text-transform:uppercase;margin-bottom:4px;}
+.kadar-sum-card .ks-val{font-size:18px;font-weight:700;color:var(--primary);}
+.kadar-sum-card .ks-sub{font-size:10px;color:var(--text-light);margin-top:2px;}
+.peruntukan-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:16px;}
+.peruntukan-card{background:var(--white);border-radius:12px;padding:16px;border:1px solid var(--border);}
+.peruntukan-card h4{font-size:12px;font-weight:700;color:var(--primary);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.perun-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:12px;}
+.perun-row span{color:var(--text-light);}
+.perun-row strong{color:var(--text);}
+.perun-total{display:flex;justify-content:space-between;padding-top:8px;border-top:1px solid var(--border);font-size:13px;font-weight:700;color:var(--primary);}
+.btn-save-kadar{padding:10px 24px;background:linear-gradient(135deg,var(--primary),var(--primary-bright));color:#fff;border:none;border-radius:9px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;}
+.kadar-table{width:100%;border-collapse:collapse;font-size:12px;}
 .ts-tab-bar{display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;border:1px solid var(--border);}
 .ts-tab{flex:1;padding:11px;border:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;background:var(--white);color:var(--text-light);}
 .ts-tab.semasa.active{background:linear-gradient(135deg,#1e7a56,#3daa7a);color:#fff;}
@@ -301,6 +335,7 @@ tr:hover td{background:rgba(30,122,86,0.03);}
       <div class="nav-label" id="kpi-label" style="display:none;">Pemantauan</div>
       <div class="nav-item kpi-nav" id="kpi-nav" style="display:none;" onclick="showPage('kpi',this)"><span class="icon">🏆</span><span class="label">KPI PPK — Prestasi</span></div>
       <div class="nav-label">Pengurusan</div>
+      <div class="nav-item" id="nav-kadar" style="display:none;" onclick="showPage('kadar',this)"><span class="icon">💹</span><span class="label">Kadar Ansuran</span></div>
       <div class="nav-item" id="nav-users" onclick="showPage('users',this)"><span class="icon">👥</span><span class="label">Urus Pengguna</span></div>
     </nav>
     <div class="sidebar-footer"><button class="btn-logout" onclick="doLogout()">🚪 Log Keluar</button></div>
@@ -758,6 +793,52 @@ tr:hover td{background:rgba(30,122,86,0.03);}
         <div class="status-grid" id="kpi-status-grid"></div>
       </div>
 
+      <!-- KADAR ANSURAN -->
+      <div class="page" id="pg-kadar">
+        <div style="background:linear-gradient(135deg,#061f17,#0a3d2e);border-radius:14px;padding:20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+          <div>
+            <h2 style="font-family:'Playfair Display',serif;font-size:18px;color:#fff;">💹 Pengurusan Kadar Ansuran</h2>
+            <p style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:3px;">Kadar Baru 2026 & Kadar Lama (RMKe-12 Sarawak)</p>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button onclick="saveAllKadar()" class="btn-save-kadar">💾 Simpan Semua Kadar</button>
+          </div>
+        </div>
+
+        <!-- Tab Kadar Baru / Lama -->
+        <div class="kadar-version-tabs">
+          <button class="kadar-vtab active-baru" id="tab-kadar-baru" onclick="switchKadarTab('baru')">🟢 Kadar Baru 2026</button>
+          <button class="kadar-vtab" id="tab-kadar-lama" onclick="switchKadarTab('lama')">🔵 Kadar Lama (RMKe-12)</button>
+          <button class="kadar-vtab" id="tab-kadar-peruntukan" onclick="switchKadarTab('peruntukan')">📊 Semakan Peruntukan</button>
+        </div>
+
+        <!-- KADAR BARU 2026 -->
+        <div id="kadar-baru-section">
+          <div style="background:var(--primary-pale);border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:12px;color:var(--primary);">
+            ℹ️ Kadar ini diguna untuk pekebun yang <strong>mendaftar tahun 2026 ke atas</strong>. Kadar dikira <strong>per hektar</strong>.
+          </div>
+          <div id="kadar-baru-cards"></div>
+        </div>
+
+        <!-- KADAR LAMA RMKe-12 -->
+        <div id="kadar-lama-section" style="display:none;">
+          <div style="background:#e8f2ff;border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:12px;color:#1a6eb5;">
+            ℹ️ Kadar ini diguna untuk pekebun <strong>berturut (daftar sebelum 2026)</strong> mengikut AKP Bil.21 Tahun 2022 — Sarawak.
+          </div>
+          <div id="kadar-lama-cards"></div>
+        </div>
+
+        <!-- SEMAKAN PERUNTUKAN -->
+        <div id="kadar-peruntukan-section" style="display:none;">
+          <div class="kadar-summary-grid">
+            <div class="kadar-sum-card"><div class="ks-label">Jumlah Pekebun</div><div class="ks-val" id="perun-total-pekebun">—</div><div class="ks-sub">Semua PPK</div></div>
+            <div class="kadar-sum-card"><div class="ks-label">Jumlah Luas</div><div class="ks-val" id="perun-total-luas">—</div><div class="ks-sub">hektar</div></div>
+            <div class="kadar-sum-card"><div class="ks-label">Jumlah Peruntukan</div><div class="ks-val" id="perun-total-rm">—</div><div class="ks-sub">Diperlukan</div></div>
+          </div>
+          <div class="peruntukan-grid" id="peruntukan-grid"></div>
+        </div>
+      </div>
+
       <!-- USERS -->
       <div class="page" id="pg-users">
         <div class="form-panel">
@@ -1158,7 +1239,7 @@ function loadTanam(){
         rows+='<td>'+(v.ic||'')+'</td>';
         rows+='<td>'+(v.lot||'')+'</td>';
         rows+='<td>'+(v.luas||'')+'</td>';
-        rows+='<td><span style="font-size:10px;">'+(v.kumpulan||'—')+'</span></td>';
+        rows+='<td><span style="font-size:10px;">'+(v.kategoriDetail||v.kumpulan||'—')+'</span></td>';
         rows+='<td><span class="status-badge '+statBadge+'">'+(v.statusPermohonan||'—')+'</span></td>';
         rows+='<td>'+(v.ppk||'')+'</td>';
         rows+='<td><span class="status-badge '+lawBadge+'">'+(v.lawatan||'—')+'</span></td>';
@@ -1183,7 +1264,7 @@ function loadTanam(){
         rows2+='<td>'+(v.ic||'')+'</td>';
         rows2+='<td>'+(v.lot||'')+'</td>';
         rows2+='<td>'+(v.luas||'')+'</td>';
-        rows2+='<td><span style="font-size:10px;">'+(v.kumpulan||'—')+'</span></td>';
+        rows2+='<td><span style="font-size:10px;">'+(v.kategoriDetail||v.kumpulan||'—')+'</span></td>';
         rows2+='<td>Ansuran '+(v.ansuran||'—')+'</td>';
         rows2+='<td><span class="status-badge '+kebunBadge+'">'+(v.statusKebun||'—')+'</span></td>';
         rows2+='<td>'+(v.ppk||'')+'</td>';
@@ -1528,11 +1609,13 @@ window.doLogin = function(){
         document.getElementById('kpi-label').style.display='block';
         document.getElementById('kpi-nav').style.display='flex';
         document.getElementById('rollover-section').style.display='block';
+        document.getElementById('nav-kadar').style.display='flex';
       }
       if(ud.role!=='admin') document.getElementById('nav-users').style.display='none';
       loadStats(); loadTanam(); loadPGT(); loadPeng(); loadUsa(); loadProg(); loadUsers(); loadKPI();
       // Auto-detect rollover keperluan
       checkAutoRollover(ud.role);
+      if(ud.role==='admin'||ud.role==='ketua') loadKadarFromFirebase();
     } else {
       err.style.display='block'; err.textContent='Username atau password salah!';
     }
@@ -1652,6 +1735,216 @@ window.doRollover = function(){
   });
 };
 
+// ===== KADAR ANSURAN =====
+var KADAR_DEFAULT = {
+  baru: {
+    1: { kadar:12300, bakiTunai:2296, items:[
+      {bil:1,perkara:'Benih Getah',unit:'509 Pokok',rmUnit:9.00,jumlah:4581.00},
+      {bil:2,perkara:'Baja RP',unit:'3 Beg',rmUnit:50.00,jumlah:150.00},
+      {bil:3,perkara:'Baja RISDA 1',unit:'13 Beg',rmUnit:91.00,jumlah:1183.00},
+      {bil:4,perkara:'Racun',unit:'2 Botol',rmUnit:120.00,jumlah:240.00},
+      {bil:5,perkara:'Menebang & Membersih',unit:'1 Hektar',rmUnit:3500.00,jumlah:3500.00},
+      {bil:6,perkara:'Ukur Perimeter',unit:'1 Hektar',rmUnit:350.00,jumlah:350.00},
+      {bil:7,perkara:'Kawalan Penyakit & Musuh',unit:'1 Hektar',rmUnit:56.40,jumlah:56.40},
+      {bil:8,perkara:'Upah Membaris, Melubang & Menanam',unit:'509 Pokok',rmUnit:4.40,jumlah:2239.60},
+      {bil:9,perkara:'Upah Membaja',unit:'3 Pusingan',rmUnit:250.00,jumlah:0},
+      {bil:10,perkara:'Upah Penyelenggaraan Kebun',unit:'2 Pusingan',rmUnit:300.00,jumlah:0}
+    ]},
+    2: { kadar:3000, bakiTunai:2032, items:[
+      {bil:1,perkara:'Baja RISDA 1',unit:'8 Beg',rmUnit:91.00,jumlah:728.00},
+      {bil:2,perkara:'Racun',unit:'2 Botol',rmUnit:120.00,jumlah:240.00},
+      {bil:3,perkara:'Upah Membaja',unit:'3 Pusingan',rmUnit:250.00,jumlah:750.00},
+      {bil:4,perkara:'Upah Penyelenggaraan Kebun',unit:'4 Pusingan',rmUnit:300.00,jumlah:1200.00},
+      {bil:5,perkara:'Benih Sulam',unit:'69 Pokok',rmUnit:9.00,jumlah:0},
+      {bil:6,perkara:'Kawalan Penyakit & Musuh',unit:'1 Hektar',rmUnit:82.00,jumlah:82.00}
+    ]},
+    3: { kadar:2000, bakiTunai:908, items:[
+      {bil:1,perkara:'Baja RISDA 1',unit:'12 Beg',rmUnit:91.00,jumlah:1092.00},
+      {bil:2,perkara:'Upah Membaja',unit:'3 Pusingan',rmUnit:200.00,jumlah:600.00},
+      {bil:3,perkara:'Upah Penyelenggaraan Kebun',unit:'1 Pusingan',rmUnit:250.00,jumlah:250.00},
+      {bil:4,perkara:'Kawalan Penyakit & Musuh',unit:'1 Hektar',rmUnit:58.00,jumlah:58.00},
+      {bil:5,perkara:'Benih Sulam',unit:'15 Pokok',rmUnit:13.50,jumlah:0}
+    ]},
+    4: { kadar:2500, bakiTunai:1472, items:[
+      {bil:1,perkara:'Baja RISDA 1',unit:'4 Beg',rmUnit:91.00,jumlah:364.00},
+      {bil:2,perkara:'Baja RISDA 4',unit:'8 Beg',rmUnit:83.00,jumlah:664.00},
+      {bil:3,perkara:'Upah Membaja',unit:'2 Pusingan',rmUnit:250.00,jumlah:500.00},
+      {bil:4,perkara:'Upah Penyelenggaraan Kebun',unit:'2 Pusingan',rmUnit:300.00,jumlah:600.00},
+      {bil:5,perkara:'Kawalan Penyakit & Musuh',unit:'1 Hektar',rmUnit:372.00,jumlah:372.00}
+    ]},
+    5: { kadar:3200, bakiTunai:1955, items:[
+      {bil:1,perkara:'Baja RISDA 4',unit:'15 Beg',rmUnit:83.00,jumlah:1245.00},
+      {bil:2,perkara:'Upah Membaja',unit:'2 Pusingan',rmUnit:250.00,jumlah:500.00},
+      {bil:3,perkara:'Upah Penyelenggaraan Kebun',unit:'1 Pusingan',rmUnit:500.00,jumlah:500.00},
+      {bil:4,perkara:'Kawalan Penyakit & Musuh',unit:'1 Hektar',rmUnit:955.00,jumlah:955.00}
+    ]}
+  },
+  lama: {
+    1: { kadar:8205, bakiTunai:6708.20, items:[
+      {bil:1,perkara:'Benih Getah (RP)',unit:'7 Pokok',rmUnit:120.40,jumlah:120.40},
+      {bil:2,perkara:'Baja RISDA 1',unit:'27 Beg',rmUnit:33.20,jumlah:896.40},
+      {bil:3,perkara:'Upah Membaja',unit:'3 Pusingan',rmUnit:60.00,jumlah:180.00},
+      {bil:4,perkara:'Upah Penyelenggaraan Kebun',unit:'2 Pusingan',rmUnit:150.00,jumlah:300.00}
+    ]},
+    2: { kadar:1700, bakiTunai:-175.60, items:[
+      {bil:1,perkara:'Baja RISDA 1',unit:'33 Beg',rmUnit:33.20,jumlah:1095.60},
+      {bil:2,perkara:'Upah Membaja',unit:'3 Pusingan',rmUnit:60.00,jumlah:180.00},
+      {bil:3,perkara:'Upah Penyelenggaraan Kebun',unit:'4 Pusingan',rmUnit:150.00,jumlah:600.00}
+    ]},
+    3: { kadar:1400, bakiTunai:-32.00, items:[
+      {bil:1,perkara:'Baja RISDA 1',unit:'35 Beg',rmUnit:33.20,jumlah:1162.00},
+      {bil:2,perkara:'Upah Membaja',unit:'2 Pusingan',rmUnit:60.00,jumlah:120.00},
+      {bil:3,perkara:'Upah Penyelenggaraan Kebun',unit:'1 Pusingan',rmUnit:150.00,jumlah:150.00}
+    ]},
+    4: { kadar:1600, bakiTunai:-625.20, items:[
+      {bil:1,perkara:'Baja RISDA 1',unit:'20 Beg',rmUnit:33.20,jumlah:664.00},
+      {bil:2,perkara:'Baja RISDA 4',unit:'36 Beg',rmUnit:31.70,jumlah:1141.20},
+      {bil:3,perkara:'Upah Membaja',unit:'2 Pusingan',rmUnit:60.00,jumlah:120.00},
+      {bil:4,perkara:'Upah Penyelenggaraan Kebun',unit:'2 Pusingan',rmUnit:150.00,jumlah:300.00}
+    ]},
+    5: { kadar:1900, bakiTunai:-906.00, items:[
+      {bil:1,perkara:'Baja RISDA 4',unit:'80 Beg',rmUnit:31.70,jumlah:2536.00},
+      {bil:2,perkara:'Upah Membaja',unit:'2 Pusingan',rmUnit:60.00,jumlah:120.00},
+      {bil:3,perkara:'Upah Penyelenggaraan Kebun',unit:'1 Pusingan',rmUnit:150.00,jumlah:150.00}
+    ]}
+  }
+};
+
+var currentKadarTab='baru';
+
+window.switchKadarTab = function(tab){
+  currentKadarTab=tab;
+  document.getElementById('kadar-baru-section').style.display=tab==='baru'?'block':'none';
+  document.getElementById('kadar-lama-section').style.display=tab==='lama'?'block':'none';
+  document.getElementById('kadar-peruntukan-section').style.display=tab==='peruntukan'?'block':'none';
+  document.getElementById('tab-kadar-baru').className='kadar-vtab'+(tab==='baru'?' active-baru':'');
+  document.getElementById('tab-kadar-lama').className='kadar-vtab'+(tab==='lama'?' active-lama':'');
+  document.getElementById('tab-kadar-peruntukan').className='kadar-vtab'+(tab==='peruntukan'?' active-baru':'');
+  if(tab==='peruntukan') loadPeruntukan();
+};
+
+var ansColors=['ans1','ans2','ans3','ans4','ans5'];
+
+function renderKadarCards(version, containerId, data){
+  var html='';
+  for(var a=1;a<=5;a++){
+    var d=data[a];
+    var baki=d.bakiTunai;
+    var bakiColor=baki>=0?'#1e7a56':'#c0392b';
+    html+='<div class="kadar-ansuran-card">';
+    html+='<div class="kadar-card-hdr '+ansColors[a-1]+'">';
+    html+='<div><h3>📋 Ansuran '+a+'</h3><div class="kadar-baki">Baki Tunai: <strong style="color:'+(baki>=0?'#a8f5d0':'#ffb3b3')+'">RM '+baki.toFixed(2)+'/ha</strong></div></div>';
+    html+='<div class="kadar-jumlah">RM <input type="number" id="kadar-'+version+'-'+a+'-jumlah" value="'+d.kadar+'" style="background:transparent;border:1px solid rgba(255,255,255,0.4);color:#fff;width:90px;padding:4px 8px;border-radius:6px;font-size:16px;font-weight:800;text-align:right;" onchange="updateKadarJumlah(\''+version+'\','+a+')"> /ha</div>';
+    html+='</div>';
+    html+='<table class="kadar-table"><thead><tr><th>Bil</th><th>Perkara / Jenis Kerja</th><th>Kuantiti/Unit</th><th>RM/Unit</th><th>Jumlah Kos (RM)</th></tr></thead><tbody>';
+    d.items.forEach(function(item,idx){
+      html+='<tr>';
+      html+='<td>'+item.bil+'</td>';
+      html+='<td><input type="text" value="'+item.perkara+'" id="k-'+version+'-'+a+'-'+idx+'-perkara" /></td>';
+      html+='<td><input type="text" value="'+item.unit+'" id="k-'+version+'-'+a+'-'+idx+'-unit" style="width:90px;" /></td>';
+      html+='<td><input type="number" step="0.01" value="'+item.rmUnit+'" id="k-'+version+'-'+a+'-'+idx+'-rm" style="width:80px;" onchange="recalcItem(\''+version+'\','+a+','+idx+')" /></td>';
+      html+='<td><input type="number" step="0.01" value="'+item.jumlah+'" id="k-'+version+'-'+a+'-'+idx+'-jumlah" style="width:90px;" /></td>';
+      html+='</tr>';
+    });
+    html+='</tbody></table>';
+    html+='<div style="padding:10px 14px;background:var(--cream);display:flex;gap:8px;">';
+    html+='<button onclick="addKadarItem(\''+version+'\','+a+')" style="padding:5px 12px;background:var(--primary-pale);color:var(--primary);border:none;border-radius:6px;font-size:11px;cursor:pointer;">+ Tambah Perkara</button>';
+    html+='</div>';
+    html+='</div>';
+  }
+  document.getElementById(containerId).innerHTML=html;
+}
+
+window.recalcItem = function(ver, ans, idx){
+  var rm=parseFloat(document.getElementById('k-'+ver+'-'+ans+'-'+idx+'-rm').value)||0;
+  var unitStr=document.getElementById('k-'+ver+'-'+ans+'-'+idx+'-unit').value||'';
+  var qty=parseFloat(unitStr.split(' ')[0])||0;
+  if(qty>0) document.getElementById('k-'+ver+'-'+ans+'-'+idx+'-jumlah').value=(rm*qty).toFixed(2);
+};
+
+window.updateKadarJumlah = function(ver, ans){
+  // Update display kadar
+};
+
+window.addKadarItem = function(ver, ans){
+  showToast('Simpan dulu sebelum tambah perkara baru.',true);
+};
+
+function loadKadarFromFirebase(){
+  onValue(ref(db,'kadarAnsuran'),function(snap){
+    var data = snap.exists() ? snap.val() : KADAR_DEFAULT;
+    renderKadarCards('baru','kadar-baru-cards', data.baru||KADAR_DEFAULT.baru);
+    renderKadarCards('lama','kadar-lama-cards', data.lama||KADAR_DEFAULT.lama);
+  },{onlyOnce:true});
+}
+
+window.saveAllKadar = function(){
+  var saved={baru:{},lama:{}};
+  ['baru','lama'].forEach(function(ver){
+    for(var a=1;a<=5;a++){
+      var kadarEl=document.getElementById('kadar-'+ver+'-'+a+'-jumlah');
+      var kadar=kadarEl?parseFloat(kadarEl.value)||0:KADAR_DEFAULT[ver][a].kadar;
+      var items=[];
+      var idx=0;
+      while(document.getElementById('k-'+ver+'-'+a+'-'+idx+'-perkara')){
+        items.push({
+          bil:idx+1,
+          perkara:document.getElementById('k-'+ver+'-'+a+'-'+idx+'-perkara').value,
+          unit:document.getElementById('k-'+ver+'-'+a+'-'+idx+'-unit').value,
+          rmUnit:parseFloat(document.getElementById('k-'+ver+'-'+a+'-'+idx+'-rm').value)||0,
+          jumlah:parseFloat(document.getElementById('k-'+ver+'-'+a+'-'+idx+'-jumlah').value)||0
+        });
+        idx++;
+      }
+      var totalKos=items.reduce(function(s,i){ return s+i.jumlah; },0);
+      saved[ver][a]={ kadar:kadar, bakiTunai:kadar-totalKos, items:items };
+    }
+  });
+  set(ref(db,'kadarAnsuran'),saved).then(function(){
+    showToast('✅ Kadar ansuran berjaya disimpan!');
+    KADAR_DEFAULT=saved;
+  });
+};
+
+function loadPeruntukan(){
+  onValue(ref(db,'tanam'),function(snap){
+    if(!snap.exists()){ document.getElementById('peruntukan-grid').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--text-light);">Tiada data pekebun.</div>'; return; }
+    var recs=Object.values(snap.val());
+    var totalPekebun=recs.length;
+    var totalLuas=recs.reduce(function(s,r){ return s+(parseFloat(r.luas)||0); },0);
+
+    onValue(ref(db,'kadarAnsuran'),function(kSnap){
+      var kadar=kSnap.exists()?kSnap.val():KADAR_DEFAULT;
+      var gridHTML='';
+      var grandTotal=0;
+
+      // Group by ansuran
+      for(var a=1;a<=5;a++){
+        var ansPekebun=recs.filter(function(r){ return parseInt(r.ansuran)===a; });
+        if(!ansPekebun.length) continue;
+        var ansLuas=ansPekebun.reduce(function(s,r){ return s+(parseFloat(r.luas)||0); },0);
+        var ans2026=ansPekebun.filter(function(r){ return (r.tahunDaftar||0)>=2026; });
+        var ansLama=ansPekebun.filter(function(r){ return (r.tahunDaftar||0)<2026; });
+        var rm2026=ans2026.reduce(function(s,r){ return s+(parseFloat(r.luas)||0)*(kadar.baru[a]?kadar.baru[a].kadar:0); },0);
+        var rmLama=ansLama.reduce(function(s,r){ return s+(parseFloat(r.luas)||0)*(kadar.lama[a]?kadar.lama[a].kadar:0); },0);
+        var total=rm2026+rmLama;
+        grandTotal+=total;
+        gridHTML+='<div class="peruntukan-card">';
+        gridHTML+='<h4>📋 Ansuran '+a+' ('+ansPekebun.length+' pekebun | '+ansLuas.toFixed(2)+' ha)</h4>';
+        gridHTML+='<div class="perun-row"><span>Kadar Baru 2026 ('+ans2026.length+' pekebun)</span><strong>RM '+rm2026.toFixed(2)+'</strong></div>';
+        gridHTML+='<div class="perun-row"><span>Kadar Lama RMKe-12 ('+ansLama.length+' pekebun)</span><strong>RM '+rmLama.toFixed(2)+'</strong></div>';
+        gridHTML+='<div class="perun-total"><span>Jumlah Peruntukan</span><strong>RM '+total.toFixed(2)+'</strong></div>';
+        gridHTML+='</div>';
+      }
+
+      document.getElementById('peruntukan-grid').innerHTML=gridHTML||'<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-light);">Tiada data.</div>';
+      document.getElementById('perun-total-pekebun').textContent=totalPekebun;
+      document.getElementById('perun-total-luas').textContent=totalLuas.toFixed(2)+' ha';
+      document.getElementById('perun-total-rm').textContent='RM '+grandTotal.toFixed(2);
+    },{onlyOnce:true});
+  },{onlyOnce:true});
+}
+
 window.calcTotalPGT = function(){
   var months=['jan','feb','mac','apr','mei','jun','jul','ogos','sep','okt','nov','dis'];
   var total=months.reduce(function(s,m){
@@ -1691,6 +1984,7 @@ window.showPage = function(id,navEl){
     usahawan:['Usahawan AET','Pendapatan bulanan usahawan'],
     programkhas:['Program Khas','Pelaksanaan & status program'],
     kpi:['KPI PPK — Dashboard Prestasi','🔒 Akses Ketua Stesen Sahaja'],
+    kadar:['Kadar Ansuran','Pengurusan kadar & semakan peruntukan'],
     users:['Urus Pengguna','Daftar & urus akaun pengguna']
   };
   if(titles[id]){
