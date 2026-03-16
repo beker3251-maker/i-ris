@@ -1391,7 +1391,6 @@ function loadTanam(){
       _pgSemasa=1; _pgBerturut=1;
       renderSemasaPage();
       renderBerurutPage();
-    },{onlyOnce:true});
 
       // Render Bantuan
       var tb3=document.getElementById('tbody-bantuan');
@@ -1417,6 +1416,7 @@ function loadTanam(){
         });
         tb3.innerHTML=rows3;
       }
+    },{onlyOnce:true});
   });
 }
 
