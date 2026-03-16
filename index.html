@@ -114,6 +114,15 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--cream);color:va
 .fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--primary-bright);background:var(--white);}
 .fg textarea{resize:vertical;min-height:70px;}
 .bulan-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px;}
+/* PAGINATION */
+.pagination{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--white);border-top:1px solid var(--border);flex-wrap:wrap;gap:8px;}
+.pagination-info{font-size:12px;color:var(--text-light);}
+.pagination-btns{display:flex;gap:4px;align-items:center;}
+.pg-btn{padding:5px 10px;border:1.5px solid var(--border);border-radius:6px;background:var(--white);font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;cursor:pointer;color:var(--text);transition:all 0.2s;}
+.pg-btn:hover{background:var(--primary-pale);border-color:var(--primary-bright);}
+.pg-btn.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+.pg-btn:disabled{opacity:0.4;cursor:not-allowed;}
+.pg-btn.pg-num{min-width:32px;text-align:center;}
 /* KADAR ANSURAN */
 .kadar-version-tabs{display:flex;gap:8px;margin-bottom:16px;}
 .kadar-vtab{padding:10px 20px;border:2px solid var(--border);border-radius:10px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;background:var(--white);transition:all 0.2s;}
@@ -403,6 +412,7 @@ tr:hover td{background:rgba(30,122,86,0.03);}
                   <tbody id="tbody-tanam-semasa"><tr><td colspan="12" class="tbl-empty">⏳ Memuatkan...</td></tr></tbody>
                 </table>
               </div>
+              <div class="pagination" id="pg-semasa"></div>
             </div>
           </div>
 
@@ -441,6 +451,7 @@ tr:hover td{background:rgba(30,122,86,0.03);}
                 <tbody id="tbody-tanam-berturut"><tr><td colspan="13" class="tbl-empty">⏳ Memuatkan...</td></tr></tbody>
               </table>
             </div>
+            <div class="pagination" id="pg-berturut"></div>
           </div>
         </div>
 
@@ -1203,6 +1214,55 @@ function loadKPI(){
   });
 }
 
+// ===== PAGINATION =====
+var PG_SIZE = 100;
+var _semasaData = [], _berurutData = [];
+var _pgSemasa = 1, _pgBerturut = 1;
+
+function renderPagination(containerId, currentPage, totalItems, onPageChange){
+  var totalPages = Math.ceil(totalItems/PG_SIZE);
+  if(totalPages<=1){ document.getElementById(containerId).innerHTML=''; return; }
+  var start=(currentPage-1)*PG_SIZE+1;
+  var end=Math.min(currentPage*PG_SIZE,totalItems);
+  var html='<div class="pagination-info">Rekod '+start+'–'+end+' daripada '+totalItems+'</div>';
+  html+='<div class="pagination-btns">';
+  html+='<button class="pg-btn" '+(currentPage===1?'disabled':'')+' onclick="'+onPageChange+'('+(currentPage-1)+')">‹ Prev</button>';
+  // Show page numbers
+  var pages=[];
+  if(totalPages<=7){ for(var i=1;i<=totalPages;i++) pages.push(i); }
+  else {
+    pages=[1];
+    if(currentPage>3) pages.push('...');
+    for(var i=Math.max(2,currentPage-1);i<=Math.min(totalPages-1,currentPage+1);i++) pages.push(i);
+    if(currentPage<totalPages-2) pages.push('...');
+    pages.push(totalPages);
+  }
+  pages.forEach(function(p){
+    if(p==='...') html+='<span class="pg-btn" style="cursor:default;">…</span>';
+    else html+='<button class="pg-btn pg-num'+(p===currentPage?' active':'')+'" onclick="'+onPageChange+'('+p+')">'+p+'</button>';
+  });
+  html+='<button class="pg-btn" '+(currentPage===totalPages?'disabled':'')+' onclick="'+onPageChange+'('+(currentPage+1)+')">Next ›</button>';
+  html+='</div>';
+  document.getElementById(containerId).innerHTML=html;
+}
+
+window.goPageSemasa = function(p){ _pgSemasa=p; renderSemasaPage(); };
+window.goPageBerturut = function(p){ _pgBerturut=p; renderBerurutPage(); };
+
+function renderSemasaPage(){
+  var start=(_pgSemasa-1)*PG_SIZE;
+  var pageData=_semasaData.slice(start,start+PG_SIZE);
+  renderSemasaRows(pageData);
+  renderPagination('pg-semasa',_pgSemasa,_semasaData.length,'goPageSemasa');
+}
+
+function renderBerurutPage(){
+  var start=(_pgBerturut-1)*PG_SIZE;
+  var pageData=_berurutData.slice(start,start+PG_SIZE);
+  renderBerurutRows(pageData);
+  renderPagination('pg-berturut',_pgBerturut,_berurutData.length,'goPageBerturut');
+}
+
 // ===== TANAM SEMULA V2 =====
 window.switchTSTab = function(tab, el){
   ['ts-semasa','ts-berturut','ts-kewangan','ts-laporan-ts'].forEach(function(id){
@@ -1325,97 +1385,97 @@ function loadTanam(){
     // Load kadar untuk pengiraan
     onValue(ref(db,'kadarAnsuran'),function(kSnap){
       var kadarData=kSnap.exists()?kSnap.val():KADAR_DEFAULT;
-
-      // Render Semasa
-      var tb=document.getElementById('tbody-tanam-semasa');
-      if(!semasa.length){ tb.innerHTML='<tr><td colspan="12" class="tbl-empty">Tiada rekod semasa.</td></tr>'; }
-      else {
-        var rows='';
-        semasa.forEach(function(item){
-          var v=item.v,k=item.k;
-          var lawBadge=v.lawatan==='Sudah Dilawati'?'sb-lulus':'sb-tidak';
-          var statBadge=v.statusPermohonan==='Lulus'?'sb-lulus':v.statusPermohonan==='Ditolak'?'sb-tidak':'sb-proses';
-          var ki=getKadarForRek(v,kadarData);
-          var luas=parseFloat(v.luas)||0;
-          var bantuan=luas*ki.kadar;
-          var baki=luas*ki.baki;
-          rows+='<tr>';
-          rows+='<td><strong>'+(v.nama||'')+'</strong></td>';
-          rows+='<td>'+(v.ic||'')+'</td>';
-          rows+='<td>'+(v.lot||'')+'</td>';
-          rows+='<td>'+(v.luas||'')+'</td>';
-          rows+='<td style="font-size:10px;">'+(v.kategoriDetail||v.kumpulan||'—')+'</td>';
-          rows+='<td><span class="status-badge '+statBadge+'">'+(v.statusPermohonan||'—')+'</span></td>';
-          rows+='<td>'+(v.ppk||'')+'</td>';
-          rows+='<td><span class="status-badge '+lawBadge+'">'+(v.lawatan||'—')+'</span></td>';
-          rows+='<td style="background:#e8f7f0;font-weight:600;">RM '+ki.kadar.toLocaleString()+'</td>';
-          rows+='<td style="background:#e8f7f0;font-weight:700;">RM '+bantuan.toFixed(2)+'</td>';
-          rows+='<td style="background:#e8f7f0;color:'+(baki>=0?'#1e7a56':'#c0392b')+';font-weight:700;">RM '+baki.toFixed(2)+'</td>';
-          rows+='<td><button class="btn-edit" onclick="editTanam(\''+k+'\')" >✏️ Edit</button> <button class="btn-del" onclick="openDelModal(\'tanam\',\''+k+'\',\''+v.nama.replace(/'/g,'')+'\')">🗑️</button></td>';
-          rows+='</tr>';
-        });
-        tb.innerHTML=rows;
-      }
-
-      // Render Berturut
-      var tb2=document.getElementById('tbody-tanam-berturut');
-      if(!berturut.length){ tb2.innerHTML='<tr><td colspan="13" class="tbl-empty">Tiada rekod berturut.</td></tr>'; }
-      else {
-        var rows2='';
-        berturut.forEach(function(item){
-          var v=item.v,k=item.k;
-          var lawBadge=v.lawatan==='Sudah Dilawati'?'sb-lulus':'sb-tidak';
-          var kebunBadge=v.statusKebun==='Kebun Bersih'?'sb-lulus':'sb-proses';
-          var tertahan=v.statusKebun==='Tertahan';
-          var ki=getKadarForRek(v,kadarData);
-          var luas=parseFloat(v.luas)||0;
-          var bantuan=luas*ki.kadar;
-          var baki=luas*ki.baki;
-          rows2+='<tr'+(tertahan?' class="tertahan-row" title="⚠️ Kebun Tertahan — PPK perlu tindakan!"':'')+'>'; 
-          rows2+='<td><strong>'+(v.nama||'')+'</strong></td>';
-          rows2+='<td>'+(v.ic||'')+'</td>';
-          rows2+='<td>'+(v.lot||'')+'</td>';
-          rows2+='<td>'+(v.luas||'')+'</td>';
-          rows2+='<td style="font-size:10px;">'+(v.kategoriDetail||v.kumpulan||'—')+'</td>';
-          rows2+='<td>Ansuran '+(v.ansuran||'—')+'</td>';
-          rows2+='<td><span class="status-badge '+kebunBadge+'">'+(v.statusKebun||'—')+'</span></td>';
-          rows2+='<td>'+(v.ppk||'')+'</td>';
-          rows2+='<td><span class="status-badge '+lawBadge+'">'+(v.lawatan||'—')+'</span></td>';
-          rows2+='<td style="background:#e8f2ff;font-weight:600;">RM '+ki.kadar.toLocaleString()+'</td>';
-          rows2+='<td style="background:#e8f2ff;font-weight:700;">RM '+bantuan.toFixed(2)+'</td>';
-          rows2+='<td style="background:#e8f2ff;color:'+(baki>=0?'#1e7a56':'#c0392b')+';font-weight:700;">RM '+baki.toFixed(2)+'</td>';
-          rows2+='<td><button class="btn-edit" onclick="editTanam(\''+k+'\')">✏️ Edit</button> <button class="btn-del" onclick="openDelModal(\'tanam\',\''+k+'\',\''+v.nama.replace(/'/g,'')+'\')">🗑️</button></td>';
-          rows2+='</tr>';
-        });
-        tb2.innerHTML=rows2;
-      }
+      // Store data dengan kadar untuk pagination
+      _semasaData = semasa.map(function(item){ return {k:item.k, v:item.v, ki:getKadarForRek(item.v,kadarData)}; });
+      _berurutData = berturut.map(function(item){ return {k:item.k, v:item.v, ki:getKadarForRek(item.v,kadarData)}; });
+      _pgSemasa=1; _pgBerturut=1;
+      renderSemasaPage();
+      renderBerurutPage();
     },{onlyOnce:true});
 
-    // Render Bantuan
-    var tb3=document.getElementById('tbody-bantuan');
-    if(!bantuanList.length){ tb3.innerHTML='<tr><td colspan="11" class="tbl-empty">Tiada rekod lulus lagi.</td></tr>'; }
-    else {
-      var rows3='';
-      bantuanList.forEach(function(item){
-        var v=item.v,k=item.k;
-        var lawBadge=v.lawatan==='Sudah Dilawati'?'sb-lulus':'sb-tidak';
-        rows3+='<tr>';
-        rows3+='<td><strong>'+(v.nama||'')+'</strong></td>';
-        rows3+='<td>'+(v.lot||'')+'</td>';
-        rows3+='<td>'+(v.luas||'')+'</td>';
-        rows3+='<td>RM '+(parseFloat(v.ansuran1)||0).toFixed(2)+'</td>';
-        rows3+='<td>'+(v.bajaRP||0)+'</td>';
-        rows3+='<td>'+(v.bajaR1||0)+'</td>';
-        rows3+='<td>'+(v.benih||0)+'</td>';
-        rows3+='<td><strong>RM '+(parseFloat(v.jumlahBantuan)||0).toFixed(2)+'</strong></td>';
-        rows3+='<td><span class="status-badge '+lawBadge+'">'+(v.lawatan||'—')+'</span></td>';
-        rows3+='<td>'+(v.tarikhLawatan||'—')+'</td>';
-        rows3+='<td><button class="btn-edit" onclick="editTanam(\''+k+'\')">✏️ Edit</button></td>';
-        rows3+='</tr>';
-      });
-      tb3.innerHTML=rows3;
-    }
+      // Render Bantuan
+      var tb3=document.getElementById('tbody-bantuan');
+      if(!bantuanList.length){ tb3.innerHTML='<tr><td colspan="11" class="tbl-empty">Tiada rekod lulus lagi.</td></tr>'; }
+      else {
+        var rows3='';
+        bantuanList.forEach(function(item){
+          var v=item.v,k=item.k;
+          var lawBadge=v.lawatan==='Sudah Dilawati'?'sb-lulus':'sb-tidak';
+          rows3+='<tr>';
+          rows3+='<td><strong>'+(v.nama||'')+'</strong></td>';
+          rows3+='<td>'+(v.lot||'')+'</td>';
+          rows3+='<td>'+(v.luas||'')+'</td>';
+          rows3+='<td>RM '+(parseFloat(v.ansuran1)||0).toFixed(2)+'</td>';
+          rows3+='<td>'+(v.bajaRP||0)+'</td>';
+          rows3+='<td>'+(v.bajaR1||0)+'</td>';
+          rows3+='<td>'+(v.benih||0)+'</td>';
+          rows3+='<td><strong>RM '+(parseFloat(v.jumlahBantuan)||0).toFixed(2)+'</strong></td>';
+          rows3+='<td><span class="status-badge '+lawBadge+'">'+(v.lawatan||'—')+'</span></td>';
+          rows3+='<td>'+(v.tarikhLawatan||'—')+'</td>';
+          rows3+='<td><button class="btn-edit" onclick="editTanam(\''+k+'\')">✏️ Edit</button></td>';
+          rows3+='</tr>';
+        });
+        tb3.innerHTML=rows3;
+      }
   });
+}
+
+function renderSemasaRows(pageData){
+  var tb=document.getElementById('tbody-tanam-semasa');
+  if(!pageData.length){ tb.innerHTML='<tr><td colspan="12" class="tbl-empty">Tiada rekod semasa.</td></tr>'; return; }
+  var rows='';
+  pageData.forEach(function(item){
+    var v=item.v,k=item.k,ki=item.ki;
+    var lawBadge=v.lawatan==='Sudah Dilawati'?'sb-lulus':'sb-tidak';
+    var statBadge=v.statusPermohonan==='Lulus'?'sb-lulus':v.statusPermohonan==='Ditolak'?'sb-tidak':'sb-proses';
+    var luas=parseFloat(v.luas)||0;
+    var bantuan=luas*ki.kadar, baki=luas*ki.baki;
+    rows+='<tr>';
+    rows+='<td><strong>'+(v.nama||'')+'</strong></td>';
+    rows+='<td>'+(v.ic||'')+'</td>';
+    rows+='<td>'+(v.lot||'')+'</td>';
+    rows+='<td>'+(v.luas||'')+'</td>';
+    rows+='<td style="font-size:10px;">'+(v.kategoriDetail||v.kumpulan||'—')+'</td>';
+    rows+='<td><span class="status-badge '+statBadge+'">'+(v.statusPermohonan||'—')+'</span></td>';
+    rows+='<td>'+(v.ppk||'')+'</td>';
+    rows+='<td><span class="status-badge '+lawBadge+'">'+(v.lawatan||'—')+'</span></td>';
+    rows+='<td style="background:#e8f7f0;font-weight:600;">RM '+ki.kadar.toLocaleString()+'</td>';
+    rows+='<td style="background:#e8f7f0;font-weight:700;">RM '+bantuan.toFixed(2)+'</td>';
+    rows+='<td style="background:#e8f7f0;color:'+(baki>=0?'#1e7a56':'#c0392b')+';font-weight:700;">RM '+baki.toFixed(2)+'</td>';
+    rows+='<td><button class="btn-edit" onclick="editTanam(\''+k+'\')">✏️ Edit</button> <button class="btn-del" onclick="openDelModal(\'tanam\',\''+k+'\',\''+v.nama.replace(/'/g,'')+'\')">🗑️</button></td>';
+    rows+='</tr>';
+  });
+  tb.innerHTML=rows;
+}
+
+function renderBerurutRows(pageData){
+  var tb2=document.getElementById('tbody-tanam-berturut');
+  if(!pageData.length){ tb2.innerHTML='<tr><td colspan="13" class="tbl-empty">Tiada rekod berturut.</td></tr>'; return; }
+  var rows2='';
+  pageData.forEach(function(item){
+    var v=item.v,k=item.k,ki=item.ki;
+    var lawBadge=v.lawatan==='Sudah Dilawati'?'sb-lulus':'sb-tidak';
+    var kebunBadge=v.statusKebun==='Kebun Bersih'?'sb-lulus':'sb-proses';
+    var tertahan=v.statusKebun==='Tertahan';
+    var luas=parseFloat(v.luas)||0;
+    var bantuan=luas*ki.kadar, baki=luas*ki.baki;
+    rows2+='<tr'+(tertahan?' class="tertahan-row" title="⚠️ Kebun Tertahan — PPK perlu tindakan!"':'')+'>'; 
+    rows2+='<td><strong>'+(v.nama||'')+'</strong></td>';
+    rows2+='<td>'+(v.ic||'')+'</td>';
+    rows2+='<td>'+(v.lot||'')+'</td>';
+    rows2+='<td>'+(v.luas||'')+'</td>';
+    rows2+='<td style="font-size:10px;">'+(v.kategoriDetail||v.kumpulan||'—')+'</td>';
+    rows2+='<td>Ansuran '+(v.ansuran||'—')+'</td>';
+    rows2+='<td><span class="status-badge '+kebunBadge+'">'+(v.statusKebun||'—')+'</span></td>';
+    rows2+='<td>'+(v.ppk||'')+'</td>';
+    rows2+='<td><span class="status-badge '+lawBadge+'">'+(v.lawatan||'—')+'</span></td>';
+    rows2+='<td style="background:#e8f2ff;font-weight:600;">RM '+ki.kadar.toLocaleString()+'</td>';
+    rows2+='<td style="background:#e8f2ff;font-weight:700;">RM '+bantuan.toFixed(2)+'</td>';
+    rows2+='<td style="background:#e8f2ff;color:'+(baki>=0?'#1e7a56':'#c0392b')+';font-weight:700;">RM '+baki.toFixed(2)+'</td>';
+    rows2+='<td><button class="btn-edit" onclick="editTanam(\''+k+'\')">✏️ Edit</button> <button class="btn-del" onclick="openDelModal(\'tanam\',\''+k+'\',\''+v.nama.replace(/'/g,'')+'\')">🗑️</button></td>';
+    rows2+='</tr>';
+  });
+  tb2.innerHTML=rows2;
 }
 
 window.editTanam = function(idOrBtn){
