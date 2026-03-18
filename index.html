@@ -1382,10 +1382,9 @@ function loadTanam(){
     // Update stats dashboard
     var el=document.getElementById('st-tanam'); if(el) el.textContent=semasa.length+berturut.length;
 
-    // Load kadar untuk pengiraan
+    // Load kadar dan render
     onValue(ref(db,'kadarAnsuran'),function(kSnap){
-      var kadarData=kSnap.exists()?kSnap.val():KADAR_DEFAULT;
-      // Store data dengan kadar untuk pagination
+      var kadarData = kSnap.exists() ? kSnap.val() : KADAR_DEFAULT;
       _semasaData = semasa.map(function(item){ return {k:item.k, v:item.v, ki:getKadarForRek(item.v,kadarData)}; });
       _berurutData = berturut.map(function(item){ return {k:item.k, v:item.v, ki:getKadarForRek(item.v,kadarData)}; });
       _pgSemasa=1; _pgBerturut=1;
@@ -1791,7 +1790,17 @@ window.doLogin = function(){
       loadStats(); loadTanam(); loadPGT(); loadPeng(); loadUsa(); loadProg(); loadUsers(); loadKPI();
       // Auto-detect rollover keperluan
       checkAutoRollover(ud.role);
-      if(ud.role==='admin'||ud.role==='ketua') loadKadarFromFirebase();
+      if(ud.role==='admin'||ud.role==='ketua') {
+        loadKadarFromFirebase();
+        // Auto-init kadar ke Firebase kalau belum ada
+        onValue(ref(db,'kadarAnsuran'),function(ks){
+          if(!ks.exists()){
+            set(ref(db,'kadarAnsuran'), KADAR_DEFAULT).then(function(){
+              console.log('Kadar default diinit ke Firebase');
+            });
+          }
+        },{onlyOnce:true});
+      }
     } else {
       err.style.display='block'; err.textContent='Username atau password salah!';
     }
