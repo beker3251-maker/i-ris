@@ -994,6 +994,21 @@ tr:hover td{background:rgba(30,122,86,0.03);}
   </div>
 </div>
 
+<div class="modal-overlay" id="modal-fix2025">
+  <div class="modal-box">
+    <h3>🛠️ Fix Data 2025</h3>
+    <p id="fix2025-msg">Ini akan tukar SEMUA rekod yang tahunDaftar &lt; 2026 kepada <strong>Berturut 2025</strong>.<br><br>Teruskan?</p>
+    <div id="fix2025-progress" style="display:none;text-align:center;padding:10px 0;">
+      <div style="font-size:13px;color:var(--primary);font-weight:600;">⏳ Sedang memproses...</div>
+      <div id="fix2025-count" style="font-size:12px;color:var(--text-light);margin-top:4px;"></div>
+    </div>
+    <div class="modal-actions" id="fix2025-actions">
+      <button style="padding:10px 20px;background:var(--cream);border:1px solid var(--border);border-radius:9px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;cursor:pointer;" onclick="document.getElementById('modal-fix2025').classList.remove('show')">Batal</button>
+      <button style="padding:10px 20px;background:#c0392b;color:#fff;border:none;border-radius:9px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;" onclick="doFix2025()">Ya, Jalankan!</button>
+    </div>
+  </div>
+</div>
+
 <!-- ROLLOVER MODAL -->
 <div class="rollover-modal" id="modal-rollover">
   <div class="rollover-box">
@@ -1876,27 +1891,48 @@ function updateKPIHektar(allRecs){
 
 // ===== FIX DATA 2025 =====
 function fixData2025(){
-  if(!confirm('⚠️ Ini akan tukar SEMUA rekod yang tahunDaftar < 2026 kepada Berturut 2025.\n\nTeruskan?')) return;
+  document.getElementById('fix2025-msg').style.display='block';
+  document.getElementById('fix2025-progress').style.display='none';
+  document.getElementById('fix2025-actions').style.display='flex';
+  document.getElementById('modal-fix2025').classList.add('show');
+}
+
+function doFix2025(){
+  document.getElementById('fix2025-actions').style.display='none';
+  document.getElementById('fix2025-msg').style.display='none';
+  document.getElementById('fix2025-progress').style.display='block';
+  document.getElementById('fix2025-count').textContent='Membaca data dari Firebase...';
   var toFix=[];
   onValue(ref(db,'tanam'),function(snap){
-    if(!snap.exists()){ alert('Tiada data.'); return; }
+    if(!snap.exists()){
+      document.getElementById('fix2025-count').textContent='Tiada data.';
+      return;
+    }
     Object.entries(snap.val()).forEach(function([key,val]){
       var tahun=parseInt(val.tahunDaftar)||0;
       var jenis=val.jenisTanam||'semasa';
       if(jenis!=='berturut' && jenis!=='selesai' && tahun<2026){
-        toFix.push({key:key, tahunDaftar:val.tahunDaftar||2025});
+        toFix.push({key:key});
       }
     });
-    if(toFix.length===0){ alert('✅ Tiada rekod perlu diubah.'); return; }
-    alert('⏳ Sedang fix '+toFix.length+' rekod... Sila tunggu.');
+    if(toFix.length===0){
+      document.getElementById('fix2025-count').textContent='✅ Tiada rekod perlu diubah.';
+      setTimeout(function(){ document.getElementById('modal-fix2025').classList.remove('show'); },2000);
+      return;
+    }
+    document.getElementById('fix2025-count').textContent='Menukar '+toFix.length+' rekod...';
     var done=0;
     toFix.forEach(function(item){
       set(ref(db,'tanam/'+item.key+'/jenisTanam'),'berturut').then(function(){
         done++;
+        document.getElementById('fix2025-count').textContent=done+' / '+toFix.length+' rekod diubah...';
         if(done===toFix.length){
-          alert('🎉 Selesai! '+done+' rekod ditukar ke Berturut 2025.\n\nSila refresh page.');
+          document.getElementById('fix2025-count').textContent='🎉 Selesai! '+done+' rekod berjaya ditukar. Refresh page...';
+          setTimeout(function(){ location.reload(); },2000);
         }
-      }).catch(function(e){ alert('❌ Error: '+e.message); });
+      }).catch(function(e){
+        document.getElementById('fix2025-count').textContent='❌ Error: '+e.message;
+      });
     });
   },{onlyOnce:true});
 }
