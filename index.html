@@ -398,6 +398,13 @@ tr:hover td{background:rgba(30,122,86,0.03);}
 
           <!-- Bahagian A: Senarai -->
           <div id="semasa-senarai">
+            <div id="fix2025-bar" style="display:none;background:#fff0f0;border:1px solid rgba(192,57,43,0.25);border-radius:12px;padding:12px 16px;margin-bottom:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+              <div>
+                <div style="font-size:13px;font-weight:700;color:#c0392b;">🛠️ Fix Data 2025</div>
+                <div style="font-size:11px;color:#888;margin-top:2px;">Tukar semua rekod lama ke Berturut 2025</div>
+              </div>
+              <button onclick="fixData2025()" style="padding:9px 18px;background:#c0392b;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">🛠️ Jalankan Fix</button>
+            </div>
             <div class="tbl-panel">
               <div class="tbl-top">
                 <h3>🌿 Pekebun Semasa 2026</h3>
@@ -1808,6 +1815,8 @@ window.doLogin = function(){
         document.getElementById('kpi-label').style.display='block';
         document.getElementById('kpi-nav').style.display='flex';
         document.getElementById('rollover-section').style.display='block';
+        var f=document.getElementById('fix2025-bar');
+        if(f) f.style.display='flex';
         document.getElementById('nav-kadar').style.display='flex';
       }
       if(ud.role!=='admin') document.getElementById('nav-users').style.display='none';
