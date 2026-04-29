@@ -1877,26 +1877,27 @@ function updateKPIHektar(allRecs){
 // ===== FIX DATA 2025 =====
 function fixData2025(){
   if(!confirm('⚠️ Ini akan tukar SEMUA rekod yang tahunDaftar < 2026 kepada Berturut 2025.\n\nTeruskan?')) return;
-  alert('⏳ Sedang memproses... Sila tunggu.');
-  var tanamRef=ref(db,'tanam');
-  onValue(tanamRef,function(snap){
-    if(!snap.exists()){ alert('Tiada data dalam Firebase.'); return; }
-    var data=snap.val();
-    var updates={};
-    var count=0;
-    Object.entries(data).forEach(function([key,val]){
+  var toFix=[];
+  onValue(ref(db,'tanam'),function(snap){
+    if(!snap.exists()){ alert('Tiada data.'); return; }
+    Object.entries(snap.val()).forEach(function([key,val]){
       var tahun=parseInt(val.tahunDaftar)||0;
       var jenis=val.jenisTanam||'semasa';
       if(jenis!=='berturut' && jenis!=='selesai' && tahun<2026){
-        updates['tanam/'+key+'/jenisTanam']='berturut';
-        updates['tanam/'+key+'/tahunDaftar']=val.tahunDaftar||2025;
-        count++;
+        toFix.push({key:key, tahunDaftar:val.tahunDaftar||2025});
       }
     });
-    if(count===0){ alert('✅ Tiada rekod perlu diubah.'); return; }
-    update(ref(db,'/'),updates).then(function(){
-      alert('🎉 Selesai! '+count+' rekod berjaya ditukar ke Berturut 2025.\n\nSila refresh page.');
-    }).catch(function(e){ alert('❌ Error update: '+e.message); });
+    if(toFix.length===0){ alert('✅ Tiada rekod perlu diubah.'); return; }
+    alert('⏳ Sedang fix '+toFix.length+' rekod... Sila tunggu.');
+    var done=0;
+    toFix.forEach(function(item){
+      set(ref(db,'tanam/'+item.key+'/jenisTanam'),'berturut').then(function(){
+        done++;
+        if(done===toFix.length){
+          alert('🎉 Selesai! '+done+' rekod ditukar ke Berturut 2025.\n\nSila refresh page.');
+        }
+      }).catch(function(e){ alert('❌ Error: '+e.message); });
+    });
   },{onlyOnce:true});
 }
 
