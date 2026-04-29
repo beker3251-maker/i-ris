@@ -890,6 +890,14 @@ tr:hover td{background:rgba(30,122,86,0.03);}
             </div>
             <button onclick="openRolloverModal()" style="padding:9px 18px;background:var(--gold);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">🔄 Semak & Rollover</button>
           </div>
+          <!-- Fix Data 2025 button -->
+          <div style="background:#fff0f0;border:1px solid rgba(192,57,43,0.25);border-radius:12px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:10px;">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#c0392b;">🛠️ Fix Data 2025</div>
+              <div style="font-size:11px;color:var(--text-light);margin-top:2px;">Tukar semua rekod lama (tahunDaftar &lt; 2026) kepada Berturut 2025</div>
+            </div>
+            <button onclick="fixData2025()" style="padding:9px 18px;background:#c0392b;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">🛠️ Jalankan Fix</button>
+          </div>
         </div>
 
         <div class="section-hdr">Prestasi Keseluruhan By PPK</div>
@@ -996,7 +1004,7 @@ tr:hover td{background:rgba(30,122,86,0.03);}
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getDatabase, ref, set, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { getDatabase, ref, set, push, onValue, remove, update, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD3sKWtPcQ2oEira30Axx9JkSREiGcRZio",
@@ -1855,6 +1863,31 @@ function updateKPIHektar(allRecs){
   if(el) el.textContent=totalLuas.toFixed(1);
   if(fill) fill.style.width=pct+'%';
   if(pctEl) pctEl.textContent=pct+'% daripada sasaran 100 ha';
+}
+
+// ===== FIX DATA 2025 =====
+function fixData2025(){
+  if(!confirm('⚠️ Ini akan tukar SEMUA rekod yang tahunDaftar < 2026 kepada Berturut 2025.\n\nTeruskan?')) return;
+  var tanamRef=ref(db,'tanam');
+  get(tanamRef).then(function(snap){
+    if(!snap.exists()){ alert('Tiada data dalam Firebase.'); return; }
+    var data=snap.val();
+    var updates={};
+    var count=0;
+    Object.entries(data).forEach(function([key,val]){
+      var tahun=parseInt(val.tahunDaftar)||0;
+      var jenis=val.jenisTanam||'semasa';
+      if(jenis!=='berturut' && jenis!=='selesai' && tahun<2026){
+        updates['tanam/'+key+'/jenisTanam']='berturut';
+        updates['tanam/'+key+'/tahunDaftar']=val.tahunDaftar||2025;
+        count++;
+      }
+    });
+    if(count===0){ alert('✅ Tiada rekod perlu diubah.'); return; }
+    update(ref(db,'/'),updates).then(function(){
+      alert('🎉 Selesai! '+count+' rekod berjaya ditukar ke Berturut 2025.\n\nSila refresh page.');
+    }).catch(function(e){ alert('❌ Error: '+e.message); });
+  }).catch(function(e){ alert('❌ Gagal baca data: '+e.message); });
 }
 
 // ===== AUTO-ROLLOVER =====
