@@ -1877,8 +1877,9 @@ function updateKPIHektar(allRecs){
 // ===== FIX DATA 2025 =====
 function fixData2025(){
   if(!confirm('⚠️ Ini akan tukar SEMUA rekod yang tahunDaftar < 2026 kepada Berturut 2025.\n\nTeruskan?')) return;
+  alert('⏳ Sedang memproses... Sila tunggu.');
   var tanamRef=ref(db,'tanam');
-  get(tanamRef).then(function(snap){
+  onValue(tanamRef,function(snap){
     if(!snap.exists()){ alert('Tiada data dalam Firebase.'); return; }
     var data=snap.val();
     var updates={};
@@ -1895,8 +1896,8 @@ function fixData2025(){
     if(count===0){ alert('✅ Tiada rekod perlu diubah.'); return; }
     update(ref(db,'/'),updates).then(function(){
       alert('🎉 Selesai! '+count+' rekod berjaya ditukar ke Berturut 2025.\n\nSila refresh page.');
-    }).catch(function(e){ alert('❌ Error: '+e.message); });
-  }).catch(function(e){ alert('❌ Gagal baca data: '+e.message); });
+    }).catch(function(e){ alert('❌ Error update: '+e.message); });
+  },{onlyOnce:true});
 }
 
 // ===== AUTO-ROLLOVER =====
