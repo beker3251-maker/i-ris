@@ -1,0 +1,2391 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>i-Ris — Sistem Pengurusan RISDA Stesen Lundu</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#0a3d2e;--primary-mid:#0d4f3a;--primary-bright:#1e7a56;--primary-light:#3daa7a;--primary-pale:#e8f7f0;
+  --gold:#c8921a;--gold-light:#f0b429;--gold-pale:#fef8e8;
+  --red:#c0392b;--blue:#1a6eb5;--blue-pale:#e8f2fc;--purple:#8e44ad;--purple-pale:#f5eeff;
+  --cream:#f8f6f1;--white:#fff;--text:#0f2d1f;--text-light:#7a9a82;--border:rgba(30,122,86,0.12);
+  --shadow-sm:0 2px 8px rgba(10,61,46,0.08);--shadow-md:0 4px 20px rgba(10,61,46,0.12);--shadow-lg:0 8px 40px rgba(10,61,46,0.16);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;}
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#061f17 0%,#0a3d2e 60%,#1e7a56 100%);}
+.login-box{background:var(--white);border-radius:20px;padding:40px 36px;width:380px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,0.3);}
+.login-logo{text-align:center;margin-bottom:24px;}
+.login-logo img{width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--gold);margin-bottom:12px;}
+.login-logo h1{font-family:'Playfair Display',serif;font-size:26px;color:var(--primary);}
+.login-logo p{font-size:12px;color:var(--text-light);margin-top:4px;}
+.form-group{margin-bottom:16px;}
+.form-group label{display:block;font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;}
+.form-group input,.form-group select{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;color:var(--text);background:var(--cream);transition:all 0.2s;outline:none;}
+.form-group input:focus,.form-group select:focus{border-color:var(--primary-bright);background:var(--white);}
+.btn-login{width:100%;padding:13px;background:linear-gradient(135deg,var(--primary),var(--primary-bright));color:#fff;border:none;border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all 0.2s;margin-top:8px;}
+.btn-login:hover{transform:translateY(-1px);}
+.login-error{background:#fff0f0;color:var(--red);border:1px solid rgba(192,57,43,0.2);border-radius:8px;padding:10px 14px;font-size:13px;margin-top:12px;display:none;text-align:center;}
+#app-screen{display:none;min-height:100vh;flex-direction:row;}
+.sidebar{width:260px;min-height:100vh;background:linear-gradient(180deg,#061f17 0%,#0a3d2e 100%);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:100;overflow-y:auto;}
+.sidebar-logo{padding:18px 18px 14px;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:12px;}
+.logo-img{width:46px;height:46px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);flex-shrink:0;}
+.logo-text h1{font-family:'Playfair Display',serif;font-size:19px;color:#fff;}
+.logo-text p{font-size:9px;color:rgba(255,255,255,0.4);margin-top:2px;}
+.sidebar-user{margin:10px 12px 6px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;}
+.user-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-light));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--primary);flex-shrink:0;}
+.user-info .uname{font-size:12px;font-weight:600;color:#fff;}
+.user-info .urole{font-size:10px;color:rgba(255,255,255,0.45);margin-top:1px;}
+.sidebar-nav{padding:6px 10px;flex:1;}
+.nav-label{font-size:9px;font-weight:700;color:rgba(255,255,255,0.28);text-transform:uppercase;letter-spacing:1.5px;padding:10px 10px 4px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;cursor:pointer;transition:all 0.2s;margin-bottom:1px;}
+.nav-item:hover{background:rgba(255,255,255,0.08);}
+.nav-item.active{background:rgba(255,255,255,0.13);}
+.nav-item .icon{font-size:15px;width:20px;text-align:center;flex-shrink:0;}
+.nav-item .label{font-size:12px;font-weight:500;color:rgba(255,255,255,0.75);flex:1;}
+.nav-item.active .label{color:#fff;font-weight:600;}
+.nav-item.kpi-nav{background:rgba(200,146,26,0.12);border:1px solid rgba(200,146,26,0.2);}
+.nav-item.kpi-nav .label{color:var(--gold-light);}
+.sidebar-footer{padding:12px;border-top:1px solid rgba(255,255,255,0.08);}
+.btn-logout{width:100%;padding:9px;border:1px solid rgba(255,255,255,0.12);border-radius:8px;background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.55);font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-logout:hover{background:rgba(255,255,255,0.1);color:#fff;}
+.main{margin-left:260px;flex:1;min-height:100vh;}
+.topbar{background:var(--white);padding:13px 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);box-shadow:var(--shadow-sm);position:sticky;top:0;z-index:50;}
+.topbar-left h2{font-family:'Playfair Display',serif;font-size:17px;color:var(--primary);}
+.topbar-left p{font-size:11px;color:var(--text-light);margin-top:1px;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.sync-badge{display:flex;align-items:center;gap:6px;background:var(--primary-pale);border:1px solid rgba(30,122,86,0.2);padding:5px 12px;border-radius:50px;font-size:11px;color:var(--primary-bright);font-weight:500;}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--primary-light);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.date-badge{background:var(--gold-pale);border:1px solid rgba(200,146,26,0.2);padding:5px 12px;border-radius:50px;font-size:11px;color:var(--gold);font-weight:500;}
+.content{padding:20px;}
+.page{display:none;}
+.page.active{display:block;}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.stat-card{background:var(--white);border-radius:13px;padding:16px;border:1px solid var(--border);box-shadow:var(--shadow-sm);position:relative;overflow:hidden;cursor:pointer;transition:all 0.2s;}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.stat-card.c1::before{background:linear-gradient(90deg,var(--primary-bright),var(--primary-light));}
+.stat-card.c2::before{background:linear-gradient(90deg,var(--gold),var(--gold-light));}
+.stat-card.c3::before{background:linear-gradient(90deg,var(--blue),#5ba3e0);}
+.stat-card.c4::before{background:linear-gradient(90deg,var(--red),#e74c3c);}
+.stat-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;}
+.stat-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;}
+.si1{background:var(--primary-pale);}.si2{background:var(--gold-pale);}.si3{background:var(--blue-pale);}.si4{background:#fff0f0;}
+.stat-num{font-size:24px;font-weight:700;color:var(--text);line-height:1;}
+.stat-lbl{font-size:11px;color:var(--text-light);margin-top:3px;}
+.section-hdr{font-family:'Playfair Display',serif;font-size:15px;color:var(--primary);margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.section-hdr::after{content:'';flex:1;height:1px;background:var(--border);}
+.units-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+.ucard{background:var(--white);border-radius:13px;padding:16px;border:1px solid var(--border);box-shadow:var(--shadow-sm);cursor:pointer;transition:all 0.25s;position:relative;overflow:hidden;}
+.ucard:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);}
+.ucard::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;}
+.ucard.u1::after{background:linear-gradient(90deg,#1e7a56,#3daa7a);}
+.ucard.u2::after{background:linear-gradient(90deg,#c8921a,#f0b429);}
+.ucard.u3::after{background:linear-gradient(90deg,#1a6eb5,#5ba3e0);}
+.ucard.u4::after{background:linear-gradient(90deg,#8e44ad,#bb8fcf);}
+.ucard.u5::after{background:linear-gradient(90deg,#c0392b,#e74c3c);}
+.ucard-hdr{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.uicon{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:19px;}
+.u1 .uicon{background:var(--primary-pale);}.u2 .uicon{background:var(--gold-pale);}.u3 .uicon{background:var(--blue-pale);}.u4 .uicon{background:var(--purple-pale);}.u5 .uicon{background:#fff0f0;}
+.uname{font-weight:700;font-size:12px;color:var(--text);}
+.usub{font-size:10px;color:var(--text-light);margin-top:1px;}
+.ppk-row{display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap;}
+.ppk-chip{font-size:9px;padding:2px 7px;border-radius:20px;font-weight:500;}
+.chip-r{background:#fff0f5;color:#c0392b;}.chip-j{background:var(--blue-pale);color:var(--blue);}.chip-a{background:var(--primary-pale);color:var(--primary-bright);}
+.ubtn{width:100%;padding:7px;border:none;border-radius:7px;font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer;}
+.u1 .ubtn{background:var(--primary-pale);color:var(--primary-bright);}
+.u2 .ubtn{background:var(--gold-pale);color:var(--gold);}
+.u3 .ubtn{background:var(--blue-pale);color:var(--blue);}
+.u4 .ubtn{background:var(--purple-pale);color:var(--purple);}
+.u5 .ubtn{background:#fff0f0;color:var(--red);}
+.tab-bar{display:flex;gap:4px;margin-bottom:16px;background:var(--white);padding:6px;border-radius:12px;border:1px solid var(--border);}
+.tab-btn{flex:1;padding:8px;border:none;border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;color:var(--text-light);background:transparent;transition:all 0.2s;}
+.tab-btn.active{background:var(--primary);color:#fff;}
+.form-panel{background:var(--white);border-radius:13px;padding:22px;border:1px solid var(--border);box-shadow:var(--shadow-sm);margin-bottom:16px;}
+.form-panel h3{font-size:14px;font-weight:700;color:var(--primary);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+.fg{display:flex;flex-direction:column;gap:5px;}
+.fg.full{grid-column:1/-1;}
+.fg label{font-size:11px;font-weight:600;color:var(--text);text-transform:uppercase;letter-spacing:0.4px;}
+.fg input,.fg select,.fg textarea{padding:9px 11px;border:1.5px solid var(--border);border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--text);background:var(--cream);outline:none;transition:all 0.2s;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--primary-bright);background:var(--white);}
+.fg textarea{resize:vertical;min-height:70px;}
+.bulan-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px;}
+/* PAGINATION */
+.pagination{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--white);border-top:1px solid var(--border);flex-wrap:wrap;gap:8px;}
+.pagination-info{font-size:12px;color:var(--text-light);}
+.pagination-btns{display:flex;gap:4px;align-items:center;}
+.pg-btn{padding:5px 10px;border:1.5px solid var(--border);border-radius:6px;background:var(--white);font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;cursor:pointer;color:var(--text);transition:all 0.2s;}
+.pg-btn:hover{background:var(--primary-pale);border-color:var(--primary-bright);}
+.pg-btn.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+.pg-btn:disabled{opacity:0.4;cursor:not-allowed;}
+.pg-btn.pg-num{min-width:32px;text-align:center;}
+/* KADAR ANSURAN */
+.kadar-version-tabs{display:flex;gap:8px;margin-bottom:16px;}
+.kadar-vtab{padding:10px 20px;border:2px solid var(--border);border-radius:10px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;background:var(--white);transition:all 0.2s;}
+.kadar-vtab.active-baru{border-color:#1e7a56;background:#e8f7f0;color:#1e7a56;}
+.kadar-vtab.active-lama{border-color:#1a6eb5;background:#e8f2ff;color:#1a6eb5;}
+.kadar-ansuran-card{background:var(--white);border-radius:13px;border:1px solid var(--border);box-shadow:var(--shadow-sm);margin-bottom:14px;overflow:hidden;}
+.kadar-card-hdr{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+.kadar-card-hdr.ans1{background:linear-gradient(135deg,#0a3d2e,#1e7a56);color:#fff;}
+.kadar-card-hdr.ans2{background:linear-gradient(135deg,#1a4a8a,#1a6eb5);color:#fff;}
+.kadar-card-hdr.ans3{background:linear-gradient(135deg,#5a2d82,#8e44ad);color:#fff;}
+.kadar-card-hdr.ans4{background:linear-gradient(135deg,#b5410c,#e67e22);color:#fff;}
+.kadar-card-hdr.ans5{background:linear-gradient(135deg,#880000,#c0392b);color:#fff;}
+.kadar-card-hdr h3{font-size:14px;font-weight:700;}
+.kadar-jumlah{font-size:18px;font-weight:800;}
+.kadar-baki{font-size:11px;opacity:0.8;margin-top:2px;}
+.kadar-table{width:100%;border-collapse:collapse;font-size:12px;}
+.kadar-table th{padding:8px 12px;background:var(--cream);font-size:10px;font-weight:700;color:var(--text-light);text-transform:uppercase;border-bottom:1px solid var(--border);}
+.kadar-table td{padding:8px 12px;border-bottom:1px solid var(--border);}
+.kadar-table tr:last-child td{border-bottom:none;}
+.kadar-table input{width:100%;padding:5px 8px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;font-family:'Plus Jakarta Sans',sans-serif;outline:none;}
+.kadar-table input:focus{border-color:var(--primary-bright);}
+.kadar-summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+.kadar-sum-card{background:var(--white);border-radius:10px;padding:14px;border:1px solid var(--border);text-align:center;}
+.kadar-sum-card .ks-label{font-size:10px;color:var(--text-light);text-transform:uppercase;margin-bottom:4px;}
+.kadar-sum-card .ks-val{font-size:18px;font-weight:700;color:var(--primary);}
+.kadar-sum-card .ks-sub{font-size:10px;color:var(--text-light);margin-top:2px;}
+.peruntukan-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:16px;}
+.peruntukan-card{background:var(--white);border-radius:12px;padding:16px;border:1px solid var(--border);}
+.peruntukan-card h4{font-size:12px;font-weight:700;color:var(--primary);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.perun-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:12px;}
+.perun-row span{color:var(--text-light);}
+.perun-row strong{color:var(--text);}
+.perun-total{display:flex;justify-content:space-between;padding-top:8px;border-top:1px solid var(--border);font-size:13px;font-weight:700;color:var(--primary);}
+.btn-save-kadar{padding:10px 24px;background:linear-gradient(135deg,var(--primary),var(--primary-bright));color:#fff;border:none;border-radius:9px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;}
+.kadar-table{width:100%;border-collapse:collapse;font-size:12px;}
+.ts-tab-bar{display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;border:1px solid var(--border);}
+.ts-tab{flex:1;padding:11px;border:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;background:var(--white);color:var(--text-light);}
+.ts-tab.semasa.active{background:linear-gradient(135deg,#1e7a56,#3daa7a);color:#fff;}
+.ts-tab.berturut.active{background:linear-gradient(135deg,#1a6eb5,#5ba3e0);color:#fff;}
+.ts-badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;margin-left:6px;}
+.badge-semasa{background:rgba(30,122,86,0.15);color:#1e7a56;}
+.badge-berturut{background:rgba(26,110,181,0.15);color:#1a6eb5;}
+.ts-sub-tab-bar{display:flex;gap:4px;margin-bottom:14px;background:var(--white);padding:5px;border-radius:10px;border:1px solid var(--border);}
+.ts-sub-tab{flex:1;padding:7px;border:none;border-radius:7px;font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer;color:var(--text-light);background:transparent;transition:all 0.2s;}
+.ts-sub-tab.active{background:var(--primary);color:#fff;}
+.form-section-title{font-size:12px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:0.5px;margin:14px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+.bantuan-box{background:linear-gradient(135deg,var(--primary-pale),#d4f5e5);border:1px solid rgba(30,122,86,0.2);border-radius:10px;padding:14px;margin-top:12px;}
+.bantuan-box .bb-title{font-size:11px;font-weight:700;color:var(--primary);margin-bottom:8px;text-transform:uppercase;}
+.bantuan-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;}
+.bantuan-row span{font-size:12px;color:var(--text);}
+.bantuan-row strong{font-size:12px;font-weight:700;color:var(--primary);}
+.bantuan-total{display:flex;align-items:center;justify-content:space-between;padding-top:8px;border-top:1px solid rgba(30,122,86,0.2);margin-top:4px;}
+.bantuan-total span{font-size:13px;font-weight:700;color:var(--primary);}
+.bantuan-total strong{font-size:18px;font-weight:800;color:var(--primary-bright);}
+.lap-ts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+.lap-ts-card{background:var(--white);border-radius:12px;padding:16px;border:1px solid var(--border);}
+.lap-ts-card.roz{border-top:3px solid #e91e63;}
+.lap-ts-card.jude{border-top:3px solid #1a6eb5;}
+.lap-ts-card.armi{border-top:3px solid #1e7a56;}
+.lap-ts-card h4{font-size:12px;font-weight:700;margin-bottom:10px;}
+.lap-ts-stat{display:flex;justify-content:space-between;margin-bottom:4px;font-size:11px;}
+.lap-ts-stat span{color:var(--text-light);}
+.lap-ts-stat strong{color:var(--text);}
+.progress-bar{width:100%;height:6px;background:var(--cream);border-radius:3px;margin-top:6px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#1e7a56,#3daa7a);transition:width 0.5s;}
+.tertahan-row td{background:#fff5f0 !important;}
+.tertahan-row td:first-child::before{content:'⚠️ ';font-size:11px;}
+.kpi-hektar-box{background:linear-gradient(135deg,#061f17,#0a3d2e);border-radius:13px;padding:18px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.kpi-hektar-box h3{font-family:'Playfair Display',serif;font-size:16px;color:#fff;}
+.kpi-hektar-box p{font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px;}
+.kpi-hektar-meter{text-align:right;}
+.kpi-hektar-meter .num{font-size:28px;font-weight:800;color:var(--gold-light);}
+.kpi-hektar-meter .denom{font-size:13px;color:rgba(255,255,255,0.5);}
+.kpi-hektar-track{width:200px;height:10px;background:rgba(255,255,255,0.15);border-radius:5px;margin-top:6px;overflow:hidden;}
+.kpi-hektar-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--gold),var(--gold-light));transition:width 0.8s;}
+.rollover-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:300;align-items:center;justify-content:center;}
+.rollover-modal.show{display:flex;}
+.rollover-box{background:#fff;border-radius:16px;padding:28px;width:460px;max-width:95vw;}
+.rollover-box h3{font-size:16px;font-weight:700;color:var(--primary);margin-bottom:8px;}
+.rollover-box p{font-size:13px;color:var(--text-light);margin-bottom:16px;}
+.rollover-list{max-height:280px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;margin-bottom:16px;}
+.rollover-item{padding:10px 14px;border-bottom:1px solid var(--border);font-size:12px;display:flex;justify-content:space-between;align-items:center;}
+.rollover-item:last-child{border-bottom:none;}
+.rollover-item.will-selesai{background:#fff0f0;}
+.btn-rollover-go{width:100%;padding:12px;background:linear-gradient(135deg,var(--primary),var(--primary-bright));color:#fff;border:none;border-radius:9px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;}
+.bulan-item{background:var(--cream);border-radius:8px;padding:10px;}
+.bulan-item label{font-size:10px;font-weight:700;color:var(--primary);text-transform:uppercase;display:block;margin-bottom:6px;}
+.bulan-item input{width:100%;padding:6px 8px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;background:var(--white);outline:none;}
+.bulan-item input:focus{border-color:var(--primary-bright);}
+.bulan-total{grid-column:1/-1;background:var(--primary-pale);border:1px solid rgba(30,122,86,0.2);border-radius:8px;padding:12px;display:flex;align-items:center;justify-content:space-between;}
+.bulan-total span{font-size:12px;font-weight:600;color:var(--primary);}
+.bulan-total strong{font-size:18px;font-weight:700;color:var(--primary-bright);}
+.form-actions{display:flex;gap:10px;margin-top:16px;}
+.btn-save{padding:10px 24px;background:linear-gradient(135deg,var(--primary),var(--primary-bright));color:#fff;border:none;border-radius:9px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.btn-save:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(10,61,46,0.3);}
+.btn-cancel{padding:10px 20px;background:var(--cream);color:var(--text-light);border:1px solid var(--border);border-radius:9px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;cursor:pointer;}
+.tbl-panel{background:var(--white);border-radius:13px;border:1px solid var(--border);box-shadow:var(--shadow-sm);overflow:hidden;margin-bottom:16px;}
+.tbl-top{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px;}
+.tbl-top h3{font-size:13px;font-weight:700;color:var(--primary);}
+.tbl-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.btn-add{padding:7px 16px;background:var(--primary-bright);color:#fff;border:none;border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.search-box{padding:7px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;outline:none;width:180px;}
+.search-box:focus{border-color:var(--primary-bright);}
+table{width:100%;border-collapse:collapse;}
+th{padding:10px 14px;text-align:left;font-size:10px;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:0.5px;background:var(--cream);border-bottom:1px solid var(--border);}
+td{padding:11px 14px;font-size:12px;color:var(--text);border-bottom:1px solid var(--border);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(30,122,86,0.03);}
+.status-badge{padding:3px 9px;border-radius:20px;font-size:10px;font-weight:600;}
+.sb-lulus{background:var(--primary-pale);color:var(--primary-bright);}
+.sb-proses{background:var(--gold-pale);color:var(--gold);}
+.sb-aktif{background:var(--primary-pale);color:var(--primary-bright);}
+.sb-tidak{background:#fff0f0;color:var(--red);}
+.sb-hantar{background:var(--primary-pale);color:var(--primary-bright);}
+.sb-draf{background:var(--gold-pale);color:var(--gold);}
+.sb-belum{background:#fff0f0;color:var(--red);}
+.tbl-empty{text-align:center;padding:40px;color:var(--text-light);font-size:13px;}
+.btn-edit{padding:4px 10px;background:var(--blue-pale);color:var(--blue);border:none;border-radius:6px;font-size:11px;cursor:pointer;margin-right:4px;font-weight:600;}
+.btn-del{padding:4px 10px;background:#fff0f0;color:var(--red);border:none;border-radius:6px;font-size:11px;cursor:pointer;font-weight:600;}
+.btn-del:hover{background:var(--red);color:#fff;}
+.btn-edit:hover{background:var(--blue);color:#fff;}
+.kpi-header{background:linear-gradient(135deg,#061f17,#0a3d2e);border-radius:14px;padding:22px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;}
+.kpi-header h2{font-family:'Playfair Display',serif;font-size:20px;color:#fff;}
+.kpi-header p{font-size:11px;color:rgba(255,255,255,0.5);margin-top:3px;}
+.kpi-lock{background:rgba(200,146,26,0.2);border:1px solid var(--gold);color:var(--gold-light);font-size:11px;padding:5px 12px;border-radius:20px;font-weight:600;}
+.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;}
+.kpi-card{background:var(--white);border-radius:13px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow-sm);}
+.kpi-card-hdr{padding:14px 16px 10px;display:flex;align-items:center;gap:10px;}
+.kpi-av{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;}
+.kpi-av.r{background:linear-gradient(135deg,#e91e63,#f06292);color:#fff;}
+.kpi-av.j{background:linear-gradient(135deg,#1a6eb5,#5ba3e0);color:#fff;}
+.kpi-av.a{background:linear-gradient(135deg,#1e7a56,#3daa7a);color:#fff;}
+.kpi-nm{font-weight:700;font-size:13px;color:var(--text);}
+.kpi-tt{font-size:10px;color:var(--text-light);margin-top:1px;}
+.kpi-sc{margin-left:auto;text-align:right;}
+.kpi-sc .sc{font-size:20px;font-weight:700;}
+.sc-hi{color:var(--primary-bright);}.sc-mi{color:var(--gold);}.sc-lo{color:var(--red);}
+.kpi-bars{padding:0 16px 14px;}
+.kbar{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.kbar-lbl{font-size:10px;color:var(--text-light);width:85px;flex-shrink:0;}
+.kbar-track{flex:1;height:7px;background:var(--cream);border-radius:4px;overflow:hidden;}
+.kbar-fill{height:100%;border-radius:4px;}
+.kbar-val{font-size:10px;font-weight:600;color:var(--text);width:26px;text-align:right;}
+.ppk-laporan{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+.ppk-lcard{background:var(--white);border-radius:13px;padding:16px;border:1px solid var(--border);}
+.ppk-lcard h4{font-size:13px;font-weight:700;margin-bottom:12px;color:var(--text);}
+.ppk-lcard .rm{font-size:22px;font-weight:700;color:var(--primary-bright);}
+.ppk-lcard .sub{font-size:11px;color:var(--text-light);}
+.ppk-lcard.r-card{border-top:3px solid #e91e63;}
+.ppk-lcard.j-card{border-top:3px solid var(--blue);}
+.ppk-lcard.a-card{border-top:3px solid var(--primary-bright);}
+.status-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px;}
+.scard{background:var(--white);border-radius:11px;padding:12px;border:1px solid var(--border);}
+.scard-title{font-size:11px;font-weight:600;color:var(--text);margin-bottom:8px;}
+.srow{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;}
+.srow-name{font-size:10px;color:#3a5a44;}
+.sdot{width:8px;height:8px;border-radius:50%;}
+.sdot-g{background:var(--primary-light);}.sdot-o{background:var(--gold-light);}.sdot-r{background:#e74c3c;}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--primary);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:var(--shadow-lg);transform:translateY(80px);opacity:0;transition:all 0.3s;z-index:999;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.error{background:var(--red);}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:center;justify-content:center;}
+.modal-overlay.show{display:flex;}
+.modal-box{background:var(--white);border-radius:16px;padding:28px;width:420px;max-width:95vw;box-shadow:var(--shadow-lg);}
+.modal-box h3{font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.modal-box p{font-size:13px;color:var(--text-light);margin-bottom:20px;}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;}
+.btn-confirm-del{padding:10px 20px;background:var(--red);color:#fff;border:none;border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;}
+.btn-cancel-del{padding:10px 20px;background:var(--cream);color:var(--text);border:1px solid var(--border);border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;cursor:pointer;}
+@media(max-width:900px){
+  .sidebar{width:220px;}.main{margin-left:220px;}
+  .stats-grid{grid-template-columns:repeat(2,1fr);}
+  .units-grid{grid-template-columns:repeat(2,1fr);}
+  .kpi-grid,.ppk-laporan{grid-template-columns:1fr;}
+  .status-grid{grid-template-columns:repeat(3,1fr);}
+  .bulan-grid{grid-template-columns:repeat(2,1fr);}
+  .form-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <img src="data:image/jpeg;base64,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" alt="RISDA" />
+      <h1>i-Ris</h1>
+      <p>Pejabat RISDA Stesen Lundu</p>
+    </div>
+    <div class="form-group"><label>Username</label><input type="text" id="login-user" placeholder="Masukkan username" /></div>
+    <div class="form-group"><label>Password</label><input type="password" id="login-pass" placeholder="Masukkan password" /></div>
+    <div class="form-group"><label>Log Masuk Sebagai</label>
+      <select id="login-role"><option value="admin">Admin</option><option value="ketua">Ketua Stesen</option><option value="ppk">Penolong Pegawai Kawasan</option><option value="pegawai">Pegawai Daerah</option></select>
+    </div>
+    <button class="btn-login" onclick="doLogin()">🔐 Log Masuk</button>
+    <div class="login-error" id="login-err">Username atau password salah!</div>
+  </div>
+</div>
+
+<div id="app-screen">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <img class="logo-img" src="data:image/jpeg;base64,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" alt="RISDA" />
+      <div class="logo-text"><h1>i-Ris</h1><p>Pejabat RISDA Stesen Lundu</p></div>
+    </div>
+    <div class="sidebar-user">
+      <div class="user-avatar" id="sb-avatar">A</div>
+      <div class="user-info"><div class="uname" id="sb-name">Administrator</div><div class="urole" id="sb-role">Admin</div></div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-label">Utama</div>
+      <div class="nav-item active" onclick="showPage('dashboard',this)"><span class="icon">🏠</span><span class="label">Dashboard</span></div>
+      <div class="nav-label">Unit Program</div>
+      <div class="nav-item" onclick="showPage('tanam',this)"><span class="icon">🌿</span><span class="label">Tanam Semula &amp; Bekalan</span></div>
+      <div class="nav-item" onclick="showPage('produktiviti',this)"><span class="icon">🏪</span><span class="label">Produktiviti &amp; Pemasaran</span></div>
+      <div class="nav-item" onclick="showPage('pengembangan',this)"><span class="icon">📣</span><span class="label">Pengembangan</span></div>
+      <div class="nav-item" onclick="showPage('usahawan',this)"><span class="icon">💼</span><span class="label">Usahawan</span></div>
+      <div class="nav-item" onclick="showPage('programkhas',this)"><span class="icon">⭐</span><span class="label">Program Khas</span></div>
+      <div class="nav-label" id="kpi-label" style="display:none;">Pemantauan</div>
+      <div class="nav-item kpi-nav" id="kpi-nav" style="display:none;" onclick="showPage('kpi',this)"><span class="icon">🏆</span><span class="label">KPI PPK — Prestasi</span></div>
+      <div class="nav-label">Pengurusan</div>
+      <div class="nav-item" id="nav-kadar" style="display:none;" onclick="showPage('kadar',this)"><span class="icon">💹</span><span class="label">Kadar Ansuran</span></div>
+      <div class="nav-item" id="nav-users" onclick="showPage('users',this)"><span class="icon">👥</span><span class="label">Urus Pengguna</span></div>
+    </nav>
+    <div class="sidebar-footer"><button class="btn-logout" onclick="doLogout()">🚪 Log Keluar</button></div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-left"><h2 id="page-title">Dashboard Utama</h2><p id="page-sub">Paparan keseluruhan sistem i-Ris</p></div>
+      <div class="topbar-right">
+        <div class="sync-badge"><div class="dot"></div><span id="sync-status">Menyambung...</span></div>
+        <div class="date-badge" id="datebadge">📅 —</div>
+      </div>
+    </div>
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div class="page active" id="pg-dashboard">
+        <div class="stats-grid">
+          <div class="stat-card c1"><div class="stat-top"><div class="stat-icon si1">🌿</div></div><div class="stat-num" id="st-tanam">—</div><div class="stat-lbl">Pekebun Tanam Semula</div></div>
+          <div class="stat-card c2"><div class="stat-top"><div class="stat-icon si2">🌳</div></div><div class="stat-num" id="st-pgt">—</div><div class="stat-lbl">Peserta PGT</div></div>
+          <div class="stat-card c3"><div class="stat-top"><div class="stat-icon si3">💼</div></div><div class="stat-num" id="st-usahawan">—</div><div class="stat-lbl">Usahawan AET</div></div>
+          <div class="stat-card c4"><div class="stat-top"><div class="stat-icon si4">⭐</div></div><div class="stat-num" id="st-program">—</div><div class="stat-lbl">Program Khas</div></div>
+        </div>
+        <div class="section-hdr">5 Unit Program</div>
+        <div class="units-grid">
+          <div class="ucard u1" onclick="showPage('tanam',null)"><div class="ucard-hdr"><div class="uicon">🌿</div><div><div class="uname">Tanam Semula &amp; Bekalan</div><div class="usub">Getah</div></div></div><div class="ppk-row"><span class="ppk-chip chip-r">Rozaimah</span><span class="ppk-chip chip-j">Jude Hyden</span><span class="ppk-chip chip-a">Armizi</span></div><button class="ubtn">📋 Lihat Rekod →</button></div>
+          <div class="ucard u2" onclick="showPage('produktiviti',null)"><div class="ucard-hdr"><div class="uicon">🏪</div><div><div class="uname">Produktiviti &amp; Pemasaran</div><div class="usub">PGT — Jualan Getah Bulanan</div></div></div><div class="ppk-row"><span class="ppk-chip chip-r">Rozaimah</span><span class="ppk-chip chip-j">Jude Hyden</span><span class="ppk-chip chip-a">Armizi</span></div><button class="ubtn">📋 Lihat Rekod →</button></div>
+          <div class="ucard u3" onclick="showPage('pengembangan',null)"><div class="ucard-hdr"><div class="uicon">📣</div><div><div class="uname">Pengembangan</div><div class="usub">Aktiviti &amp; Peserta</div></div></div><div class="ppk-row"><span class="ppk-chip chip-r">Rozaimah</span><span class="ppk-chip chip-j">Jude Hyden</span><span class="ppk-chip chip-a">Armizi</span></div><button class="ubtn">📋 Lihat Rekod →</button></div>
+          <div class="ucard u4" onclick="showPage('usahawan',null)"><div class="ucard-hdr"><div class="uicon">💼</div><div><div class="uname">Usahawan</div><div class="usub">AET — Pendapatan Bulanan</div></div></div><div class="ppk-row"><span class="ppk-chip chip-r">Rozaimah</span><span class="ppk-chip chip-j">Jude Hyden</span><span class="ppk-chip chip-a">Armizi</span></div><button class="ubtn">📋 Lihat Rekod →</button></div>
+          <div class="ucard u5" onclick="showPage('programkhas',null)"><div class="ucard-hdr"><div class="uicon">⭐</div><div><div class="uname">Program Khas</div><div class="usub">Pelaksanaan &amp; Status</div></div></div><div class="ppk-row"><span class="ppk-chip chip-r">Rozaimah</span><span class="ppk-chip chip-j">Jude Hyden</span><span class="ppk-chip chip-a">Armizi</span></div><button class="ubtn">📋 Lihat Rekod →</button></div>
+        </div>
+      </div>
+
+      <!-- TANAM SEMULA V2 -->
+      <div class="page" id="pg-tanam">
+
+        <!-- Tab Utama: Semasa / Berturut / Laporan -->
+        <div class="ts-tab-bar">
+          <button class="ts-tab semasa active" onclick="switchTSTab('semasa',this)">🟢 Semasa (2026) <span class="ts-badge badge-semasa" id="badge-semasa">0</span></button>
+          <button class="ts-tab berturut" onclick="switchTSTab('berturut',this)">🔵 Berturut (2025 ke bawah) <span class="ts-badge badge-berturut" id="badge-berturut">0</span></button>
+          <button class="ts-tab" onclick="switchTSTab('kewangan',this)">💰 Laporan Kewangan</button>
+          <button class="ts-tab" onclick="switchTSTab('laporan-ts',this)">📊 Laporan PPK</button>
+        </div>
+
+        <!-- ===== SEMASA ===== -->
+        <div id="ts-semasa">
+          <div class="ts-sub-tab-bar">
+            <button class="ts-sub-tab active" onclick="switchTSSubTab('semasa-senarai',this)">📋 Senarai Pekebun</button>
+            <button class="ts-sub-tab" onclick="switchTSSubTab('semasa-bantuan',this)">💰 Bahagian B — Bantuan</button>
+          </div>
+
+          <!-- Bahagian A: Senarai -->
+          <div id="semasa-senarai">
+            <div class="tbl-panel">
+              <div class="tbl-top">
+                <h3>🌿 Pekebun Semasa 2026</h3>
+                <div class="tbl-actions">
+                  <input class="search-box" placeholder="🔍 Cari nama/IC..." oninput="filterTable('tbl-tanam-semasa',this.value)" />
+                  <button class="btn-add" onclick="openFormTanam('semasa')">+ Tambah Pekebun</button>
+                </div>
+              </div>
+              <div style="overflow-x:auto;">
+                <table id="tbl-tanam-semasa">
+                  <thead><tr><th>Nama</th><th>No. IC</th><th>No. Lot</th><th>Luas (ha)</th><th>TSB/Kategori</th><th>Status</th><th>PPK</th><th>Lawatan</th><th style="background:#e8f7f0;color:#1e7a56;">Kadar (RM/ha)</th><th style="background:#e8f7f0;color:#1e7a56;">Jum. Bantuan (RM)</th><th style="background:#e8f7f0;color:#1e7a56;">Baki Tunai (RM)</th><th>Tindakan</th></tr></thead>
+                  <tbody id="tbody-tanam-semasa"><tr><td colspan="12" class="tbl-empty">⏳ Memuatkan...</td></tr></tbody>
+                </table>
+              </div>
+              <div class="pagination" id="pg-semasa"></div>
+            </div>
+          </div>
+
+          <!-- Bahagian B: Bantuan (bila Lulus) -->
+          <div id="semasa-bantuan" style="display:none;">
+            <div class="tbl-panel">
+              <div class="tbl-top">
+                <h3>💰 Bahagian B — Ansuran & Bantuan Input Pertanian</h3>
+                <div class="tbl-actions">
+                  <input class="search-box" placeholder="🔍 Cari nama..." oninput="filterTable('tbl-bantuan',this.value)" />
+                </div>
+              </div>
+              <div style="overflow-x:auto;">
+                <table id="tbl-bantuan">
+                  <thead><tr><th>Nama</th><th>No. Lot</th><th>Luas (ha)</th><th>Ansuran 1 (RM)</th><th>Bil Baja RP</th><th>Bil Baja R1</th><th>Bil Benih</th><th>Jumlah Bantuan (RM)</th><th>Status Lawatan</th><th>Tarikh Lawatan</th><th>Tindakan</th></tr></thead>
+                  <tbody id="tbody-bantuan"><tr><td colspan="11" class="tbl-empty">⏳ Memuatkan...</td></tr></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== BERTURUT ===== -->
+        <div id="ts-berturut" style="display:none;">
+          <div class="tbl-panel">
+            <div class="tbl-top">
+              <h3>🔵 Pekebun Berturut (2025 ke bawah)</h3>
+              <div class="tbl-actions">
+                <input class="search-box" placeholder="🔍 Cari nama/IC..." oninput="filterTable('tbl-tanam-berturut',this.value)" />
+                <button class="btn-add" onclick="openFormTanam('berturut')">+ Tambah Pekebun</button>
+              </div>
+            </div>
+            <div style="overflow-x:auto;">
+              <table id="tbl-tanam-berturut">
+                <thead><tr><th>Nama</th><th>No. IC</th><th>No. Lot</th><th>Luas (ha)</th><th>TSB/Kategori</th><th>Ansuran</th><th>Status Kebun</th><th>PPK</th><th>Lawatan</th><th style="background:#e8f2ff;color:#1a6eb5;">Kadar (RM/ha)</th><th style="background:#e8f2ff;color:#1a6eb5;">Jum. Bantuan (RM)</th><th style="background:#e8f2ff;color:#1a6eb5;">Baki Tunai (RM)</th><th>Tindakan</th></tr></thead>
+                <tbody id="tbody-tanam-berturut"><tr><td colspan="13" class="tbl-empty">⏳ Memuatkan...</td></tr></tbody>
+              </table>
+            </div>
+            <div class="pagination" id="pg-berturut"></div>
+          </div>
+        </div>
+
+        <!-- ===== LAPORAN KEWANGAN ===== -->
+        <div id="ts-kewangan" style="display:none;">
+          <!-- Summary cards -->
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;" id="kew-summary-cards"></div>
+
+          <!-- Filter -->
+          <div style="background:var(--white);border-radius:12px;padding:14px;border:1px solid var(--border);margin-bottom:14px;display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+            <div class="fg"><label style="font-size:11px;font-weight:600;text-transform:uppercase;">PPK</label>
+              <select id="kew-filter-ppk" style="padding:8px 11px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;background:var(--cream);outline:none;" onchange="renderKewangan()">
+                <option value="semua">Semua PPK</option>
+                <option>Rozaimah</option><option>Jude Hyden</option><option>Armizi</option>
+              </select>
+            </div>
+            <div class="fg"><label style="font-size:11px;font-weight:600;text-transform:uppercase;">Jenis</label>
+              <select id="kew-filter-jenis" style="padding:8px 11px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;background:var(--cream);outline:none;" onchange="renderKewangan()">
+                <option value="semua">Semua</option>
+                <option value="semasa">Semasa 2026</option>
+                <option value="berturut">Berturut</option>
+              </select>
+            </div>
+            <div class="fg"><label style="font-size:11px;font-weight:600;text-transform:uppercase;">Ansuran</label>
+              <select id="kew-filter-ansuran" style="padding:8px 11px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;background:var(--cream);outline:none;" onchange="renderKewangan()">
+                <option value="semua">Semua Ansuran</option>
+                <option value="1">Ansuran 1</option><option value="2">Ansuran 2</option>
+                <option value="3">Ansuran 3</option><option value="4">Ansuran 4</option><option value="5">Ansuran 5</option>
+              </select>
+            </div>
+            <button onclick="exportKewanganExcel()" style="padding:9px 16px;background:#1a6eb5;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;">📊 Export Excel</button>
+            <button onclick="exportKewanganPDF()" style="padding:9px 16px;background:#c0392b;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;">📄 Export PDF</button>
+          </div>
+
+          <!-- Peruntukan by Ansuran -->
+          <div class="tbl-panel" style="margin-bottom:14px;">
+            <div class="tbl-top"><h3>📋 Ringkasan Peruntukan by Ansuran & PPK</h3></div>
+            <div style="overflow-x:auto;"><table id="tbl-kew-ringkasan">
+              <thead><tr><th>Ansuran</th><th>Kadar</th><th>Rozaimah</th><th>Jude Hyden</th><th>Armizi</th><th>Jumlah Pekebun</th><th>Jumlah Luas (ha)</th><th style="background:#e8f7f0;color:#1e7a56;">Jumlah Bantuan (RM)</th></tr></thead>
+              <tbody id="tbody-kew-ringkasan"></tbody>
+            </table></div>
+          </div>
+
+          <!-- Detail per pekebun -->
+          <div class="tbl-panel">
+            <div class="tbl-top">
+              <h3>👤 Detail Bantuan Per Pekebun</h3>
+              <input class="search-box" placeholder="🔍 Cari nama..." oninput="filterTable('tbl-kew-detail',this.value)" />
+            </div>
+            <div style="overflow-x:auto;"><table id="tbl-kew-detail">
+              <thead><tr>
+                <th>Nama</th><th>No. Lot</th><th>PPK</th><th>TSB/Kategori</th>
+                <th>Luas (ha)</th><th>Ansuran</th><th>Versi Kadar</th>
+                <th style="background:#e8f7f0;color:#1e7a56;">Kadar (RM/ha)</th>
+                <th style="background:#e8f7f0;color:#1e7a56;">Jum. Bantuan (RM)</th>
+                <th style="background:#fff5e6;color:#c8921a;">Baki Tunai (RM)</th>
+              </tr></thead>
+              <tbody id="tbody-kew-detail"></tbody>
+            </table></div>
+          </div>
+        </div>
+
+        <!-- ===== LAPORAN PPK ===== -->
+        <div id="ts-laporan-ts" style="display:none;">
+          <div style="background:linear-gradient(135deg,#061f17,#0a3d2e);border-radius:14px;padding:20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;">
+            <div><h2 style="font-family:'Playfair Display',serif;font-size:18px;color:#fff;">📊 Laporan Tanam Semula — By PPK</h2><p style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:3px;">Semasa & Berturut • Semua Kumpulan</p></div>
+            <button class="btn-export-excel" onclick="exportTanamExcel()" style="padding:9px 16px;background:#1a6eb5;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;">📊 Export Excel</button>
+          </div>
+
+          <!-- Summary cards -->
+          <div class="lap-ts-grid" id="lap-ts-cards"></div>
+
+          <!-- Table Perbandingan PPK -->
+          <div class="tbl-panel">
+            <div class="tbl-top"><h3>📋 Perbandingan PPK — Keseluruhan</h3></div>
+            <div style="overflow-x:auto;">
+              <table id="tbl-lap-ts-ppk">
+                <thead>
+                  <tr style="background:var(--primary);color:#fff;">
+                    <th style="color:#fff;">PPK</th>
+                    <th style="color:#fff;">Jumlah Pekebun</th>
+                    <th style="color:#fff;">Semasa</th>
+                    <th style="color:#fff;">Berturut</th>
+                    <th style="color:#fff;">Luas (ha)</th>
+                    <th style="color:#fff;">Sudah Dilawati</th>
+                    <th style="color:#fff;">Belum Dilawati</th>
+                    <th style="color:#fff;">% Lawatan</th>
+                    <th style="color:#fff;">Jumlah Bantuan (RM)</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-lap-ts-ppk"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Table by Kumpulan -->
+          <div class="tbl-panel" style="margin-top:12px;">
+            <div class="tbl-top"><h3>📂 Pecahan by Kumpulan</h3></div>
+            <div style="overflow-x:auto;">
+              <table id="tbl-lap-ts-kumpulan">
+                <thead><tr><th>Kumpulan</th><th>Bil Lot</th><th>Luas (ha)</th><th>Sudah Dilawati</th><th>Belum Dilawati</th><th>Baki Ansuran</th></tr></thead>
+                <tbody id="tbody-lap-ts-kumpulan"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== FORM TAMBAH/EDIT ===== -->
+        <div id="form-tanam" style="display:none;">
+          <div class="form-panel">
+            <h3 id="form-tanam-title">📝 Tambah Pekebun Semasa</h3>
+            <input type="hidden" id="ft-id" />
+            <input type="hidden" id="ft-jenis-tanam" value="semasa" />
+
+            <div class="form-section-title">👤 Maklumat Pekebun</div>
+            <div class="form-grid">
+              <div class="fg"><label>Nama Penuh</label><input id="ft-nama" placeholder="Nama penuh pekebun" /></div>
+              <div class="fg"><label>No. IC</label><input id="ft-ic" placeholder="XXXXXX-XX-XXXX" /></div>
+              <div class="fg"><label>Jantina</label><select id="ft-jantina"><option value="">— Pilih —</option><option>Lelaki</option><option>Perempuan</option></select></div>
+              <div class="fg"><label>No. Telefon</label><input id="ft-tel" placeholder="01X-XXXXXXX" /></div>
+              <div class="fg"><label>Kampung</label><input id="ft-kampung" placeholder="Nama kampung" /></div>
+              <div class="fg full"><label>Alamat</label><input id="ft-alamat" placeholder="Alamat penuh" /></div>
+            </div>
+
+            <div class="form-section-title">🌿 Maklumat Kebun</div>
+            <div class="form-grid">
+              <div class="fg"><label>No. Lot</label><input id="ft-lot" placeholder="No. Lot" /></div>
+              <div class="fg"><label>No. Geran</label><input id="ft-geran" placeholder="No. Geran" /></div>
+              <div class="fg"><label>Luas Kebun (hektar)</label><input id="ft-luas" type="number" step="0.01" placeholder="0.00" oninput="calcBantuan()" /></div>
+              <div class="fg"><label>Mukim</label><input id="ft-mukim" placeholder="Mukim" /></div>
+              <div class="fg"><label>DUN</label><input id="ft-dun" placeholder="DUN" /></div>
+              <div class="fg"><label>Parlimen</label><input id="ft-parlimen" placeholder="Parlimen" /></div>
+              <div class="fg"><label>Kategori</label>
+                <select id="ft-kumpulan-pilih" onchange="toggleKategoriInput(this)" style="padding:9px 11px;border:1.5px solid var(--border);border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--text);background:var(--cream);outline:none;width:100%;margin-bottom:6px;">
+                  <option value="">— Pilih —</option>
+                  <option value="TSB">TSB (Tanam Semula Berkelompok)</option>
+                  <option value="Individu (TSI)">Individu (TSI)</option>
+                  <option value="lain">✏️ Tulis sendiri...</option>
+                </select>
+                <input id="ft-kumpulan" placeholder="Tulis kategori..." style="padding:9px 11px;border:1.5px solid var(--border);border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--text);background:var(--cream);outline:none;width:100%;display:none;" />
+              </div>
+              <div class="fg"><label>Status Permohonan</label><select id="ft-status-permohonan" onchange="toggleBahagianB()"><option value="">— Pilih —</option><option>Dalam Proses</option><option>Lulus</option><option>Ditolak</option></select></div>
+              <div class="fg" id="fg-status-kebun" style="display:none;"><label>Status Kebun</label><select id="ft-status-kebun"><option value="">— Pilih —</option><option>Kebun Bersih</option><option>Tertahan</option></select></div>
+            </div>
+
+            <div class="form-section-title">📋 Pengurusan</div>
+            <div class="form-grid">
+              <div class="fg"><label>Nama PPK</label><select id="ft-ppk"><option value="">— Pilih —</option><option>Rozaimah</option><option>Jude Hyden</option><option>Armizi</option></select></div>
+              <div class="fg"><label>Status Lawatan</label><select id="ft-lawatan"><option value="">— Pilih —</option><option>Sudah Dilawati</option><option>Belum Dilawati</option></select></div>
+              <div class="fg"><label>Tarikh Lawatan</label><input id="ft-tarikh-lawatan" type="date" /></div>
+              <div class="fg" id="fg-ansuran"><label>Ansuran Ke-</label><select id="ft-ansuran"><option value="">— Pilih —</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+            </div>
+
+            <!-- Bahagian B: Auto-Generate Kadar -->
+            <div id="bahagian-b" style="display:none;">
+              <div class="form-section-title">💰 Bahagian B — Pengiraan Kadar Ansuran</div>
+
+              <!-- Auto-generate button -->
+              <div style="background:var(--primary-pale);border:1px solid rgba(30,122,86,0.2);border-radius:10px;padding:14px;margin-bottom:14px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+                  <div>
+                    <div style="font-size:13px;font-weight:700;color:var(--primary);">🔄 Auto-Generate Kadar</div>
+                    <div style="font-size:11px;color:var(--text-light);margin-top:2px;">Kira automatik berdasarkan luas hektar × kadar ansuran</div>
+                  </div>
+                  <button type="button" onclick="autoGenerateKadar()" style="padding:9px 18px;background:var(--primary-bright);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">⚡ Jana Kadar</button>
+                </div>
+              </div>
+
+              <!-- Breakdown table -->
+              <div id="bb-breakdown-wrap" style="display:none;">
+                <div style="overflow-x:auto;">
+                  <table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:12px;">
+                    <thead>
+                      <tr style="background:var(--primary);color:#fff;">
+                        <th style="padding:8px 12px;text-align:left;">Bil</th>
+                        <th style="padding:8px 12px;text-align:left;">Perkara / Jenis Kerja</th>
+                        <th style="padding:8px 12px;text-align:left;">Kuantiti/Unit</th>
+                        <th style="padding:8px 12px;text-align:right;">RM/Unit</th>
+                        <th style="padding:8px 12px;text-align:right;">Jumlah Kos (RM)</th>
+                      </tr>
+                    </thead>
+                    <tbody id="bb-breakdown-body"></tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Summary box -->
+              <div class="bantuan-box">
+                <div class="bb-title">💰 Ringkasan Pengiraan</div>
+                <div class="bantuan-row"><span>Versi Kadar</span><strong id="bb-versi-kadar" style="color:var(--primary);">—</strong></div>
+                <div class="bantuan-row"><span>Luas Kebun</span><strong id="bb-luas-kebun">— ha</strong></div>
+                <div class="bantuan-row"><span>Ansuran</span><strong id="bb-ansuran-ke">—</strong></div>
+                <div class="bantuan-row"><span>Kadar Sehektar</span><strong id="bb-kadar-ha">RM —</strong></div>
+                <div class="bantuan-row"><span>Jumlah Kos Input</span><strong id="bb-kos-input">RM 0.00</strong></div>
+                <div class="bantuan-total"><span>Baki Tunai Pekebun</span><strong id="bb-total" style="color:var(--primary-bright);">RM 0.00</strong></div>
+                <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(30,122,86,0.2);">
+                  <div style="font-size:11px;color:var(--text-light);margin-bottom:5px;">Jumlah Bantuan (boleh override manual):</div>
+                  <input id="ft-jumlah-bantuan" type="number" step="0.01" placeholder="0.00"
+                    style="padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-weight:700;width:180px;outline:none;"
+                    oninput="document.getElementById('bb-total').textContent='RM '+(parseFloat(this.value)||0).toFixed(2)" />
+                </div>
+              </div>
+
+              <!-- Hidden fields lama untuk compatibility -->
+              <input type="hidden" id="ft-ansuran1" value="0"/>
+              <input type="hidden" id="ft-baja-rp" value="0"/>
+              <input type="hidden" id="ft-baja-r1" value="0"/>
+              <input type="hidden" id="ft-benih" value="0"/>
+            </div>
+
+            <div class="form-actions">
+              <button class="btn-save" onclick="saveTanam()">💾 Simpan</button>
+              <button class="btn-cancel" onclick="hideForm('form-tanam')">Batal</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- PRODUKTIVITI -->
+      <div class="page" id="pg-produktiviti">
+        <div class="tab-bar">
+          <button class="tab-btn active" onclick="switchPGTTab('pgt-list',this)">📋 Senarai Peserta PGT</button>
+          <button class="tab-btn" onclick="switchPGTTab('pgt-laporan',this)">📊 Laporan PPK</button>
+        </div>
+        <div id="pgt-list">
+          <div class="tbl-panel">
+            <div class="tbl-top">
+              <h3>🌳 Peserta Program Getah Matang (PGT)</h3>
+              <div class="tbl-actions">
+                <input class="search-box" placeholder="🔍 Cari nama/IC..." oninput="filterTable('tbl-pgt',this.value)" />
+                <button class="btn-add" onclick="showForm('form-pgt');clearForm('fp')">+ Tambah Peserta</button>
+              </div>
+            </div>
+            <div style="overflow-x:auto;">
+              <table id="tbl-pgt">
+                <thead><tr><th>Nama</th><th>No. IC</th><th>No. Lot</th><th>Luas (ha)</th><th>Jenis</th><th>PPK</th><th>Status</th><th>Jumlah (RM)</th><th>Tindakan</th></tr></thead>
+                <tbody id="tbody-pgt"><tr><td colspan="9" class="tbl-empty">⏳ Memuatkan data...</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div id="pgt-laporan" style="display:none;">
+          <div class="section-hdr">Laporan Jumlah Hasil Jualan Getah By PPK</div>
+          <div class="ppk-laporan">
+            <div class="ppk-lcard r-card"><h4>🔴 Rozaimah</h4><div class="rm" id="lap-r-rm">RM 0</div><div class="sub" id="lap-r-sub">0 peserta</div></div>
+            <div class="ppk-lcard j-card"><h4>🔵 Jude Hyden</h4><div class="rm" id="lap-j-rm">RM 0</div><div class="sub" id="lap-j-sub">0 peserta</div></div>
+            <div class="ppk-lcard a-card"><h4>🟢 Armizi</h4><div class="rm" id="lap-a-rm">RM 0</div><div class="sub" id="lap-a-sub">0 peserta</div></div>
+          </div>
+          <div class="tbl-panel">
+            <table>
+              <thead><tr><th>PPK</th><th>Bil</th><th>Luas (ha)</th><th>Jan</th><th>Feb</th><th>Mac</th><th>Apr</th><th>Mei</th><th>Jun</th><th>Jul</th><th>Ogos</th><th>Sep</th><th>Okt</th><th>Nov</th><th>Dis</th><th>JUMLAH</th></tr></thead>
+              <tbody id="tbody-laporan-pgt"></tbody>
+            </table>
+          </div>
+        </div>
+        <div id="form-pgt" style="display:none;">
+          <div class="form-panel">
+            <h3 id="form-pgt-title">📝 Tambah Peserta PGT</h3>
+            <input type="hidden" id="fp-id" />
+            <div class="form-grid">
+              <div class="fg"><label>Nama Penuh</label><input id="fp-nama" placeholder="Nama peserta" /></div>
+              <div class="fg"><label>No. IC</label><input id="fp-ic" placeholder="XXXXXX-XX-XXXX" /></div>
+              <div class="fg"><label>No. Lot</label><input id="fp-lot" placeholder="No. Lot" /></div>
+              <div class="fg"><label>Luas (ha)</label><input id="fp-luas" type="number" step="0.0001" placeholder="0.0000" /></div>
+              <div class="fg"><label>Jenis Hasil</label><select id="fp-jenis"><option value="">— Pilih —</option><option>Skrap</option><option>Lateks</option><option>Skrap &amp; Lateks</option></select></div>
+              <div class="fg"><label>Status</label><select id="fp-status"><option value="">— Pilih —</option><option>Lulus</option><option>Dalam Proses</option><option>Lawatan Kebun</option></select></div>
+              <div class="fg"><label>Nama PPK</label><select id="fp-ppk"><option value="">— Pilih —</option><option>Rozaimah</option><option>Jude Hyden</option><option>Armizi</option></select></div>
+            </div>
+            <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border);">
+              <div style="font-size:12px;font-weight:700;color:var(--primary);margin-bottom:10px;">💰 Jualan Getah Bulanan (RM)</div>
+              <div class="bulan-grid">
+                <div class="bulan-item"><label>Januari</label><input type="number" id="fp-jan" placeholder="0.00" oninput="calcTotalPGT()" /></div>
+                <div class="bulan-item"><label>Februari</label><input type="number" id="fp-feb" placeholder="0.00" oninput="calcTotalPGT()" /></div>
+                <div class="bulan-item"><label>Mac</label><input type="number" id="fp-mac" placeholder="0.00" oninput="calcTotalPGT()" /></div>
+                <div class="bulan-item"><label>April</label><input type="number" id="fp-apr" placeholder="0.00" oninput="calcTotalPGT()" /></div>
+                <div class="bulan-item"><label>Mei</label><input type="number" id="fp-mei" placeholder="0.00" oninput="calcTotalPGT()" /></div>
+                <div class="bulan-item"><label>Jun</label><input type="number" id="fp-jun" placeholder="0.00" oninput="calcTotalPGT()" /></div>
+                <div class="bulan-item"><label>Julai</label><input type="number" id="fp-jul" placeholder="0.00" oninput="calcTotalPGT()" /></div>
+                <div class="bulan-item"><label>Ogos</label><input type="number" id="fp-ogos" placeholder="0.00" oninput="calcTotalPGT()" /></div>
+                <div class="bulan-item"><label>September</label><input type="number" id="fp-sep" placeholder="0.00" oninput="calcTotalPGT()" /></div>
+                <div class="bulan-item"><label>Oktober</label><input type="number" id="fp-okt" placeholder="0.00" oninput="calcTotalPGT()" /></div>
+                <div class="bulan-item"><label>November</label><input type="number" id="fp-nov" placeholder="0.00" oninput="calcTotalPGT()" /></div>
+                <div class="bulan-item"><label>Disember</label><input type="number" id="fp-dis" placeholder="0.00" oninput="calcTotalPGT()" /></div>
+                <div class="bulan-total"><span>💰 Jumlah Setahun</span><strong id="fp-total">RM 0.00</strong></div>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button class="btn-save" onclick="savePGT()">💾 Simpan</button>
+              <button class="btn-cancel" onclick="hideForm('form-pgt')">Batal</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PENGEMBANGAN -->
+      <div class="page" id="pg-pengembangan">
+        <div class="tbl-panel">
+          <div class="tbl-top">
+            <h3>📣 Rekod Aktiviti — Pengembangan</h3>
+            <div class="tbl-actions">
+              <input class="search-box" placeholder="🔍 Cari aktiviti..." oninput="filterTable('tbl-peng',this.value)" />
+              <button class="btn-add" onclick="showForm('form-peng');clearForm('fpe')">+ Tambah Aktiviti</button>
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table id="tbl-peng">
+              <thead><tr><th>Nama Aktiviti</th><th>Tarikh</th><th>Lokasi</th><th>Peserta</th><th>PPK</th><th>Status</th><th>Tindakan</th></tr></thead>
+              <tbody id="tbody-peng"><tr><td colspan="7" class="tbl-empty">⏳ Memuatkan data...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+        <div id="form-peng" style="display:none;">
+          <div class="form-panel">
+            <h3 id="form-peng-title">📝 Tambah Aktiviti Pengembangan</h3>
+            <input type="hidden" id="fpe-id" />
+            <div class="form-grid">
+              <div class="fg"><label>Nama Aktiviti</label><input id="fpe-nama" placeholder="Nama aktiviti" /></div>
+              <div class="fg"><label>Tarikh Aktiviti</label><input id="fpe-tarikh" type="date" /></div>
+              <div class="fg full"><label>Lokasi/Tempat</label><input id="fpe-lokasi" placeholder="Lokasi program" /></div>
+              <div class="fg"><label>Bilangan Peserta</label><input id="fpe-peserta" type="number" placeholder="0" /></div>
+              <div class="fg"><label>Nama PPK</label><select id="fpe-ppk"><option value="">— Pilih —</option><option>Rozaimah</option><option>Jude Hyden</option><option>Armizi</option></select></div>
+              <div class="fg"><label>Status Laporan</label><select id="fpe-status"><option value="">— Pilih —</option><option>Draf</option><option>Dihantar</option><option>Disahkan</option></select></div>
+              <div class="fg full"><label>Laporan Program</label><textarea id="fpe-laporan" placeholder="Ringkasan laporan..."></textarea></div>
+            </div>
+            <div class="form-actions">
+              <button class="btn-save" onclick="savePeng()">💾 Simpan</button>
+              <button class="btn-cancel" onclick="hideForm('form-peng')">Batal</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- USAHAWAN -->
+      <div class="page" id="pg-usahawan">
+        <div class="tbl-panel">
+          <div class="tbl-top">
+            <h3>💼 Senarai Usahawan AET</h3>
+            <div class="tbl-actions">
+              <input class="search-box" placeholder="🔍 Cari nama..." oninput="filterTable('tbl-usa',this.value)" />
+              <button class="btn-add" onclick="showForm('form-usa');clearForm('fu')">+ Tambah Usahawan</button>
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table id="tbl-usa">
+              <thead><tr><th>Nama</th><th>No. IC</th><th>Projek</th><th>Kampung</th><th>PPK</th><th>Status</th><th>Tindakan</th></tr></thead>
+              <tbody id="tbody-usa"><tr><td colspan="7" class="tbl-empty">⏳ Memuatkan data...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+        <div id="form-usa" style="display:none;">
+          <div class="form-panel">
+            <h3 id="form-usa-title">📝 Tambah Usahawan AET</h3>
+            <input type="hidden" id="fu-id" />
+            <div class="form-grid">
+              <div class="fg"><label>Nama</label><input id="fu-nama" placeholder="Nama usahawan" /></div>
+              <div class="fg"><label>No. IC</label><input id="fu-ic" placeholder="XXXXXX-XX-XXXX" /></div>
+              <div class="fg"><label>No. Telefon</label><input id="fu-tel" placeholder="01X-XXXXXXX" /></div>
+              <div class="fg full"><label>Alamat/Kampung</label><input id="fu-alamat" placeholder="Alamat penuh" /></div>
+              <div class="fg"><label>Jenis Projek/Perniagaan</label><input id="fu-jenis" placeholder="cth: Keropok Ikan" /></div>
+              <div class="fg"><label>Status</label><select id="fu-status"><option value="">— Pilih —</option><option>Aktif /SIC</option><option>Aktif /PEKEBUN KECIL</option><option>Tidak Aktif</option></select></div>
+              <div class="fg"><label>Nama PPK</label><select id="fu-ppk"><option value="">— Pilih —</option><option>Rozaimah</option><option>Jude Hyden</option><option>Armizi</option></select></div>
+            </div>
+            <div class="form-actions">
+              <button class="btn-save" onclick="saveUsa()">💾 Simpan</button>
+              <button class="btn-cancel" onclick="hideForm('form-usa')">Batal</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROGRAM KHAS -->
+      <div class="page" id="pg-programkhas">
+        <div class="tbl-panel">
+          <div class="tbl-top">
+            <h3>⭐ Senarai Program Khas</h3>
+            <div class="tbl-actions">
+              <input class="search-box" placeholder="🔍 Cari program..." oninput="filterTable('tbl-prog',this.value)" />
+              <button class="btn-add" onclick="showForm('form-prog');clearForm('fpg')">+ Tambah Program</button>
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table id="tbl-prog">
+              <thead><tr><th>Nama Program</th><th>Tarikh Mula</th><th>Tarikh Tamat</th><th>Lokasi</th><th>PPK</th><th>Status</th><th>Tindakan</th></tr></thead>
+              <tbody id="tbody-prog"><tr><td colspan="7" class="tbl-empty">⏳ Memuatkan data...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+        <div id="form-prog" style="display:none;">
+          <div class="form-panel">
+            <h3 id="form-prog-title">📝 Tambah Program Khas</h3>
+            <input type="hidden" id="fpg-id" />
+            <div class="form-grid">
+              <div class="fg full"><label>Nama Program</label><input id="fpg-nama" placeholder="Nama program" /></div>
+              <div class="fg"><label>Tarikh Mula</label><input id="fpg-mula" type="date" /></div>
+              <div class="fg"><label>Tarikh Tamat</label><input id="fpg-tamat" type="date" /></div>
+              <div class="fg full"><label>Lokasi Program</label><input id="fpg-lokasi" placeholder="Lokasi" /></div>
+              <div class="fg full"><label>Spesifikasi / Kenyataan</label><textarea id="fpg-spesifikasi" placeholder="Huraian program..."></textarea></div>
+              <div class="fg"><label>Status</label><select id="fpg-status"><option value="">— Pilih —</option><option>Dalam Perancangan</option><option>Sedang Berjalan</option><option>Ditangguhkan</option><option>Dibatalkan</option><option>Selesai</option></select></div>
+              <div class="fg"><label>Nama PPK</label><select id="fpg-ppk"><option value="">— Pilih —</option><option>Rozaimah</option><option>Jude Hyden</option><option>Armizi</option></select></div>
+            </div>
+            <div class="form-actions">
+              <button class="btn-save" onclick="saveProg()">💾 Simpan</button>
+              <button class="btn-cancel" onclick="hideForm('form-prog')">Batal</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI -->
+      <div class="page" id="pg-kpi">
+        <div class="kpi-header">
+          <div><h2>🏆 Dashboard KPI PPK</h2><p>Pemantauan prestasi — Rozaimah • Jude Hyden • Armizi</p></div>
+          <div class="kpi-lock">🔒 Ketua Stesen Sahaja</div>
+        </div>
+
+        <!-- KPI 100 Hektar -->
+        <div class="kpi-hektar-box">
+          <div>
+            <h3>🎯 KPI Tanam Semula Semasa — 100 Hektar</h3>
+            <p>Hanya mengira pekebun Semasa (Ansuran 1) tahun semasa</p>
+          </div>
+          <div class="kpi-hektar-meter">
+            <div><span class="num" id="kpi-hektar-val">0</span><span class="denom"> / 100 ha</span></div>
+            <div class="kpi-hektar-track"><div class="kpi-hektar-fill" id="kpi-hektar-fill" style="width:0%;"></div></div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.5);margin-top:4px;" id="kpi-hektar-pct">0% daripada sasaran</div>
+          </div>
+        </div>
+
+        <!-- Rollover button (admin/ketua sahaja) -->
+        <div id="rollover-section" style="display:none;margin-bottom:16px;">
+          <div style="background:var(--gold-pale);border:1px solid rgba(200,146,26,0.3);border-radius:12px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--gold);">🔄 Rollover Tahunan</div>
+              <div style="font-size:11px;color:var(--text-light);margin-top:2px;">Pindah pekebun Semasa → Berturut (Ansuran 2) untuk tahun baru</div>
+            </div>
+            <button onclick="openRolloverModal()" style="padding:9px 18px;background:var(--gold);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">🔄 Semak & Rollover</button>
+          </div>
+          <!-- Fix Data 2025 button -->
+          <div style="background:#fff0f0;border:1px solid rgba(192,57,43,0.25);border-radius:12px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:10px;">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#c0392b;">🛠️ Fix Data 2025</div>
+              <div style="font-size:11px;color:var(--text-light);margin-top:2px;">Tukar semua rekod lama (tahunDaftar &lt; 2026) kepada Berturut 2025</div>
+            </div>
+            <button onclick="fixData2025()" style="padding:9px 18px;background:#c0392b;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">🛠️ Jalankan Fix</button>
+          </div>
+        </div>
+
+        <div class="section-hdr">Prestasi Keseluruhan By PPK</div>
+        <div class="kpi-grid" id="kpi-grid-data"><div style="text-align:center;padding:30px;color:var(--text-light);">⏳ Memuatkan...</div></div>
+        <div class="section-hdr">Status Laporan By Unit</div>
+        <div class="status-grid" id="kpi-status-grid"></div>
+      </div>
+
+      <!-- KADAR ANSURAN -->
+      <div class="page" id="pg-kadar">
+        <div style="background:linear-gradient(135deg,#061f17,#0a3d2e);border-radius:14px;padding:20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+          <div>
+            <h2 style="font-family:'Playfair Display',serif;font-size:18px;color:#fff;">💹 Pengurusan Kadar Ansuran</h2>
+            <p style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:3px;">Kadar Baru 2026 & Kadar Lama (RMKe-12 Sarawak)</p>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button onclick="saveAllKadar()" class="btn-save-kadar">💾 Simpan Semua Kadar</button>
+          </div>
+        </div>
+
+        <!-- Tab Kadar Baru / Lama -->
+        <div class="kadar-version-tabs">
+          <button class="kadar-vtab active-baru" id="tab-kadar-baru" onclick="switchKadarTab('baru')">🟢 Kadar Baru 2026</button>
+          <button class="kadar-vtab" id="tab-kadar-lama" onclick="switchKadarTab('lama')">🔵 Kadar Lama (RMKe-12)</button>
+          <button class="kadar-vtab" id="tab-kadar-peruntukan" onclick="switchKadarTab('peruntukan')">📊 Semakan Peruntukan</button>
+        </div>
+
+        <!-- KADAR BARU 2026 -->
+        <div id="kadar-baru-section">
+          <div style="background:var(--primary-pale);border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:12px;color:var(--primary);">
+            ℹ️ Kadar ini diguna untuk pekebun yang <strong>mendaftar tahun 2026 ke atas</strong>. Kadar dikira <strong>per hektar</strong>.
+          </div>
+          <div id="kadar-baru-cards"></div>
+        </div>
+
+        <!-- KADAR LAMA RMKe-12 -->
+        <div id="kadar-lama-section" style="display:none;">
+          <div style="background:#e8f2ff;border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:12px;color:#1a6eb5;">
+            ℹ️ Kadar ini diguna untuk pekebun <strong>berturut (daftar sebelum 2026)</strong> mengikut AKP Bil.21 Tahun 2022 — Sarawak.
+          </div>
+          <div id="kadar-lama-cards"></div>
+        </div>
+
+        <!-- SEMAKAN PERUNTUKAN -->
+        <div id="kadar-peruntukan-section" style="display:none;">
+          <div class="kadar-summary-grid">
+            <div class="kadar-sum-card"><div class="ks-label">Jumlah Pekebun</div><div class="ks-val" id="perun-total-pekebun">—</div><div class="ks-sub">Semua PPK</div></div>
+            <div class="kadar-sum-card"><div class="ks-label">Jumlah Luas</div><div class="ks-val" id="perun-total-luas">—</div><div class="ks-sub">hektar</div></div>
+            <div class="kadar-sum-card"><div class="ks-label">Jumlah Peruntukan</div><div class="ks-val" id="perun-total-rm">—</div><div class="ks-sub">Diperlukan</div></div>
+          </div>
+          <div class="peruntukan-grid" id="peruntukan-grid"></div>
+        </div>
+      </div>
+
+      <!-- USERS -->
+      <div class="page" id="pg-users">
+        <div class="form-panel">
+          <h3>👥 Daftar Pengguna Baru</h3>
+          <div class="form-grid">
+            <div class="fg"><label>Username</label><input id="nu-user" placeholder="Username baru" /></div>
+            <div class="fg"><label>Password</label><input id="nu-pass" type="password" placeholder="Password" /></div>
+            <div class="fg"><label>Nama Penuh</label><input id="nu-nama" placeholder="Nama penuh" /></div>
+            <div class="fg"><label>Role</label><select id="nu-role"><option value="ppk">Penolong Pegawai Kawasan</option><option value="ketua">Ketua Stesen</option><option value="pegawai">Pegawai Daerah</option><option value="admin">Admin</option></select></div>
+          </div>
+          <div class="form-actions"><button class="btn-save" onclick="saveUser()">➕ Daftar Pengguna</button></div>
+        </div>
+        <div class="tbl-panel">
+          <div class="tbl-top"><h3>Senarai Pengguna</h3></div>
+          <table><thead><tr><th>Username</th><th>Nama</th><th>Role</th><th>Tindakan</th></tr></thead>
+          <tbody id="tbody-users"></tbody></table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- MODAL PADAM -->
+<div class="modal-overlay" id="modal-del">
+  <div class="modal-box">
+    <h3>🗑️ Padam Rekod?</h3>
+    <p id="modal-del-msg">Adakah awk pasti nak padam rekod ini?</p>
+    <div class="modal-actions">
+      <button class="btn-cancel-del" onclick="closeModal()">Batal</button>
+      <button class="btn-confirm-del" onclick="confirmDelete()">Ya, Padam!</button>
+    </div>
+  </div>
+</div>
+
+<!-- ROLLOVER MODAL -->
+<div class="rollover-modal" id="modal-rollover">
+  <div class="rollover-box">
+    <h3>🔄 Rollover Tahunan — Tanam Semula</h3>
+    <p>Pekebun berikut akan dipindah dari <strong>Semasa → Berturut</strong> dan ansuran akan dinaikkan. Pekebun Ansuran 5 akan ditanda <strong>Selesai</strong>.</p>
+    <div class="rollover-list" id="rollover-list">⏳ Memuatkan...</div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn-rollover-go" onclick="doRollover()">✅ Laksanakan Rollover</button>
+      <button onclick="closeRolloverModal()" style="padding:12px 20px;background:var(--cream);border:1px solid var(--border);border-radius:9px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;cursor:pointer;white-space:nowrap;">Batal</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, set, push, onValue, remove, update, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD3sKWtPcQ2oEira30Axx9JkSREiGcRZio",
+  authDomain: "i-ris-9d1a8.firebaseapp.com",
+  databaseURL: "https://i-ris-9d1a8-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "i-ris-9d1a8",
+  storageBucket: "i-ris-9d1a8.firebasestorage.app",
+  messagingSenderId: "1098753922533",
+  appId: "1:1098753922533:web:8aab40d9ce0a6df112cb0c"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+document.getElementById('sync-status').textContent = 'Tersambung • Sync';
+
+onValue(ref(db,'users/admin'),s=>{
+  if(!s.exists()) set(ref(db,'users/admin'),{password:'7710588',nama:'Firdaus',role:'admin'});
+},{onlyOnce:true});
+
+let delPath=null, delId=null, delName='';
+
+window.confirmDelete = function(){
+  if(!delPath||!delId) return;
+  remove(ref(db,delPath+'/'+delId)).then(function(){
+    showToast('🗑️ Berjaya dipadam!');
+    closeModal();
+  });
+};
+
+window.closeModal = function(){
+  document.getElementById('modal-del').classList.remove('show');
+  delPath=null; delId=null;
+};
+
+window.openDelModal = function(path,id,name){
+  delPath=path; delId=id; delName=name;
+  document.getElementById('modal-del-msg').textContent='Padam rekod "'+name+'"? Tindakan ini tidak boleh dibatalkan.';
+  document.getElementById('modal-del').classList.add('show');
+};
+
+function getVal(id){
+  var el=document.getElementById(id);
+  return el ? el.value : '';
+}
+
+function setVal(id,val){
+  var el=document.getElementById(id);
+  if(el && val!==undefined) el.value=val||'';
+}
+
+function loadStats(){
+  onValue(ref(db,'tanam'),function(s){ document.getElementById('st-tanam').textContent=s.exists()?Object.keys(s.val()).length:0; });
+  onValue(ref(db,'pgt'),function(s){ document.getElementById('st-pgt').textContent=s.exists()?Object.keys(s.val()).length:0; });
+  onValue(ref(db,'usahawan'),function(s){ document.getElementById('st-usahawan').textContent=s.exists()?Object.keys(s.val()).length:0; });
+  onValue(ref(db,'programkhas'),function(s){ document.getElementById('st-program').textContent=s.exists()?Object.keys(s.val()).length:0; });
+}
+
+function loadPGT(){
+  onValue(ref(db,'pgt'),function(snap){
+    var tb=document.getElementById('tbody-pgt');
+    if(!snap.exists()){ tb.innerHTML='<tr><td colspan="9" class="tbl-empty">Tiada rekod. Klik "+ Tambah Peserta"</td></tr>'; return; }
+    var months=['jan','feb','mac','apr','mei','jun','jul','ogos','sep','okt','nov','dis'];
+    var rows='';
+    Object.entries(snap.val()).forEach(function(entry){
+      var k=entry[0], v=entry[1];
+      var total=months.reduce(function(s,m){ return s+(parseFloat(v[m])||0); },0);
+      var badge=v.status==='Lulus'?'sb-lulus':'sb-proses';
+      var safeNama=(v.nama||'').replace(/['\"`]/g,'');
+      rows+='<tr><td><strong>'+(v.nama||'')+'</strong></td><td>'+(v.ic||'')+'</td><td>'+(v.lot||'')+'</td><td>'+(v.luas||'')+'</td><td>'+(v.jenis||'')+'</td><td>'+(v.ppk||'')+'</td>';
+      rows+='<td><span class="status-badge '+badge+'">'+(v.status||'—')+'</span></td>';
+      rows+='<td><strong>RM '+total.toFixed(2)+'</strong></td>';
+      rows+='<td><button class="btn-edit" data-id="'+k+'" onclick="window.editById(this)">&#9998; Edit</button> <button class="btn-del" data-id="'+k+'" data-path="unknown" onclick="window.delById(this)">&#128465;</button></td></tr>';
+    });
+    tb.innerHTML=rows;
+    renderLaporanPGT(snap.val());
+  });
+}
+
+function renderLaporanPGT(data){
+  var ppks=['Rozaimah','Jude Hyden','Armizi'];
+  var ids=['r','j','a'];
+  var months=['jan','feb','mac','apr','mei','jun','jul','ogos','sep','okt','nov','dis'];
+  ppks.forEach(function(ppk,pi){
+    var recs=Object.values(data).filter(function(v){ return v.ppk===ppk; });
+    var total=recs.reduce(function(s,v){ return s+months.reduce(function(ss,m){ return ss+(parseFloat(v[m])||0); },0); },0);
+    var luas=recs.reduce(function(s,v){ return s+(parseFloat(v.luas)||0); },0);
+    document.getElementById('lap-'+ids[pi]+'-rm').textContent='RM '+total.toFixed(2);
+    document.getElementById('lap-'+ids[pi]+'-sub').textContent=recs.length+' peserta • '+luas.toFixed(2)+' ha';
+  });
+  var colors=['#ffebf0','#ebf2ff','#ebf7f0'];
+  var rows='';
+  ppks.forEach(function(ppk,pi){
+    var recs=Object.values(data).filter(function(v){ return v.ppk===ppk; });
+    var luas=recs.reduce(function(s,v){ return s+(parseFloat(v.luas)||0); },0);
+    var mVals=months.map(function(m){ return recs.reduce(function(s,v){ return s+(parseFloat(v[m])||0); },0); });
+    var total=mVals.reduce(function(a,b){ return a+b; },0);
+    rows+='<tr style="background:'+colors[pi]+'"><td><strong>'+ppk+'</strong></td><td>'+recs.length+'</td><td>'+luas.toFixed(2)+'</td>';
+    mVals.forEach(function(v){ rows+='<td>'+(v>0?'RM '+v.toFixed(0):'—')+'</td>'; });
+    rows+='<td><strong>RM '+total.toFixed(2)+'</strong></td></tr>';
+  });
+  document.getElementById('tbody-laporan-pgt').innerHTML=rows;
+}
+
+function loadPeng(){
+  onValue(ref(db,'pengembangan'),function(snap){
+    var tb=document.getElementById('tbody-peng');
+    if(!snap.exists()){ tb.innerHTML='<tr><td colspan="7" class="tbl-empty">Tiada rekod.</td></tr>'; return; }
+    var rows='';
+    Object.entries(snap.val()).forEach(function(entry){
+      var k=entry[0], v=entry[1];
+      var badge=v.status==='Dihantar'?'sb-hantar':v.status==='Draf'?'sb-draf':'sb-belum';
+      var safeNama=(v.nama||'').replace(/['\"`]/g,'');
+      rows+='<tr><td><strong>'+(v.nama||'')+'</strong></td><td>'+(v.tarikh||'')+'</td><td>'+(v.lokasi||'')+'</td><td>'+(v.peserta||'')+'</td><td>'+(v.ppk||'')+'</td>';
+      rows+='<td><span class="status-badge '+badge+'">'+(v.status||'—')+'</span></td>';
+      rows+='<td><button class="btn-edit" data-id="'+k+'" onclick="window.editById(this)">&#9998; Edit</button> <button class="btn-del" data-id="'+k+'" data-path="unknown" onclick="window.delById(this)">&#128465;</button></td></tr>';
+    });
+    tb.innerHTML=rows;
+  });
+}
+
+function loadUsa(){
+  onValue(ref(db,'usahawan'),function(snap){
+    var tb=document.getElementById('tbody-usa');
+    if(!snap.exists()){ tb.innerHTML='<tr><td colspan="7" class="tbl-empty">Tiada rekod.</td></tr>'; return; }
+    var rows='';
+    Object.entries(snap.val()).forEach(function(entry){
+      var k=entry[0], v=entry[1];
+      var badge=v.status&&v.status.includes('Aktif')?'sb-aktif':'sb-tidak';
+      var safeNama=(v.nama||'').replace(/['\"`]/g,'');
+      rows+='<tr><td><strong>'+(v.nama||'')+'</strong></td><td>'+(v.ic||'')+'</td><td>'+(v.jenis||'')+'</td><td>'+(v.alamat||'')+'</td><td>'+(v.ppk||'')+'</td>';
+      rows+='<td><span class="status-badge '+badge+'">'+(v.status||'—')+'</span></td>';
+      rows+='<td><button class="btn-edit" data-id="'+k+'" onclick="window.editById(this)">&#9998; Edit</button> <button class="btn-del" data-id="'+k+'" data-path="unknown" onclick="window.delById(this)">&#128465;</button></td></tr>';
+    });
+    tb.innerHTML=rows;
+  });
+}
+
+function loadProg(){
+  onValue(ref(db,'programkhas'),function(snap){
+    var tb=document.getElementById('tbody-prog');
+    if(!snap.exists()){ tb.innerHTML='<tr><td colspan="7" class="tbl-empty">Tiada rekod.</td></tr>'; return; }
+    var rows='';
+    Object.entries(snap.val()).forEach(function(entry){
+      var k=entry[0], v=entry[1];
+      var badge=v.status==='Sedang Berjalan'?'sb-hantar':v.status==='Selesai'?'sb-aktif':'sb-draf';
+      var safeNama=(v.nama||'').replace(/['\"`]/g,'');
+      rows+='<tr><td><strong>'+(v.nama||'')+'</strong></td><td>'+(v.mula||'')+'</td><td>'+(v.tamat||'')+'</td><td>'+(v.lokasi||'')+'</td><td>'+(v.ppk||'')+'</td>';
+      rows+='<td><span class="status-badge '+badge+'">'+(v.status||'—')+'</span></td>';
+      rows+='<td><button class="btn-edit" data-id="'+k+'" onclick="window.editById(this)">&#9998; Edit</button> <button class="btn-del" data-id="'+k+'" data-path="unknown" onclick="window.delById(this)">&#128465;</button></td></tr>';
+    });
+    tb.innerHTML=rows;
+  });
+}
+
+function loadUsers(){
+  onValue(ref(db,'users'),function(snap){
+    var tb=document.getElementById('tbody-users');
+    if(!snap.exists()){ tb.innerHTML='<tr><td colspan="4" class="tbl-empty">Tiada pengguna</td></tr>'; return; }
+    var rows='';
+    Object.entries(snap.val()).forEach(function(entry){
+      var k=entry[0], v=entry[1];
+      rows+='<tr><td>'+k+'</td><td>'+(v.nama||'')+'</td><td>'+(v.role||'')+'</td>';
+      rows+='<td>'+(k!=='admin'?'<button class="btn-del" data-id="'+k+'" data-path="users" onclick="window.delById(this)">&#128465; Padam</button>':'&mdash;')+'</td></tr>';
+    });
+    tb.innerHTML=rows;
+  });
+}
+
+function loadKPI(){
+  var ppks=['Rozaimah','Jude Hyden','Armizi'];
+  var units=['tanam','pgt','pengembangan','usahawan','programkhas'];
+  var unitNames=['Tanam Semula','PGT','Pengembangan','Usahawan','Program Khas'];
+  var unitIcons=['🌿','🌳','📣','💼','⭐'];
+  var colors=['r','j','a'];
+  var initials=['RZ','JH','AR'];
+  var barColors=['linear-gradient(90deg,#1e7a56,#3daa7a)','linear-gradient(90deg,#c8921a,#f0b429)','linear-gradient(90deg,#1a6eb5,#5ba3e0)','linear-gradient(90deg,#8e44ad,#bb8fcf)','linear-gradient(90deg,#c0392b,#e74c3c)'];
+  var allData={};
+  var loaded=0;
+  units.forEach(function(u){
+    onValue(ref(db,u),function(snap){
+      allData[u]=snap.exists()?Object.values(snap.val()):[];
+      loaded++;
+      if(loaded>=units.length){
+        var grid=document.getElementById('kpi-grid-data');
+        var gridHTML='';
+        ppks.forEach(function(ppk,pi){
+          var unitCounts=units.map(function(u){ return allData[u].filter(function(r){ return r.ppk===ppk; }).length; });
+          var total=unitCounts.reduce(function(a,b){ return a+b; },0);
+          var maxPerUnit=units.map(function(u){ return allData[u].length||1; });
+          var pcts=unitCounts.map(function(c,i){ return Math.min(100,Math.round(c/(maxPerUnit[i]||1)*100)); });
+          var avgPct=Math.round(pcts.reduce(function(a,b){ return a+b; },0)/pcts.length);
+          var cls=avgPct>=70?'sc-hi':avgPct>=40?'sc-mi':'sc-lo';
+          var barsHTML='';
+          unitNames.forEach(function(un,ui){
+            barsHTML+='<div class="kbar"><span class="kbar-lbl">'+unitIcons[ui]+' '+un+'</span><div class="kbar-track"><div class="kbar-fill" style="width:'+pcts[ui]+'%;background:'+barColors[ui]+';"></div></div><span class="kbar-val">'+unitCounts[ui]+'</span></div>';
+          });
+          gridHTML+='<div class="kpi-card"><div class="kpi-card-hdr"><div class="kpi-av '+colors[pi]+'">'+initials[pi]+'</div><div><div class="kpi-nm">'+ppk+'</div><div class="kpi-tt">PPK • '+total+' rekod</div></div><div class="kpi-sc"><div class="sc '+cls+'">'+avgPct+'%</div><div style="font-size:9px;color:var(--text-light)">Prestasi</div></div></div><div class="kpi-bars">'+barsHTML+'</div></div>';
+        });
+        grid.innerHTML=gridHTML;
+        var sg=document.getElementById('kpi-status-grid');
+        var sgHTML='';
+        unitNames.forEach(function(un,ui){
+          var rowsHTML='';
+          ppks.forEach(function(ppk,pi){
+            var c=allData[units[ui]].filter(function(r){ return r.ppk===ppk; }).length;
+            var cls=c>2?'sdot-g':c>0?'sdot-o':'sdot-r';
+            rowsHTML+='<div class="srow"><span class="srow-name">'+ppk+'</span><div class="sdot '+cls+'"></div></div>';
+          });
+          sgHTML+='<div class="scard"><div class="scard-title">'+unitIcons[ui]+' '+un+'</div>'+rowsHTML+'</div>';
+        });
+        sg.innerHTML=sgHTML;
+      }
+    });
+  });
+}
+
+// ===== PAGINATION =====
+var PG_SIZE = 100;
+var _semasaData = [], _berurutData = [];
+var _pgSemasa = 1, _pgBerturut = 1;
+
+function renderPagination(containerId, currentPage, totalItems, onPageChange){
+  var totalPages = Math.ceil(totalItems/PG_SIZE);
+  if(totalPages<=1){ document.getElementById(containerId).innerHTML=''; return; }
+  var start=(currentPage-1)*PG_SIZE+1;
+  var end=Math.min(currentPage*PG_SIZE,totalItems);
+  var html='<div class="pagination-info">Rekod '+start+'–'+end+' daripada '+totalItems+'</div>';
+  html+='<div class="pagination-btns">';
+  html+='<button class="pg-btn" '+(currentPage===1?'disabled':'')+' onclick="'+onPageChange+'('+(currentPage-1)+')">‹ Prev</button>';
+  // Show page numbers
+  var pages=[];
+  if(totalPages<=7){ for(var i=1;i<=totalPages;i++) pages.push(i); }
+  else {
+    pages=[1];
+    if(currentPage>3) pages.push('...');
+    for(var i=Math.max(2,currentPage-1);i<=Math.min(totalPages-1,currentPage+1);i++) pages.push(i);
+    if(currentPage<totalPages-2) pages.push('...');
+    pages.push(totalPages);
+  }
+  pages.forEach(function(p){
+    if(p==='...') html+='<span class="pg-btn" style="cursor:default;">…</span>';
+    else html+='<button class="pg-btn pg-num'+(p===currentPage?' active':'')+'" onclick="'+onPageChange+'('+p+')">'+p+'</button>';
+  });
+  html+='<button class="pg-btn" '+(currentPage===totalPages?'disabled':'')+' onclick="'+onPageChange+'('+(currentPage+1)+')">Next ›</button>';
+  html+='</div>';
+  document.getElementById(containerId).innerHTML=html;
+}
+
+window.goPageSemasa = function(p){ _pgSemasa=p; renderSemasaPage(); };
+window.goPageBerturut = function(p){ _pgBerturut=p; renderBerurutPage(); };
+
+function renderSemasaPage(){
+  var start=(_pgSemasa-1)*PG_SIZE;
+  var pageData=_semasaData.slice(start,start+PG_SIZE);
+  renderSemasaRows(pageData);
+  renderPagination('pg-semasa',_pgSemasa,_semasaData.length,'goPageSemasa');
+}
+
+function renderBerurutPage(){
+  var start=(_pgBerturut-1)*PG_SIZE;
+  var pageData=_berurutData.slice(start,start+PG_SIZE);
+  renderBerurutRows(pageData);
+  renderPagination('pg-berturut',_pgBerturut,_berurutData.length,'goPageBerturut');
+}
+
+// ===== TANAM SEMULA V2 =====
+window.switchTSTab = function(tab, el){
+  ['ts-semasa','ts-berturut','ts-kewangan','ts-laporan-ts'].forEach(function(id){
+    var el2=document.getElementById(id); if(el2) el2.style.display='none';
+  });
+  var show=document.getElementById('ts-'+tab); if(show) show.style.display='block';
+  document.querySelectorAll('.ts-tab').forEach(function(b){ b.classList.remove('active'); });
+  if(el) el.classList.add('active');
+  if(tab==='laporan-ts') loadLaporanTS();
+  if(tab==='kewangan') renderKewangan();
+};
+
+window.switchTSSubTab = function(tab, el){
+  ['semasa-senarai','semasa-bantuan'].forEach(function(id){
+    var e=document.getElementById(id); if(e) e.style.display='none';
+  });
+  var show=document.getElementById(tab); if(show) show.style.display='block';
+  document.querySelectorAll('.ts-sub-tab').forEach(function(b){ b.classList.remove('active'); });
+  if(el) el.classList.add('active');
+};
+
+window.openFormTanam = function(jenis){
+  document.getElementById('ft-id').value='';
+  document.getElementById('ft-jenis-tanam').value=jenis;
+  document.getElementById('form-tanam-title').textContent = jenis==='semasa'?'📝 Tambah Pekebun Semasa':'📝 Tambah Pekebun Berturut';
+  document.getElementById('fg-status-kebun').style.display = jenis==='berturut'?'block':'none';
+  document.getElementById('fg-ansuran').style.display = jenis==='berturut'?'block':'none';
+  document.getElementById('bahagian-b').style.display='none';
+  // Clear semua field
+  document.querySelectorAll('[id^="ft-"]').forEach(function(el){
+    if(el.type!=='hidden'){ el.value=''; if(el.tagName==='SELECT') el.selectedIndex=0; }
+  });
+  document.getElementById('bb-total').textContent='RM 0.00';
+  // Auto-set PPK kalau user adalah PPK
+  if(window.currentUser && window.currentUser.role==='ppk'){
+    setVal('ft-ppk', window.currentUser.nama);
+  }
+  // Scroll ke form dan tunjuk
+  showForm('form-tanam');
+  document.getElementById('form-tanam').scrollIntoView({behavior:'smooth',block:'start'});
+};
+
+window.toggleKategoriInput = function(sel){
+  var input=document.getElementById('ft-kumpulan');
+  var val=sel.value;
+  if(val==='lain'){
+    input.style.display='block';
+    input.value='';
+    input.focus();
+  } else {
+    input.style.display='none';
+    input.value=val;
+  }
+};
+
+window.toggleBahagianB = function(){
+  var status=getVal('ft-status-permohonan');
+  document.getElementById('bahagian-b').style.display = status==='Lulus'?'block':'none';
+};
+
+window.calcBantuan = function(){
+  var ansuran1=parseFloat(getVal('ft-ansuran1'))||0;
+  var bajaRP=(parseFloat(getVal('ft-baja-rp'))||0)*45;
+  var bajaR1=(parseFloat(getVal('ft-baja-r1'))||0)*38;
+  var benih=(parseFloat(getVal('ft-benih'))||0)*12;
+  var total=ansuran1+bajaRP+bajaR1+benih;
+  document.getElementById('bb-ansuran1').textContent='RM '+ansuran1.toFixed(2);
+  document.getElementById('bb-baja-rp').textContent='RM '+bajaRP.toFixed(2);
+  document.getElementById('bb-baja-r1').textContent='RM '+bajaR1.toFixed(2);
+  document.getElementById('bb-benih').textContent='RM '+benih.toFixed(2);
+  document.getElementById('bb-total').textContent='RM '+total.toFixed(2);
+  document.getElementById('ft-jumlah-bantuan').value=total.toFixed(2);
+};
+
+window.saveTanam = function(){
+  var id=getVal('ft-id');
+  var jenis=getVal('ft-jenis-tanam')||'semasa';
+  var jumlahBantuan=parseFloat(getVal('ft-jumlah-bantuan'))||0;
+  var data={
+    nama:getVal('ft-nama'),ic:getVal('ft-ic'),jantina:getVal('ft-jantina'),tel:getVal('ft-tel'),
+    kampung:getVal('ft-kampung'),alamat:getVal('ft-alamat'),dun:getVal('ft-dun'),parlimen:getVal('ft-parlimen'),
+    lot:getVal('ft-lot'),geran:getVal('ft-geran'),luas:getVal('ft-luas'),mukim:getVal('ft-mukim'),
+    kumpulan:getVal('ft-kumpulan'),statusPermohonan:getVal('ft-status-permohonan'),
+    statusKebun:getVal('ft-status-kebun'),ansuran:getVal('ft-ansuran'),
+    lawatan:getVal('ft-lawatan'),tarikhLawatan:getVal('ft-tarikh-lawatan'),
+    ppk:getVal('ft-ppk'),jenisTanam:jenis,
+    ansuran1:getVal('ft-ansuran1'),bajaRP:getVal('ft-baja-rp'),bajaR1:getVal('ft-baja-r1'),
+    benih:getVal('ft-benih'),jumlahBantuan:jumlahBantuan,
+    masa:new Date().toISOString()
+  };
+  if(!id) data.tahunDaftar=new Date().getFullYear();
+  if(!data.nama){ showToast('Sila isi Nama Penuh!',true); return; }
+  var r=id?ref(db,'tanam/'+id):push(ref(db,'tanam'));
+  (id?update(r,data):set(r,data)).then(function(){ showToast('✅ Rekod berjaya disimpan!'); hideForm('form-tanam'); });
+};
+
+function loadTanam(){
+  onValue(ref(db,'tanam'),function(snap){
+    var semasa=[], berturut=[], bantuanList=[], allRecs=[];
+    if(snap.exists()){
+      Object.entries(snap.val()).forEach(function(entry){
+        var k=entry[0], v=entry[1];
+        allRecs.push(v);
+        var jenis=v.jenisTanam||'semasa';
+        if(jenis==='berturut') berturut.push({k:k,v:v});
+        else if(jenis!=='selesai') semasa.push({k:k,v:v});
+        if(v.statusPermohonan==='Lulus') bantuanList.push({k:k,v:v});
+      });
+    }
+    // KPI Hektar update
+    updateKPIHektar(allRecs);
+    // Cache untuk kewangan
+    _allTanamData = allRecs;
+    // Badge counts
+    document.getElementById('badge-semasa').textContent=semasa.length;
+    document.getElementById('badge-berturut').textContent=berturut.length;
+    // Update stats dashboard
+    var el=document.getElementById('st-tanam'); if(el) el.textContent=semasa.length+berturut.length;
+
+    // Render terus tanpa tunggu kadar - guna kadar default
+    _semasaData = semasa.map(function(item){ 
+      return {k:item.k, v:item.v, ki:getKadarForRek(item.v, KADAR_DEFAULT)}; 
+    });
+    _berurutData = berturut.map(function(item){ 
+      return {k:item.k, v:item.v, ki:getKadarForRek(item.v, KADAR_DEFAULT)}; 
+    });
+    _pgSemasa=1; _pgBerturut=1;
+    renderSemasaPage();
+    renderBerurutPage();
+
+    // Render Bantuan
+    var tb3=document.getElementById('tbody-bantuan');
+    if(!bantuanList.length){ tb3.innerHTML='<tr><td colspan="11" class="tbl-empty">Tiada rekod lulus lagi.</td></tr>'; }
+    else {
+      var rows3='';
+      bantuanList.forEach(function(item){
+        var v=item.v,k=item.k;
+        var lawBadge=v.lawatan==='Sudah Dilawati'?'sb-lulus':'sb-tidak';
+        rows3+='<tr>';
+        rows3+='<td><strong>'+(v.nama||'')+'</strong></td>';
+        rows3+='<td>'+(v.lot||'')+'</td>';
+        rows3+='<td>'+(v.luas||'')+'</td>';
+        rows3+='<td>RM '+(parseFloat(v.ansuran1)||0).toFixed(2)+'</td>';
+        rows3+='<td>'+(v.bajaRP||0)+'</td>';
+        rows3+='<td>'+(v.bajaR1||0)+'</td>';
+        rows3+='<td>'+(v.benih||0)+'</td>';
+        rows3+='<td><strong>RM '+(parseFloat(v.jumlahBantuan)||0).toFixed(2)+'</strong></td>';
+        rows3+='<td><span class="status-badge '+lawBadge+'">'+(v.lawatan||'—')+'</span></td>';
+        rows3+='<td>'+(v.tarikhLawatan||'—')+'</td>';
+        rows3+='<td><button class="btn-edit" onclick="editTanam(\''+k+'\')">✏️ Edit</button></td>';
+        rows3+='</tr>';
+      });
+      tb3.innerHTML=rows3;
+    }
+
+    // Update kadar dari Firebase kalau ada (background)
+    onValue(ref(db,'kadarAnsuran'),function(kSnap){
+      if(kSnap.exists()){
+        var kadarData=kSnap.val();
+        _semasaData = semasa.map(function(item){ 
+          return {k:item.k, v:item.v, ki:getKadarForRek(item.v,kadarData)}; 
+        });
+        _berurutData = berturut.map(function(item){ 
+          return {k:item.k, v:item.v, ki:getKadarForRek(item.v,kadarData)}; 
+        });
+        renderSemasaPage();
+        renderBerurutPage();
+      }
+    },{onlyOnce:true});
+  });
+}
+
+function renderSemasaRows(pageData){
+  var tb=document.getElementById('tbody-tanam-semasa');
+  if(!pageData.length){ tb.innerHTML='<tr><td colspan="12" class="tbl-empty">Tiada rekod semasa.</td></tr>'; return; }
+  var rows='';
+  pageData.forEach(function(item){
+    var v=item.v,k=item.k,ki=item.ki;
+    var lawBadge=v.lawatan==='Sudah Dilawati'?'sb-lulus':'sb-tidak';
+    var statBadge=v.statusPermohonan==='Lulus'?'sb-lulus':v.statusPermohonan==='Ditolak'?'sb-tidak':'sb-proses';
+    var luas=parseFloat(v.luas)||0;
+    var bantuan=luas*ki.kadar, baki=luas*ki.baki;
+    rows+='<tr>';
+    rows+='<td><strong>'+(v.nama||'')+'</strong></td>';
+    rows+='<td>'+(v.ic||'')+'</td>';
+    rows+='<td>'+(v.lot||'')+'</td>';
+    rows+='<td>'+(v.luas||'')+'</td>';
+    rows+='<td style="font-size:10px;">'+(v.kategoriDetail||v.kumpulan||'—')+'</td>';
+    rows+='<td><span class="status-badge '+statBadge+'">'+(v.statusPermohonan||'—')+'</span></td>';
+    rows+='<td>'+(v.ppk||'')+'</td>';
+    rows+='<td><span class="status-badge '+lawBadge+'">'+(v.lawatan||'—')+'</span></td>';
+    rows+='<td style="background:#e8f7f0;font-weight:600;">RM '+ki.kadar.toLocaleString()+'</td>';
+    rows+='<td style="background:#e8f7f0;font-weight:700;">RM '+bantuan.toFixed(2)+'</td>';
+    rows+='<td style="background:#e8f7f0;color:'+(baki>=0?'#1e7a56':'#c0392b')+';font-weight:700;">RM '+baki.toFixed(2)+'</td>';
+    rows+='<td><button class="btn-edit" onclick="editTanam(\''+k+'\')">✏️ Edit</button> <button class="btn-del" onclick="openDelModal(\'tanam\',\''+k+'\',\''+v.nama.replace(/'/g,'')+'\')">🗑️</button></td>';
+    rows+='</tr>';
+  });
+  tb.innerHTML=rows;
+}
+
+function renderBerurutRows(pageData){
+  var tb2=document.getElementById('tbody-tanam-berturut');
+  if(!pageData.length){ tb2.innerHTML='<tr><td colspan="13" class="tbl-empty">Tiada rekod berturut.</td></tr>'; return; }
+  var rows2='';
+  pageData.forEach(function(item){
+    var v=item.v,k=item.k,ki=item.ki;
+    var lawBadge=v.lawatan==='Sudah Dilawati'?'sb-lulus':'sb-tidak';
+    var kebunBadge=v.statusKebun==='Kebun Bersih'?'sb-lulus':'sb-proses';
+    var tertahan=v.statusKebun==='Tertahan';
+    var luas=parseFloat(v.luas)||0;
+    var bantuan=luas*ki.kadar, baki=luas*ki.baki;
+    rows2+='<tr'+(tertahan?' class="tertahan-row" title="⚠️ Kebun Tertahan — PPK perlu tindakan!"':'')+'>'; 
+    rows2+='<td><strong>'+(v.nama||'')+'</strong></td>';
+    rows2+='<td>'+(v.ic||'')+'</td>';
+    rows2+='<td>'+(v.lot||'')+'</td>';
+    rows2+='<td>'+(v.luas||'')+'</td>';
+    rows2+='<td style="font-size:10px;">'+(v.kategoriDetail||v.kumpulan||'—')+'</td>';
+    rows2+='<td>Ansuran '+(v.ansuran||'—')+'</td>';
+    rows2+='<td><span class="status-badge '+kebunBadge+'">'+(v.statusKebun||'—')+'</span></td>';
+    rows2+='<td>'+(v.ppk||'')+'</td>';
+    rows2+='<td><span class="status-badge '+lawBadge+'">'+(v.lawatan||'—')+'</span></td>';
+    rows2+='<td style="background:#e8f2ff;font-weight:600;">RM '+ki.kadar.toLocaleString()+'</td>';
+    rows2+='<td style="background:#e8f2ff;font-weight:700;">RM '+bantuan.toFixed(2)+'</td>';
+    rows2+='<td style="background:#e8f2ff;color:'+(baki>=0?'#1e7a56':'#c0392b')+';font-weight:700;">RM '+baki.toFixed(2)+'</td>';
+    rows2+='<td><button class="btn-edit" onclick="editTanam(\''+k+'\')">✏️ Edit</button> <button class="btn-del" onclick="openDelModal(\'tanam\',\''+k+'\',\''+v.nama.replace(/'/g,'')+'\')">🗑️</button></td>';
+    rows2+='</tr>';
+  });
+  tb2.innerHTML=rows2;
+}
+
+window.editTanam = function(idOrBtn){
+  var id = (typeof idOrBtn === 'string') ? idOrBtn : idOrBtn.getAttribute('data-id');
+  onValue(ref(db,'tanam/'+id),function(snap){
+    if(!snap.exists()) return;
+    var v=snap.val();
+    setVal('ft-id',id);
+    setVal('ft-jenis-tanam',v.jenisTanam||'semasa');
+    setVal('ft-nama',v.nama); setVal('ft-ic',v.ic); setVal('ft-jantina',v.jantina);
+    setVal('ft-tel',v.tel); setVal('ft-kampung',v.kampung); setVal('ft-alamat',v.alamat);
+    setVal('ft-dun',v.dun); setVal('ft-parlimen',v.parlimen); setVal('ft-lot',v.lot);
+    setVal('ft-geran',v.geran); setVal('ft-luas',v.luas); setVal('ft-mukim',v.mukim);
+    setVal('ft-kumpulan',v.kumpulan);
+    // Restore kategori dropdown
+    var kpilih=document.getElementById('ft-kumpulan-pilih');
+    if(kpilih){
+      var stdVals=['TSB','Individu (TSI)',''];
+      if(stdVals.indexOf(v.kumpulan)>=0){ kpilih.value=v.kumpulan||''; document.getElementById('ft-kumpulan').style.display='none'; }
+      else { kpilih.value='lain'; document.getElementById('ft-kumpulan').style.display='block'; setVal('ft-kumpulan',v.kumpulan); }
+    }
+    setVal('ft-status-permohonan',v.statusPermohonan);
+    setVal('ft-status-kebun',v.statusKebun); setVal('ft-ansuran',v.ansuran);
+    setVal('ft-lawatan',v.lawatan); setVal('ft-tarikh-lawatan',v.tarikhLawatan);
+    setVal('ft-ppk',v.ppk);
+    setVal('ft-ansuran1',v.ansuran1); setVal('ft-baja-rp',v.bajaRP);
+    setVal('ft-baja-r1',v.bajaR1); setVal('ft-benih',v.benih);
+    setVal('ft-jumlah-bantuan',v.jumlahBantuan);
+    document.getElementById('bb-total').textContent='RM '+(parseFloat(v.jumlahBantuan)||0).toFixed(2);
+    document.getElementById('form-tanam-title').textContent='✏️ Edit Rekod Pekebun';
+    document.getElementById('fg-status-kebun').style.display=(v.jenisTanam==='berturut')?'block':'none';
+    document.getElementById('fg-ansuran').style.display=(v.jenisTanam==='berturut')?'block':'none';
+    document.getElementById('bahagian-b').style.display=(v.statusPermohonan==='Lulus')?'block':'none';
+    // Pastikan page tanam active
+    document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+    var pg=document.getElementById('pg-tanam'); if(pg) pg.classList.add('active');
+    // Show form dan scroll
+    var formEl=document.getElementById('form-tanam');
+    if(formEl){
+      formEl.style.display='block';
+      setTimeout(function(){ formEl.scrollIntoView({behavior:'smooth',block:'start'}); },100);
+    }
+  },{onlyOnce:true});
+};
+
+function loadLaporanTS(){
+  var ppks=['Rozaimah','Jude Hyden','Armizi'];
+  var kumpulans=['TSB Jantan Fasa A - Kebun Bersih','TSB Jantan Fasa A - Tahan Kekal','TSB Jantan Fasa B - Kebun Bersih','TSB Jantan Fasa B - Kebun Semak','TSB NCR Semadu','Tanam Semula Individu (TSI)'];
+  var userRole=window.currentUser?window.currentUser.role:'';
+  var userPPK=window.currentUser?window.currentUser.nama:'';
+
+  onValue(ref(db,'tanam'),function(snap){
+    var allRecs=snap.exists()?Object.values(snap.val()):[];
+
+    // Filter ikut role — PPK nampak sendiri je
+    var recs=allRecs;
+    if(userRole==='ppk'){
+      recs=allRecs.filter(function(r){ return r.ppk===userPPK; });
+    }
+
+    // Render cards PPK
+    var cardsHTML='';
+    var ppkList = (userRole==='ppk') ? [userPPK] : ppks;
+    var cardClasses={Rozaimah:'roz', 'Jude Hyden':'jude', Armizi:'armi'};
+
+    ppkList.forEach(function(ppk){
+      var precs=allRecs.filter(function(r){ return r.ppk===ppk; });
+      var jumlah=precs.length;
+      var luas=precs.reduce(function(s,r){ return s+(parseFloat(r.luas)||0); },0);
+      var sudah=precs.filter(function(r){ return r.lawatan==='Sudah Dilawati'; }).length;
+      var belum=jumlah-sudah;
+      var bantuan=precs.reduce(function(s,r){ return s+(parseFloat(r.jumlahBantuan)||0); },0);
+      var pct=jumlah>0?Math.round(sudah/jumlah*100):0;
+      var cls=cardClasses[ppk]||'roz';
+      cardsHTML+='<div class="lap-ts-card '+cls+'">';
+      cardsHTML+='<h4>'+ppk+'</h4>';
+      cardsHTML+='<div class="lap-ts-stat"><span>Jumlah Pekebun</span><strong>'+jumlah+'</strong></div>';
+      cardsHTML+='<div class="lap-ts-stat"><span>Luas (ha)</span><strong>'+luas.toFixed(2)+'</strong></div>';
+      cardsHTML+='<div class="lap-ts-stat"><span>Sudah Dilawati</span><strong>'+sudah+'</strong></div>';
+      cardsHTML+='<div class="lap-ts-stat"><span>Belum Dilawati</span><strong>'+belum+'</strong></div>';
+      cardsHTML+='<div class="lap-ts-stat"><span>Jumlah Bantuan</span><strong>RM '+bantuan.toFixed(2)+'</strong></div>';
+      cardsHTML+='<div class="progress-bar"><div class="progress-fill" style="width:'+pct+'%;"></div></div>';
+      cardsHTML+='<div style="font-size:10px;color:var(--text-light);margin-top:4px;">'+pct+'% lawatan selesai</div>';
+      cardsHTML+='</div>';
+    });
+    document.getElementById('lap-ts-cards').innerHTML=cardsHTML;
+
+    // Table PPK perbandingan (Ketua/Admin sahaja)
+    var tbodyPPK=document.getElementById('tbody-lap-ts-ppk');
+    if(userRole==='ppk'){
+      tbodyPPK.innerHTML='<tr><td colspan="9" class="tbl-empty">🔒 Akses terhad — hubungi Ketua Stesen</td></tr>';
+    } else {
+      var rowsPPK=''; var grandTotal={jumlah:0,semasa:0,berturut:0,luas:0,sudah:0,belum:0,bantuan:0};
+      ppks.forEach(function(ppk){
+        var pr=allRecs.filter(function(r){ return r.ppk===ppk; });
+        var j=pr.length;
+        var s=pr.filter(function(r){ return r.jenisTanam!=='berturut'; }).length;
+        var b=pr.filter(function(r){ return r.jenisTanam==='berturut'; }).length;
+        var luas=pr.reduce(function(sum,r){ return sum+(parseFloat(r.luas)||0); },0);
+        var sudah=pr.filter(function(r){ return r.lawatan==='Sudah Dilawati'; }).length;
+        var belum=j-sudah;
+        var bantuan=pr.reduce(function(sum,r){ return sum+(parseFloat(r.jumlahBantuan)||0); },0);
+        var pct=j>0?Math.round(sudah/j*100):0;
+        grandTotal.jumlah+=j; grandTotal.semasa+=s; grandTotal.berturut+=b;
+        grandTotal.luas+=luas; grandTotal.sudah+=sudah; grandTotal.belum+=belum; grandTotal.bantuan+=bantuan;
+        rowsPPK+='<tr>';
+        rowsPPK+='<td><strong>'+ppk+'</strong></td>';
+        rowsPPK+='<td><strong>'+j+'</strong></td>';
+        rowsPPK+='<td>'+s+'</td>';
+        rowsPPK+='<td>'+b+'</td>';
+        rowsPPK+='<td>'+luas.toFixed(2)+'</td>';
+        rowsPPK+='<td><span class="status-badge sb-lulus">'+sudah+'</span></td>';
+        rowsPPK+='<td><span class="status-badge sb-tidak">'+belum+'</span></td>';
+        rowsPPK+='<td><strong>'+pct+'%</strong></td>';
+        rowsPPK+='<td><strong>RM '+bantuan.toFixed(2)+'</strong></td>';
+        rowsPPK+='</tr>';
+      });
+      var gpct=grandTotal.jumlah>0?Math.round(grandTotal.sudah/grandTotal.jumlah*100):0;
+      rowsPPK+='<tr style="background:#e8f7f0;font-weight:700;">';
+      rowsPPK+='<td><strong>JUMLAH</strong></td><td><strong>'+grandTotal.jumlah+'</strong></td>';
+      rowsPPK+='<td>'+grandTotal.semasa+'</td><td>'+grandTotal.berturut+'</td>';
+      rowsPPK+='<td>'+grandTotal.luas.toFixed(2)+'</td>';
+      rowsPPK+='<td>'+grandTotal.sudah+'</td><td>'+grandTotal.belum+'</td>';
+      rowsPPK+='<td><strong>'+gpct+'%</strong></td>';
+      rowsPPK+='<td><strong>RM '+grandTotal.bantuan.toFixed(2)+'</strong></td>';
+      rowsPPK+='</tr>';
+      tbodyPPK.innerHTML=rowsPPK;
+    }
+
+    // Table by Kumpulan
+    var tbodyKump=document.getElementById('tbody-lap-ts-kumpulan');
+    var rowsKump='';
+    kumpulans.forEach(function(k){
+      var kr=recs.filter(function(r){ return r.kumpulan===k; });
+      if(!kr.length) return;
+      var luas=kr.reduce(function(s,r){ return s+(parseFloat(r.luas)||0); },0);
+      var sudah=kr.filter(function(r){ return r.lawatan==='Sudah Dilawati'; }).length;
+      var belum=kr.length-sudah;
+      var bagiAnsuran=kr.filter(function(r){ return !r.jumlahBantuan||r.jumlahBantuan==0; }).length;
+      rowsKump+='<tr>';
+      rowsKump+='<td><strong>'+k+'</strong></td>';
+      rowsKump+='<td>'+kr.length+'</td>';
+      rowsKump+='<td>'+luas.toFixed(2)+'</td>';
+      rowsKump+='<td><span class="status-badge sb-lulus">'+sudah+'</span></td>';
+      rowsKump+='<td><span class="status-badge sb-tidak">'+belum+'</span></td>';
+      rowsKump+='<td>'+bagiAnsuran+' lot</td>';
+      rowsKump+='</tr>';
+    });
+    tbodyKump.innerHTML=rowsKump||'<tr><td colspan="6" class="tbl-empty">Tiada data.</td></tr>';
+  },{onlyOnce:true});
+}
+
+window.exportTanamExcel = function(){
+  var html='<html><head><meta charset="UTF-8"></head><body>';
+  html+='<h2>Laporan Tanam Semula — i-Ris RISDA Stesen Lundu</h2>';
+  var t1=document.getElementById('tbl-lap-ts-ppk'); if(t1) html+='<h3>Perbandingan PPK</h3>'+t1.outerHTML;
+  var t2=document.getElementById('tbl-lap-ts-kumpulan'); if(t2) html+='<h3>Pecahan by Kumpulan</h3>'+t2.outerHTML;
+  html+='</body></html>';
+  var blob=new Blob([html],{type:'application/vnd.ms-excel'});
+  var a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='Laporan_TanamSemula_'+new Date().toISOString().slice(0,10)+'.xls';
+  a.click(); showToast('✅ Excel berjaya diexport!');
+};
+
+window.savePGT = function(){
+  var id=getVal('fp-id');
+  var months=['jan','feb','mac','apr','mei','jun','jul','ogos','sep','okt','nov','dis'];
+  var mData={};
+  months.forEach(function(m){ var v=getVal('fp-'+m); if(v) mData[m]=parseFloat(v)||0; });
+  var data=Object.assign({nama:getVal('fp-nama'),ic:getVal('fp-ic'),lot:getVal('fp-lot'),luas:getVal('fp-luas'),jenis:getVal('fp-jenis'),status:getVal('fp-status'),ppk:getVal('fp-ppk'),masa:new Date().toISOString()},mData);
+  if(!data.nama){ showToast('Sila isi Nama Peserta!',true); return; }
+  var r=id?ref(db,'pgt/'+id):push(ref(db,'pgt'));
+  (id?update(r,data):set(r,data)).then(function(){ showToast('✅ Rekod PGT berjaya disimpan!'); hideForm('form-pgt'); });
+};
+
+window.savePeng = function(){
+  var id=getVal('fpe-id');
+  var data={nama:getVal('fpe-nama'),tarikh:getVal('fpe-tarikh'),lokasi:getVal('fpe-lokasi'),peserta:getVal('fpe-peserta'),ppk:getVal('fpe-ppk'),status:getVal('fpe-status'),laporan:getVal('fpe-laporan'),masa:new Date().toISOString()};
+  if(!data.nama){ showToast('Sila isi Nama Aktiviti!',true); return; }
+  var r=id?ref(db,'pengembangan/'+id):push(ref(db,'pengembangan'));
+  (id?update(r,data):set(r,data)).then(function(){ showToast('✅ Aktiviti berjaya disimpan!'); hideForm('form-peng'); });
+};
+
+window.saveUsa = function(){
+  var id=getVal('fu-id');
+  var data={nama:getVal('fu-nama'),ic:getVal('fu-ic'),tel:getVal('fu-tel'),alamat:getVal('fu-alamat'),jenis:getVal('fu-jenis'),status:getVal('fu-status'),ppk:getVal('fu-ppk'),masa:new Date().toISOString()};
+  if(!data.nama){ showToast('Sila isi Nama Usahawan!',true); return; }
+  var r=id?ref(db,'usahawan/'+id):push(ref(db,'usahawan'));
+  (id?update(r,data):set(r,data)).then(function(){ showToast('✅ Usahawan berjaya disimpan!'); hideForm('form-usa'); });
+};
+
+window.saveProg = function(){
+  var id=getVal('fpg-id');
+  var data={nama:getVal('fpg-nama'),mula:getVal('fpg-mula'),tamat:getVal('fpg-tamat'),lokasi:getVal('fpg-lokasi'),spesifikasi:getVal('fpg-spesifikasi'),status:getVal('fpg-status'),ppk:getVal('fpg-ppk'),masa:new Date().toISOString()};
+  if(!data.nama){ showToast('Sila isi Nama Program!',true); return; }
+  var r=id?ref(db,'programkhas/'+id):push(ref(db,'programkhas'));
+  (id?update(r,data):set(r,data)).then(function(){ showToast('✅ Program berjaya disimpan!'); hideForm('form-prog'); });
+};
+
+window.saveUser = function(){
+  var user=getVal('nu-user').trim(), pass=getVal('nu-pass').trim(), nama=getVal('nu-nama').trim(), role=getVal('nu-role');
+  if(!user||!pass||!nama){ showToast('Sila isi semua field!',true); return; }
+  set(ref(db,'users/'+user),{password:pass,nama:nama,role:role}).then(function(){
+    showToast('✅ Pengguna berjaya didaftar!');
+    document.getElementById('nu-user').value='';
+    document.getElementById('nu-pass').value='';
+    document.getElementById('nu-nama').value='';
+  });
+};
+
+window.editTanam = function(id){
+  onValue(ref(db,'tanam/'+id),function(snap){
+    if(!snap.exists()) return;
+    var v=snap.val();
+    document.getElementById('ft-id').value=id;
+    document.getElementById('form-tanam-title').textContent='✏️ Kemaskini Rekod Pekebun';
+    setVal('ft-nama',v.nama); setVal('ft-ic',v.ic); setVal('ft-jantina',v.jantina); setVal('ft-tel',v.tel);
+    setVal('ft-kampung',v.kampung); setVal('ft-alamat',v.alamat); setVal('ft-dun',v.dun); setVal('ft-parlimen',v.parlimen);
+    setVal('ft-lot',v.lot); setVal('ft-geran',v.geran); setVal('ft-luas',v.luas); setVal('ft-mukim',v.mukim);
+    setVal('ft-kumpulan',v.kumpulan); setVal('ft-ansuran',v.ansuran); setVal('ft-lawatan',v.lawatan);
+    setVal('ft-tarikh-lawatan',v.tarikhLawatan); setVal('ft-ppk',v.ppk);
+    showForm('form-tanam');
+  },{onlyOnce:true});
+};
+
+window.editPGT = function(id){
+  onValue(ref(db,'pgt/'+id),function(snap){
+    if(!snap.exists()) return;
+    var v=snap.val();
+    document.getElementById('fp-id').value=id;
+    document.getElementById('form-pgt-title').textContent='✏️ Kemaskini Rekod PGT';
+    setVal('fp-nama',v.nama); setVal('fp-ic',v.ic); setVal('fp-lot',v.lot); setVal('fp-luas',v.luas);
+    setVal('fp-jenis',v.jenis); setVal('fp-status',v.status); setVal('fp-ppk',v.ppk);
+    ['jan','feb','mac','apr','mei','jun','jul','ogos','sep','okt','nov','dis'].forEach(function(m){ setVal('fp-'+m,v[m]); });
+    calcTotalPGT(); showForm('form-pgt');
+  },{onlyOnce:true});
+};
+
+window.editPeng = function(id){
+  onValue(ref(db,'pengembangan/'+id),function(snap){
+    if(!snap.exists()) return;
+    var v=snap.val();
+    document.getElementById('fpe-id').value=id;
+    document.getElementById('form-peng-title').textContent='✏️ Kemaskini Aktiviti';
+    setVal('fpe-nama',v.nama); setVal('fpe-tarikh',v.tarikh); setVal('fpe-lokasi',v.lokasi);
+    setVal('fpe-peserta',v.peserta); setVal('fpe-ppk',v.ppk); setVal('fpe-status',v.status); setVal('fpe-laporan',v.laporan);
+    showForm('form-peng');
+  },{onlyOnce:true});
+};
+
+window.editUsa = function(id){
+  onValue(ref(db,'usahawan/'+id),function(snap){
+    if(!snap.exists()) return;
+    var v=snap.val();
+    document.getElementById('fu-id').value=id;
+    document.getElementById('form-usa-title').textContent='✏️ Kemaskini Usahawan';
+    setVal('fu-nama',v.nama); setVal('fu-ic',v.ic); setVal('fu-tel',v.tel); setVal('fu-alamat',v.alamat);
+    setVal('fu-jenis',v.jenis); setVal('fu-status',v.status); setVal('fu-ppk',v.ppk);
+    showForm('form-usa');
+  },{onlyOnce:true});
+};
+
+window.editProg = function(id){
+  onValue(ref(db,'programkhas/'+id),function(snap){
+    if(!snap.exists()) return;
+    var v=snap.val();
+    document.getElementById('fpg-id').value=id;
+    document.getElementById('form-prog-title').textContent='✏️ Kemaskini Program';
+    setVal('fpg-nama',v.nama); setVal('fpg-mula',v.mula); setVal('fpg-tamat',v.tamat); setVal('fpg-lokasi',v.lokasi);
+    setVal('fpg-spesifikasi',v.spesifikasi); setVal('fpg-status',v.status); setVal('fpg-ppk',v.ppk);
+    showForm('form-prog');
+  },{onlyOnce:true});
+};
+
+
+window.editById = function(btn){
+  var id=btn.getAttribute('data-id');
+  var path=btn.closest('tr').querySelector('.btn-del').getAttribute('data-path');
+  if(path==='tanam') editTanam(id);
+  else if(path==='pgt') editPGT(id);
+  else if(path==='pengembangan') editPeng(id);
+  else if(path==='usahawan') editUsa(id);
+  else if(path==='programkhas') editProg(id);
+};
+window.delById = function(btn){
+  var id=btn.getAttribute('data-id');
+  var path=btn.getAttribute('data-path');
+  var name=btn.closest('tr').querySelector('td strong').textContent||id;
+  openDelModal(path,id,name);
+};
+
+window.doLogin = function(){
+  var user=document.getElementById('login-user').value.trim();
+  var pass=document.getElementById('login-pass').value.trim();
+  var err=document.getElementById('login-err');
+  if(!user||!pass){ err.style.display='block'; err.textContent='Sila isi username dan password!'; return; }
+  onValue(ref(db,'users/'+user),function(snap){
+    if(snap.exists()&&snap.val().password===pass){
+      var ud=snap.val();
+      window.currentUser={username:user,nama:ud.nama,role:ud.role};
+      document.getElementById('login-screen').style.display='none';
+      document.getElementById('app-screen').style.display='flex';
+      document.getElementById('sb-name').textContent=ud.nama||user;
+      document.getElementById('sb-role').textContent=ud.role||'';
+      document.getElementById('sb-avatar').textContent=(ud.nama||user).charAt(0).toUpperCase();
+      if(ud.role==='admin'||ud.role==='ketua'){
+        document.getElementById('kpi-label').style.display='block';
+        document.getElementById('kpi-nav').style.display='flex';
+        document.getElementById('rollover-section').style.display='block';
+        document.getElementById('nav-kadar').style.display='flex';
+      }
+      if(ud.role!=='admin') document.getElementById('nav-users').style.display='none';
+      loadStats(); loadTanam(); loadPGT(); loadPeng(); loadUsa(); loadProg(); loadUsers(); loadKPI();
+      // Auto-detect rollover keperluan
+      checkAutoRollover(ud.role);
+      if(ud.role==='admin'||ud.role==='ketua') {
+        loadKadarFromFirebase();
+        // Auto-init kadar ke Firebase kalau belum ada
+        onValue(ref(db,'kadarAnsuran'),function(ks){
+          if(!ks.exists()){
+            set(ref(db,'kadarAnsuran'), KADAR_DEFAULT).then(function(){
+              console.log('Kadar default diinit ke Firebase');
+            });
+          }
+        },{onlyOnce:true});
+      }
+    } else {
+      err.style.display='block'; err.textContent='Username atau password salah!';
+    }
+  },{onlyOnce:true});
+};
+
+window.doLogout = function(){
+  document.getElementById('app-screen').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('login-user').value='';
+  document.getElementById('login-pass').value='';
+};
+
+var toastTimer;
+window.showToast = function(msg,isErr){
+  var t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className='toast'+(isErr?' error':'');
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){ t.classList.remove('show'); },3000);
+};
+
+// ===== KPI HEKTAR =====
+function updateKPIHektar(allRecs){
+  var tahunSemasa=new Date().getFullYear();
+  var semasa=allRecs.filter(function(r){
+    return r.jenisTanam!=='berturut' && r.statusPermohonan!=='Selesai';
+  });
+  var totalLuas=semasa.reduce(function(s,r){ return s+(parseFloat(r.luas)||0); },0);
+  var sasaran=100;
+  var pct=Math.min(100,Math.round(totalLuas/sasaran*100));
+  var el=document.getElementById('kpi-hektar-val');
+  var fill=document.getElementById('kpi-hektar-fill');
+  var pctEl=document.getElementById('kpi-hektar-pct');
+  if(el) el.textContent=totalLuas.toFixed(1);
+  if(fill) fill.style.width=pct+'%';
+  if(pctEl) pctEl.textContent=pct+'% daripada sasaran 100 ha';
+}
+
+// ===== FIX DATA 2025 =====
+function fixData2025(){
+  if(!confirm('⚠️ Ini akan tukar SEMUA rekod yang tahunDaftar < 2026 kepada Berturut 2025.\n\nTeruskan?')) return;
+  var tanamRef=ref(db,'tanam');
+  get(tanamRef).then(function(snap){
+    if(!snap.exists()){ alert('Tiada data dalam Firebase.'); return; }
+    var data=snap.val();
+    var updates={};
+    var count=0;
+    Object.entries(data).forEach(function([key,val]){
+      var tahun=parseInt(val.tahunDaftar)||0;
+      var jenis=val.jenisTanam||'semasa';
+      if(jenis!=='berturut' && jenis!=='selesai' && tahun<2026){
+        updates['tanam/'+key+'/jenisTanam']='berturut';
+        updates['tanam/'+key+'/tahunDaftar']=val.tahunDaftar||2025;
+        count++;
+      }
+    });
+    if(count===0){ alert('✅ Tiada rekod perlu diubah.'); return; }
+    update(ref(db,'/'),updates).then(function(){
+      alert('🎉 Selesai! '+count+' rekod berjaya ditukar ke Berturut 2025.\n\nSila refresh page.');
+    }).catch(function(e){ alert('❌ Error: '+e.message); });
+  }).catch(function(e){ alert('❌ Gagal baca data: '+e.message); });
+}
+
+// ===== AUTO-ROLLOVER =====
+function checkAutoRollover(role){
+  if(role!=='admin'&&role!=='ketua') return;
+  var tahunSemasa=new Date().getFullYear();
+  onValue(ref(db,'tanam'),function(snap){
+    if(!snap.exists()) return;
+    var perlu=Object.entries(snap.val()).filter(function(e){
+      var v=e[1];
+      // Rekod semasa dari tahun lepas = perlu rollover
+      if(v.jenisTanam==='berturut'||v.statusPermohonan==='Selesai') return false;
+      var tahunDaftar=v.tahunDaftar||tahunSemasa;
+      return parseInt(tahunDaftar) < tahunSemasa;
+    });
+    if(perlu.length>0){
+      showToast('⚠️ '+perlu.length+' pekebun perlu Rollover Tahunan! Pergi KPI PPK.',true);
+    }
+  },{onlyOnce:true});
+}
+
+window.openRolloverModal = function(){
+  var tahunSemasa=new Date().getFullYear();
+  var listEl=document.getElementById('rollover-list');
+  listEl.innerHTML='⏳ Memuatkan...';
+  onValue(ref(db,'tanam'),function(snap){
+    if(!snap.exists()){ listEl.innerHTML='<div style="padding:20px;text-align:center;color:var(--text-light);">Tiada rekod untuk rollover.</div>'; return; }
+    var perlu=Object.entries(snap.val()).filter(function(e){
+      var v=e[1];
+      if(v.jenisTanam==='berturut'||v.statusPermohonan==='Selesai') return false;
+      var tahunDaftar=v.tahunDaftar||tahunSemasa;
+      return parseInt(tahunDaftar) < tahunSemasa;
+    });
+    if(!perlu.length){ listEl.innerHTML='<div style="padding:20px;text-align:center;color:var(--text-light);">✅ Tiada pekebun yang perlu rollover.</div>'; }
+    else {
+      var html='';
+      perlu.forEach(function(e){
+        var v=e[1];
+        var ansCurr=parseInt(v.ansuran)||1;
+        var ansNext=ansCurr+1;
+        var selesai=ansNext>5;
+        html+='<div class="rollover-item'+(selesai?' will-selesai':'')+'"><div><strong>'+(v.nama||'')+'</strong><br><span style="color:var(--text-light);">'+v.lot+' • '+v.ppk+' • Ansuran '+ansCurr+'</span></div>';
+        html+='<span style="font-size:11px;font-weight:600;color:'+(selesai?'#c0392b':'#1a6eb5')+';">'+(selesai?'→ SELESAI':'→ Berturut Ansuran '+ansNext)+'</span></div>';
+      });
+      listEl.innerHTML=html;
+    }
+    window._rolloverData=perlu;
+  },{onlyOnce:true});
+  document.getElementById('modal-rollover').classList.add('show');
+};
+
+window.closeRolloverModal = function(){
+  document.getElementById('modal-rollover').classList.remove('show');
+};
+
+window.doRollover = function(){
+  if(!window._rolloverData||!window._rolloverData.length){
+    closeRolloverModal(); return;
+  }
+  var tahunSemasa=new Date().getFullYear();
+  var promises=window._rolloverData.map(function(e){
+    var k=e[0], v=e[1];
+    var ansCurr=parseInt(v.ansuran)||1;
+    var ansNext=ansCurr+1;
+    var selesai=ansNext>5;
+    var updateData={
+      jenisTanam: selesai?'selesai':'berturut',
+      ansuran: selesai?'5':String(ansNext),
+      statusPermohonan: selesai?'Selesai':v.statusPermohonan,
+      tahunRollover: tahunSemasa
+    };
+    return update(ref(db,'tanam/'+k), updateData);
+  });
+  Promise.all(promises).then(function(){
+    closeRolloverModal();
+    showToast('✅ Rollover berjaya! '+window._rolloverData.length+' pekebun dipindah.');
+    loadTanam();
+    loadKPI();
+  });
+};
+
+// ===== KADAR ANSURAN =====
+var KADAR_DEFAULT = {
+  baru: {
+    1: { kadar:12300, bakiTunai:2296, items:[
+      {bil:1,perkara:'Benih Getah',unit:'509 Pokok',rmUnit:9.00,jumlah:4581.00},
+      {bil:2,perkara:'Baja RP',unit:'3 Beg',rmUnit:50.00,jumlah:150.00},
+      {bil:3,perkara:'Baja RISDA 1',unit:'13 Beg',rmUnit:91.00,jumlah:1183.00},
+      {bil:4,perkara:'Racun',unit:'2 Botol',rmUnit:120.00,jumlah:240.00},
+      {bil:5,perkara:'Menebang & Membersih',unit:'1 Hektar',rmUnit:3500.00,jumlah:3500.00},
+      {bil:6,perkara:'Ukur Perimeter',unit:'1 Hektar',rmUnit:350.00,jumlah:350.00},
+      {bil:7,perkara:'Kawalan Penyakit & Musuh',unit:'1 Hektar',rmUnit:56.40,jumlah:56.40},
+      {bil:8,perkara:'Upah Membaris, Melubang & Menanam',unit:'509 Pokok',rmUnit:4.40,jumlah:2239.60},
+      {bil:9,perkara:'Upah Membaja',unit:'3 Pusingan',rmUnit:250.00,jumlah:0},
+      {bil:10,perkara:'Upah Penyelenggaraan Kebun',unit:'2 Pusingan',rmUnit:300.00,jumlah:0}
+    ]},
+    2: { kadar:3000, bakiTunai:2032, items:[
+      {bil:1,perkara:'Baja RISDA 1',unit:'8 Beg',rmUnit:91.00,jumlah:728.00},
+      {bil:2,perkara:'Racun',unit:'2 Botol',rmUnit:120.00,jumlah:240.00},
+      {bil:3,perkara:'Upah Membaja',unit:'3 Pusingan',rmUnit:250.00,jumlah:750.00},
+      {bil:4,perkara:'Upah Penyelenggaraan Kebun',unit:'4 Pusingan',rmUnit:300.00,jumlah:1200.00},
+      {bil:5,perkara:'Benih Sulam',unit:'69 Pokok',rmUnit:9.00,jumlah:0},
+      {bil:6,perkara:'Kawalan Penyakit & Musuh',unit:'1 Hektar',rmUnit:82.00,jumlah:82.00}
+    ]},
+    3: { kadar:2000, bakiTunai:908, items:[
+      {bil:1,perkara:'Baja RISDA 1',unit:'12 Beg',rmUnit:91.00,jumlah:1092.00},
+      {bil:2,perkara:'Upah Membaja',unit:'3 Pusingan',rmUnit:200.00,jumlah:600.00},
+      {bil:3,perkara:'Upah Penyelenggaraan Kebun',unit:'1 Pusingan',rmUnit:250.00,jumlah:250.00},
+      {bil:4,perkara:'Kawalan Penyakit & Musuh',unit:'1 Hektar',rmUnit:58.00,jumlah:58.00},
+      {bil:5,perkara:'Benih Sulam',unit:'15 Pokok',rmUnit:13.50,jumlah:0}
+    ]},
+    4: { kadar:2500, bakiTunai:1472, items:[
+      {bil:1,perkara:'Baja RISDA 1',unit:'4 Beg',rmUnit:91.00,jumlah:364.00},
+      {bil:2,perkara:'Baja RISDA 4',unit:'8 Beg',rmUnit:83.00,jumlah:664.00},
+      {bil:3,perkara:'Upah Membaja',unit:'2 Pusingan',rmUnit:250.00,jumlah:500.00},
+      {bil:4,perkara:'Upah Penyelenggaraan Kebun',unit:'2 Pusingan',rmUnit:300.00,jumlah:600.00},
+      {bil:5,perkara:'Kawalan Penyakit & Musuh',unit:'1 Hektar',rmUnit:372.00,jumlah:372.00}
+    ]},
+    5: { kadar:3200, bakiTunai:1955, items:[
+      {bil:1,perkara:'Baja RISDA 4',unit:'15 Beg',rmUnit:83.00,jumlah:1245.00},
+      {bil:2,perkara:'Upah Membaja',unit:'2 Pusingan',rmUnit:250.00,jumlah:500.00},
+      {bil:3,perkara:'Upah Penyelenggaraan Kebun',unit:'1 Pusingan',rmUnit:500.00,jumlah:500.00},
+      {bil:4,perkara:'Kawalan Penyakit & Musuh',unit:'1 Hektar',rmUnit:955.00,jumlah:955.00}
+    ]}
+  },
+  lama: {
+    1: { kadar:8205, bakiTunai:6708.20, items:[
+      {bil:1,perkara:'Benih Getah (RP)',unit:'7 Pokok',rmUnit:120.40,jumlah:120.40},
+      {bil:2,perkara:'Baja RISDA 1',unit:'27 Beg',rmUnit:33.20,jumlah:896.40},
+      {bil:3,perkara:'Upah Membaja',unit:'3 Pusingan',rmUnit:60.00,jumlah:180.00},
+      {bil:4,perkara:'Upah Penyelenggaraan Kebun',unit:'2 Pusingan',rmUnit:150.00,jumlah:300.00}
+    ]},
+    2: { kadar:1700, bakiTunai:-175.60, items:[
+      {bil:1,perkara:'Baja RISDA 1',unit:'33 Beg',rmUnit:33.20,jumlah:1095.60},
+      {bil:2,perkara:'Upah Membaja',unit:'3 Pusingan',rmUnit:60.00,jumlah:180.00},
+      {bil:3,perkara:'Upah Penyelenggaraan Kebun',unit:'4 Pusingan',rmUnit:150.00,jumlah:600.00}
+    ]},
+    3: { kadar:1400, bakiTunai:-32.00, items:[
+      {bil:1,perkara:'Baja RISDA 1',unit:'35 Beg',rmUnit:33.20,jumlah:1162.00},
+      {bil:2,perkara:'Upah Membaja',unit:'2 Pusingan',rmUnit:60.00,jumlah:120.00},
+      {bil:3,perkara:'Upah Penyelenggaraan Kebun',unit:'1 Pusingan',rmUnit:150.00,jumlah:150.00}
+    ]},
+    4: { kadar:1600, bakiTunai:-625.20, items:[
+      {bil:1,perkara:'Baja RISDA 1',unit:'20 Beg',rmUnit:33.20,jumlah:664.00},
+      {bil:2,perkara:'Baja RISDA 4',unit:'36 Beg',rmUnit:31.70,jumlah:1141.20},
+      {bil:3,perkara:'Upah Membaja',unit:'2 Pusingan',rmUnit:60.00,jumlah:120.00},
+      {bil:4,perkara:'Upah Penyelenggaraan Kebun',unit:'2 Pusingan',rmUnit:150.00,jumlah:300.00}
+    ]},
+    5: { kadar:1900, bakiTunai:-906.00, items:[
+      {bil:1,perkara:'Baja RISDA 4',unit:'80 Beg',rmUnit:31.70,jumlah:2536.00},
+      {bil:2,perkara:'Upah Membaja',unit:'2 Pusingan',rmUnit:60.00,jumlah:120.00},
+      {bil:3,perkara:'Upah Penyelenggaraan Kebun',unit:'1 Pusingan',rmUnit:150.00,jumlah:150.00}
+    ]}
+  }
+};
+
+var currentKadarTab='baru';
+
+window.switchKadarTab = function(tab){
+  currentKadarTab=tab;
+  document.getElementById('kadar-baru-section').style.display=tab==='baru'?'block':'none';
+  document.getElementById('kadar-lama-section').style.display=tab==='lama'?'block':'none';
+  document.getElementById('kadar-peruntukan-section').style.display=tab==='peruntukan'?'block':'none';
+  document.getElementById('tab-kadar-baru').className='kadar-vtab'+(tab==='baru'?' active-baru':'');
+  document.getElementById('tab-kadar-lama').className='kadar-vtab'+(tab==='lama'?' active-lama':'');
+  document.getElementById('tab-kadar-peruntukan').className='kadar-vtab'+(tab==='peruntukan'?' active-baru':'');
+  if(tab==='peruntukan') loadPeruntukan();
+};
+
+var ansColors=['ans1','ans2','ans3','ans4','ans5'];
+
+function renderKadarCards(version, containerId, data){
+  var html='';
+  for(var a=1;a<=5;a++){
+    var d=data[a];
+    var baki=d.bakiTunai;
+    var bakiColor=baki>=0?'#1e7a56':'#c0392b';
+    html+='<div class="kadar-ansuran-card">';
+    html+='<div class="kadar-card-hdr '+ansColors[a-1]+'">';
+    html+='<div><h3>📋 Ansuran '+a+'</h3><div class="kadar-baki">Baki Tunai: <strong style="color:'+(baki>=0?'#a8f5d0':'#ffb3b3')+'">RM '+baki.toFixed(2)+'/ha</strong></div></div>';
+    html+='<div class="kadar-jumlah">RM <input type="number" id="kadar-'+version+'-'+a+'-jumlah" value="'+d.kadar+'" style="background:transparent;border:1px solid rgba(255,255,255,0.4);color:#fff;width:90px;padding:4px 8px;border-radius:6px;font-size:16px;font-weight:800;text-align:right;" onchange="updateKadarJumlah(\''+version+'\','+a+')"> /ha</div>';
+    html+='</div>';
+    html+='<table class="kadar-table"><thead><tr><th>Bil</th><th>Perkara / Jenis Kerja</th><th>Kuantiti/Unit</th><th>RM/Unit</th><th>Jumlah Kos (RM)</th></tr></thead><tbody>';
+    d.items.forEach(function(item,idx){
+      html+='<tr>';
+      html+='<td>'+item.bil+'</td>';
+      html+='<td><input type="text" value="'+item.perkara+'" id="k-'+version+'-'+a+'-'+idx+'-perkara" /></td>';
+      html+='<td><input type="text" value="'+item.unit+'" id="k-'+version+'-'+a+'-'+idx+'-unit" style="width:90px;" /></td>';
+      html+='<td><input type="number" step="0.01" value="'+item.rmUnit+'" id="k-'+version+'-'+a+'-'+idx+'-rm" style="width:80px;" onchange="recalcItem(\''+version+'\','+a+','+idx+')" /></td>';
+      html+='<td><input type="number" step="0.01" value="'+item.jumlah+'" id="k-'+version+'-'+a+'-'+idx+'-jumlah" style="width:90px;" /></td>';
+      html+='</tr>';
+    });
+    html+='</tbody></table>';
+    html+='<div style="padding:10px 14px;background:var(--cream);display:flex;gap:8px;">';
+    html+='<button onclick="addKadarItem(\''+version+'\','+a+')" style="padding:5px 12px;background:var(--primary-pale);color:var(--primary);border:none;border-radius:6px;font-size:11px;cursor:pointer;">+ Tambah Perkara</button>';
+    html+='</div>';
+    html+='</div>';
+  }
+  document.getElementById(containerId).innerHTML=html;
+}
+
+window.recalcItem = function(ver, ans, idx){
+  var rm=parseFloat(document.getElementById('k-'+ver+'-'+ans+'-'+idx+'-rm').value)||0;
+  var unitStr=document.getElementById('k-'+ver+'-'+ans+'-'+idx+'-unit').value||'';
+  var qty=parseFloat(unitStr.split(' ')[0])||0;
+  if(qty>0) document.getElementById('k-'+ver+'-'+ans+'-'+idx+'-jumlah').value=(rm*qty).toFixed(2);
+};
+
+window.updateKadarJumlah = function(ver, ans){
+  // Update display kadar
+};
+
+window.addKadarItem = function(ver, ans){
+  showToast('Simpan dulu sebelum tambah perkara baru.',true);
+};
+
+function loadKadarFromFirebase(){
+  onValue(ref(db,'kadarAnsuran'),function(snap){
+    var data = snap.exists() ? snap.val() : KADAR_DEFAULT;
+    renderKadarCards('baru','kadar-baru-cards', data.baru||KADAR_DEFAULT.baru);
+    renderKadarCards('lama','kadar-lama-cards', data.lama||KADAR_DEFAULT.lama);
+  },{onlyOnce:true});
+}
+
+window.saveAllKadar = function(){
+  var saved={baru:{},lama:{}};
+  ['baru','lama'].forEach(function(ver){
+    for(var a=1;a<=5;a++){
+      var kadarEl=document.getElementById('kadar-'+ver+'-'+a+'-jumlah');
+      var kadar=kadarEl?parseFloat(kadarEl.value)||0:KADAR_DEFAULT[ver][a].kadar;
+      var items=[];
+      var idx=0;
+      while(document.getElementById('k-'+ver+'-'+a+'-'+idx+'-perkara')){
+        items.push({
+          bil:idx+1,
+          perkara:document.getElementById('k-'+ver+'-'+a+'-'+idx+'-perkara').value,
+          unit:document.getElementById('k-'+ver+'-'+a+'-'+idx+'-unit').value,
+          rmUnit:parseFloat(document.getElementById('k-'+ver+'-'+a+'-'+idx+'-rm').value)||0,
+          jumlah:parseFloat(document.getElementById('k-'+ver+'-'+a+'-'+idx+'-jumlah').value)||0
+        });
+        idx++;
+      }
+      var totalKos=items.reduce(function(s,i){ return s+i.jumlah; },0);
+      saved[ver][a]={ kadar:kadar, bakiTunai:kadar-totalKos, items:items };
+    }
+  });
+  set(ref(db,'kadarAnsuran'),saved).then(function(){
+    showToast('✅ Kadar ansuran berjaya disimpan!');
+    KADAR_DEFAULT=saved;
+  });
+};
+
+function loadPeruntukan(){
+  onValue(ref(db,'tanam'),function(snap){
+    if(!snap.exists()){ document.getElementById('peruntukan-grid').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--text-light);">Tiada data pekebun.</div>'; return; }
+    var recs=Object.values(snap.val());
+    var totalPekebun=recs.length;
+    var totalLuas=recs.reduce(function(s,r){ return s+(parseFloat(r.luas)||0); },0);
+
+    onValue(ref(db,'kadarAnsuran'),function(kSnap){
+      var kadar=kSnap.exists()?kSnap.val():KADAR_DEFAULT;
+      var gridHTML='';
+      var grandTotal=0;
+
+      // Group by ansuran
+      for(var a=1;a<=5;a++){
+        var ansPekebun=recs.filter(function(r){ return parseInt(r.ansuran)===a; });
+        if(!ansPekebun.length) continue;
+        var ansLuas=ansPekebun.reduce(function(s,r){ return s+(parseFloat(r.luas)||0); },0);
+        var ans2026=ansPekebun.filter(function(r){ return (r.tahunDaftar||0)>=2026; });
+        var ansLama=ansPekebun.filter(function(r){ return (r.tahunDaftar||0)<2026; });
+        var rm2026=ans2026.reduce(function(s,r){ return s+(parseFloat(r.luas)||0)*(kadar.baru[a]?kadar.baru[a].kadar:0); },0);
+        var rmLama=ansLama.reduce(function(s,r){ return s+(parseFloat(r.luas)||0)*(kadar.lama[a]?kadar.lama[a].kadar:0); },0);
+        var total=rm2026+rmLama;
+        grandTotal+=total;
+        gridHTML+='<div class="peruntukan-card">';
+        gridHTML+='<h4>📋 Ansuran '+a+' ('+ansPekebun.length+' pekebun | '+ansLuas.toFixed(2)+' ha)</h4>';
+        gridHTML+='<div class="perun-row"><span>Kadar Baru 2026 ('+ans2026.length+' pekebun)</span><strong>RM '+rm2026.toFixed(2)+'</strong></div>';
+        gridHTML+='<div class="perun-row"><span>Kadar Lama RMKe-12 ('+ansLama.length+' pekebun)</span><strong>RM '+rmLama.toFixed(2)+'</strong></div>';
+        gridHTML+='<div class="perun-total"><span>Jumlah Peruntukan</span><strong>RM '+total.toFixed(2)+'</strong></div>';
+        gridHTML+='</div>';
+      }
+
+      document.getElementById('peruntukan-grid').innerHTML=gridHTML||'<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-light);">Tiada data.</div>';
+      document.getElementById('perun-total-pekebun').textContent=totalPekebun;
+      document.getElementById('perun-total-luas').textContent=totalLuas.toFixed(2)+' ha';
+      document.getElementById('perun-total-rm').textContent='RM '+grandTotal.toFixed(2);
+    },{onlyOnce:true});
+  },{onlyOnce:true});
+}
+
+// Cache data pekebun untuk kewangan
+var _allTanamData = [];
+
+function getKadarForRek(v, kadarData){
+  var ans = parseInt(v.ansuran)||1;
+  var tahun = parseInt(v.tahunDaftar)||2025;
+  var isBaruKadar = tahun >= 2026;
+  var kadarVer = isBaruKadar ? (kadarData.baru||KADAR_DEFAULT.baru) : (kadarData.lama||KADAR_DEFAULT.lama);
+  var kadarAns = kadarVer[ans] || kadarVer[1];
+  return { kadar: kadarAns.kadar||0, baki: kadarAns.bakiTunai||0, versi: isBaruKadar?'Baru 2026':'Lama RMKe-12' };
+}
+
+window.renderKewangan = function(){
+  var ppkF = (document.getElementById('kew-filter-ppk')||{}).value||'semua';
+  var jenisF = (document.getElementById('kew-filter-jenis')||{}).value||'semua';
+  var ansF = (document.getElementById('kew-filter-ansuran')||{}).value||'semua';
+
+  onValue(ref(db,'kadarAnsuran'), function(kSnap){
+    var kadarData = kSnap.exists() ? kSnap.val() : KADAR_DEFAULT;
+    var recs = _allTanamData.filter(function(v){
+      if(ppkF!=='semua' && v.ppk!==ppkF) return false;
+      if(jenisF!=='semua' && (v.jenisTanam||'semasa')!==jenisF) return false;
+      if(ansF!=='semua' && String(v.ansuran||'1')!==ansF) return false;
+      return true;
+    });
+
+    // Summary cards
+    var totalPekebun=recs.length;
+    var totalLuas=recs.reduce(function(s,v){ return s+(parseFloat(v.luas)||0); },0);
+    var totalBantuan=0, totalBaki=0;
+    recs.forEach(function(v){
+      var k=getKadarForRek(v,kadarData);
+      var luas=parseFloat(v.luas)||0;
+      totalBantuan+=luas*k.kadar;
+      totalBaki+=luas*k.baki;
+    });
+    var ppks=['Rozaimah','Jude Hyden','Armizi'];
+    var ppkColors=['#e91e63','#1a6eb5','#1e7a56'];
+    var cardHTML='';
+    [{lbl:'Jumlah Pekebun',val:totalPekebun,sub:'rekod',color:'#0a3d2e'},
+     {lbl:'Jumlah Luas',val:totalLuas.toFixed(2)+' ha',sub:'keseluruhan',color:'#1a6eb5'},
+     {lbl:'Jumlah Bantuan',val:'RM '+totalBantuan.toFixed(2),sub:'diperlukan',color:'#1e7a56'},
+     {lbl:'Baki Tunai',val:'RM '+totalBaki.toFixed(2),sub:totalBaki>=0?'lebihan':'kekurangan',color:totalBaki>=0?'#1e7a56':'#c0392b'}
+    ].forEach(function(c){
+      cardHTML+='<div style="background:var(--white);border-radius:12px;padding:14px;border:1px solid var(--border);text-align:center;">';
+      cardHTML+='<div style="font-size:10px;color:var(--text-light);text-transform:uppercase;margin-bottom:4px;">'+c.lbl+'</div>';
+      cardHTML+='<div style="font-size:16px;font-weight:800;color:'+c.color+';">'+c.val+'</div>';
+      cardHTML+='<div style="font-size:10px;color:var(--text-light);">'+c.sub+'</div></div>';
+    });
+    var el=document.getElementById('kew-summary-cards'); if(el) el.innerHTML=cardHTML;
+
+    // Ringkasan by Ansuran & PPK
+    var ansRows=''; var grandJumPekebun=0,grandLuas=0,grandBantuan=0;
+    for(var a=1;a<=5;a++){
+      var ansRecs=_allTanamData.filter(function(v){ return parseInt(v.ansuran||1)===a; });
+      if(ansRecs.length===0) continue;
+      var k2026=KADAR_DEFAULT.baru[a]||{kadar:0};
+      var kLama=KADAR_DEFAULT.lama[a]||{kadar:0};
+      var ppkCounts=ppks.map(function(p){ return ansRecs.filter(function(v){ return v.ppk===p; }).length; });
+      var ansLuas=ansRecs.reduce(function(s,v){ return s+(parseFloat(v.luas)||0); },0);
+      var ansBantuan=ansRecs.reduce(function(s,v){
+        var ki=getKadarForRek(v,kadarData);
+        return s+(parseFloat(v.luas)||0)*ki.kadar;
+      },0);
+      grandJumPekebun+=ansRecs.length; grandLuas+=ansLuas; grandBantuan+=ansBantuan;
+      ansRows+='<tr>';
+      ansRows+='<td><strong>Ansuran '+a+'</strong></td>';
+      ansRows+='<td style="font-size:10px;">Baru: RM '+k2026.kadar+' | Lama: RM '+kLama.kadar+'</td>';
+      ppkCounts.forEach(function(c,i){ ansRows+='<td style="color:'+ppkColors[i]+'"><strong>'+c+'</strong></td>'; });
+      ansRows+='<td>'+ansRecs.length+'</td>';
+      ansRows+='<td>'+ansLuas.toFixed(2)+'</td>';
+      ansRows+='<td style="background:#e8f7f0;color:#1e7a56;font-weight:700;">RM '+ansBantuan.toFixed(2)+'</td>';
+      ansRows+='</tr>';
+    }
+    ansRows+='<tr style="background:#e8f7f0;font-weight:700;"><td><strong>JUMLAH</strong></td><td></td><td></td><td></td><td></td><td><strong>'+grandJumPekebun+'</strong></td><td><strong>'+grandLuas.toFixed(2)+'</strong></td><td style="color:#1e7a56;"><strong>RM '+grandBantuan.toFixed(2)+'</strong></td></tr>';
+    var rt=document.getElementById('tbody-kew-ringkasan'); if(rt) rt.innerHTML=ansRows;
+
+    // Detail per pekebun
+    var detailRows='';
+    recs.forEach(function(v){
+      var ki=getKadarForRek(v,kadarData);
+      var luas=parseFloat(v.luas)||0;
+      var bantuan=luas*ki.kadar;
+      var baki=luas*ki.baki;
+      var bakiColor=baki>=0?'#1e7a56':'#c0392b';
+      detailRows+='<tr>';
+      detailRows+='<td><strong>'+(v.nama||'')+'</strong></td>';
+      detailRows+='<td>'+(v.lot||'')+'</td>';
+      detailRows+='<td>'+(v.ppk||'')+'</td>';
+      detailRows+='<td style="font-size:10px;">'+(v.kategoriDetail||v.kumpulan||'—')+'</td>';
+      detailRows+='<td>'+luas.toFixed(4)+'</td>';
+      detailRows+='<td>Ansuran '+(v.ansuran||1)+'</td>';
+      detailRows+='<td><span class="status-badge '+(ki.versi==='Baru 2026'?'sb-lulus':'sb-proses')+'">'+ki.versi+'</span></td>';
+      detailRows+='<td style="background:#e8f7f0;font-weight:600;">RM '+ki.kadar.toLocaleString()+'</td>';
+      detailRows+='<td style="background:#e8f7f0;font-weight:700;">RM '+bantuan.toFixed(2)+'</td>';
+      detailRows+='<td style="background:#fff5e6;font-weight:700;color:'+bakiColor+';">RM '+baki.toFixed(2)+'</td>';
+      detailRows+='</tr>';
+    });
+    var dt=document.getElementById('tbody-kew-detail');
+    if(dt) dt.innerHTML=detailRows||'<tr><td colspan="10" class="tbl-empty">Tiada rekod.</td></tr>';
+  },{onlyOnce:true});
+};
+
+window.exportKewanganExcel = function(){
+  var t1=document.getElementById('tbl-kew-ringkasan');
+  var t2=document.getElementById('tbl-kew-detail');
+  var html='<html><head><meta charset="UTF-8"></head><body>';
+  html+='<h2>Laporan Kewangan Ansuran Tanam Semula — i-Ris RISDA Stesen Lundu</h2>';
+  if(t1) html+='<h3>Ringkasan Peruntukan by Ansuran & PPK</h3>'+t1.outerHTML;
+  if(t2) html+='<h3>Detail Bantuan Per Pekebun</h3>'+t2.outerHTML;
+  html+='</body></html>';
+  var blob=new Blob([html],{type:'application/vnd.ms-excel'});
+  var a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='Laporan_Kewangan_TanamSemula_'+new Date().toISOString().slice(0,10)+'.xls';
+  a.click(); showToast('✅ Excel berjaya diexport!');
+};
+
+window.exportKewanganPDF = function(){
+  window.print();
+};
+
+window.calcTotalPGT = function(){
+  var months=['jan','feb','mac','apr','mei','jun','jul','ogos','sep','okt','nov','dis'];
+  var total=months.reduce(function(s,m){
+    var el=document.getElementById('fp-'+m);
+    return s+(el?parseFloat(el.value)||0:0);
+  },0);
+  document.getElementById('fp-total').textContent='RM '+total.toFixed(2);
+};
+
+</script>
+
+<script>
+window.showPage = function(id,navEl){
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  var pg=document.getElementById('pg-'+id);
+  if(pg) pg.classList.add('active');
+  if(navEl){
+    document.querySelectorAll('.nav-item').forEach(function(i){ i.classList.remove('active'); });
+    navEl.classList.add('active');
+  }
+  // Reset Tanam Semula tabs bila masuk page tanam
+  if(id==='tanam'){
+    ['ts-semasa','ts-berturut','ts-laporan-ts'].forEach(function(tid){
+      var el=document.getElementById(tid); if(el) el.style.display='none';
+    });
+    var semEl=document.getElementById('ts-semasa');
+    if(semEl) semEl.style.display='block';
+    document.querySelectorAll('.ts-tab').forEach(function(b){ b.classList.remove('active'); });
+    var firstTab=document.querySelector('.ts-tab.semasa');
+    if(firstTab) firstTab.classList.add('active');
+  }
+  var titles={
+    dashboard:['Dashboard Utama','Paparan keseluruhan sistem i-Ris'],
+    tanam:['Tanam Semula & Bekalan','Rekod pekebun, lot & ansuran'],
+    produktiviti:['Produktiviti & Pemasaran','Program Getah Matang (PGT) — Jualan Bulanan'],
+    pengembangan:['Pengembangan','Aktiviti, peserta & laporan PPK'],
+    usahawan:['Usahawan AET','Pendapatan bulanan usahawan'],
+    programkhas:['Program Khas','Pelaksanaan & status program'],
+    kpi:['KPI PPK — Dashboard Prestasi','🔒 Akses Ketua Stesen Sahaja'],
+    kadar:['Kadar Ansuran','Pengurusan kadar & semakan peruntukan'],
+    users:['Urus Pengguna','Daftar & urus akaun pengguna']
+  };
+  if(titles[id]){
+    document.getElementById('page-title').textContent=titles[id][0];
+    document.getElementById('page-sub').textContent=titles[id][1];
+  }
+};
+
+window.showForm = function(id){
+  document.getElementById(id).style.display='block';
+  document.getElementById(id).scrollIntoView({behavior:'smooth'});
+};
+
+window.hideForm = function(id){
+  document.getElementById(id).style.display='none';
+};
+
+window.clearForm = function(prefix){
+  document.querySelectorAll('[id^="'+prefix+'-"]').forEach(function(el){
+    if(el.type!=='hidden'){ el.value=''; if(el.tagName==='SELECT') el.selectedIndex=0; }
+  });
+  document.querySelectorAll('[id^="'+prefix+'"]').forEach(function(el){
+    if(el.type==='hidden') el.value='';
+  });
+  var tot=document.getElementById('fp-total');
+  if(tot) tot.textContent='RM 0.00';
+};
+
+window.filterTable = function(tblId,q){
+  document.querySelectorAll('#'+tblId+' tbody tr').forEach(function(r){
+    r.style.display=r.textContent.toLowerCase().includes(q.toLowerCase())?'':'none';
+  });
+};
+
+window.switchPGTTab = function(showId,btn){
+  document.getElementById('pgt-list').style.display='none';
+  document.getElementById('pgt-laporan').style.display='none';
+  document.getElementById(showId).style.display='block';
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+};
+
+var d=new Date();
+var days=['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'];
+var mons=['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogos','Sep','Okt','Nov','Dis'];
+document.getElementById('datebadge').textContent='📅 '+days[d.getDay()]+', '+d.getDate()+' '+mons[d.getMonth()]+' '+d.getFullYear();
+</script>
+</body>
+</html>
