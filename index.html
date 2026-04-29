@@ -162,9 +162,11 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--cream);color:va
 .ts-tab{flex:1;padding:11px;border:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;background:var(--white);color:var(--text-light);}
 .ts-tab.semasa.active{background:linear-gradient(135deg,#1e7a56,#3daa7a);color:#fff;}
 .ts-tab.berturut.active{background:linear-gradient(135deg,#1a6eb5,#5ba3e0);color:#fff;}
+.ts-tab.matang.active{background:linear-gradient(135deg,#6d4c41,#a1765a);color:#fff;}
 .ts-badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;margin-left:6px;}
 .badge-semasa{background:rgba(30,122,86,0.15);color:#1e7a56;}
 .badge-berturut{background:rgba(26,110,181,0.15);color:#1a6eb5;}
+.badge-matang{background:rgba(109,76,65,0.15);color:#6d4c41;}
 .ts-sub-tab-bar{display:flex;gap:4px;margin-bottom:14px;background:var(--white);padding:5px;border-radius:10px;border:1px solid var(--border);}
 .ts-sub-tab{flex:1;padding:7px;border:none;border-radius:7px;font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer;color:var(--text-light);background:transparent;transition:all 0.2s;}
 .ts-sub-tab.active{background:var(--primary);color:#fff;}
@@ -385,6 +387,7 @@ tr:hover td{background:rgba(30,122,86,0.03);}
         <div class="ts-tab-bar">
           <button class="ts-tab semasa active" onclick="switchTSTab('semasa',this)">🟢 Semasa (2026) <span class="ts-badge badge-semasa" id="badge-semasa">0</span></button>
           <button class="ts-tab berturut" onclick="switchTSTab('berturut',this)">🔵 Berturut (2025 ke bawah) <span class="ts-badge badge-berturut" id="badge-berturut">0</span></button>
+          <button class="ts-tab matang" onclick="switchTSTab('matang',this)">🌳 Kebun Matang <span class="ts-badge badge-matang" id="badge-matang">0</span></button>
           <button class="ts-tab" onclick="switchTSTab('kewangan',this)">💰 Laporan Kewangan</button>
           <button class="ts-tab" onclick="switchTSTab('laporan-ts',this)">📊 Laporan PPK</button>
         </div>
@@ -459,6 +462,28 @@ tr:hover td{background:rgba(30,122,86,0.03);}
               </table>
             </div>
             <div class="pagination" id="pg-berturut"></div>
+          </div>
+        </div>
+
+        <!-- ===== KEBUN MATANG ===== -->
+        <div id="ts-matang" style="display:none;">
+          <div class="tbl-panel">
+            <div class="tbl-top">
+              <h3>🌳 Kebun Matang (Ansuran Selesai)</h3>
+              <div class="tbl-actions">
+                <input class="search-box" placeholder="🔍 Cari nama/IC..." oninput="filterTable('tbl-tanam-matang',this.value)" />
+              </div>
+            </div>
+            <div style="background:#f5ede8;border:1px solid rgba(109,76,65,0.2);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#6d4c41;">
+              🌳 Pekebun dalam senarai ini telah <strong>tamat semua ansuran bantuan (Ansuran 5)</strong>. Kebun mereka kini matang dan tiada bantuan selanjutnya.
+            </div>
+            <div style="overflow-x:auto;">
+              <table id="tbl-tanam-matang">
+                <thead><tr><th>Nama</th><th>No. IC</th><th>No. Lot</th><th>Luas (ha)</th><th>TSB/Kategori</th><th>PPK</th><th>Tahun Daftar</th><th>Tahun Matang</th><th>Tindakan</th></tr></thead>
+                <tbody id="tbody-tanam-matang"><tr><td colspan="9" class="tbl-empty">⏳ Memuatkan...</td></tr></tbody>
+              </table>
+            </div>
+            <div class="pagination" id="pg-matang"></div>
           </div>
         </div>
 
@@ -1295,7 +1320,7 @@ function renderBerurutPage(){
 
 // ===== TANAM SEMULA V2 =====
 window.switchTSTab = function(tab, el){
-  ['ts-semasa','ts-berturut','ts-kewangan','ts-laporan-ts'].forEach(function(id){
+  ['ts-semasa','ts-berturut','ts-matang','ts-kewangan','ts-laporan-ts'].forEach(function(id){
     var el2=document.getElementById(id); if(el2) el2.style.display='none';
   });
   var show=document.getElementById('ts-'+tab); if(show) show.style.display='block';
@@ -1391,14 +1416,15 @@ window.saveTanam = function(){
 
 function loadTanam(){
   onValue(ref(db,'tanam'),function(snap){
-    var semasa=[], berturut=[], bantuanList=[], allRecs=[];
+    var semasa=[], berturut=[], matang=[], bantuanList=[], allRecs=[];
     if(snap.exists()){
       Object.entries(snap.val()).forEach(function(entry){
         var k=entry[0], v=entry[1];
         allRecs.push(v);
         var jenis=v.jenisTanam||'semasa';
-        if(jenis==='berturut') berturut.push({k:k,v:v});
-        else if(jenis!=='selesai') semasa.push({k:k,v:v});
+        if(jenis==='matang'||jenis==='selesai') matang.push({k:k,v:v});
+        else if(jenis==='berturut') berturut.push({k:k,v:v});
+        else semasa.push({k:k,v:v});
         if(v.statusPermohonan==='Lulus') bantuanList.push({k:k,v:v});
       });
     }
@@ -1409,6 +1435,7 @@ function loadTanam(){
     // Badge counts
     document.getElementById('badge-semasa').textContent=semasa.length;
     document.getElementById('badge-berturut').textContent=berturut.length;
+    document.getElementById('badge-matang').textContent=matang.length;
     // Update stats dashboard
     var el=document.getElementById('st-tanam'); if(el) el.textContent=semasa.length+berturut.length;
 
@@ -1422,6 +1449,28 @@ function loadTanam(){
     _pgSemasa=1; _pgBerturut=1;
     renderSemasaPage();
     renderBerurutPage();
+
+    // Render Kebun Matang
+    var tbM=document.getElementById('tbody-tanam-matang');
+    if(!matang.length){ tbM.innerHTML='<tr><td colspan="9" class="tbl-empty">Tiada rekod kebun matang lagi.</td></tr>'; }
+    else {
+      var rowsM='';
+      matang.forEach(function(item){
+        var v=item.v, k=item.k;
+        rowsM+='<tr>';
+        rowsM+='<td><strong>'+(v.nama||'')+'</strong></td>';
+        rowsM+='<td>'+(v.ic||'')+'</td>';
+        rowsM+='<td>'+(v.lot||'')+'</td>';
+        rowsM+='<td>'+(v.luas||'')+'</td>';
+        rowsM+='<td>'+(v.kumpulan||v.kategori||'—')+'</td>';
+        rowsM+='<td>'+(v.ppk||'—')+'</td>';
+        rowsM+='<td>'+(v.tahunDaftar||'—')+'</td>';
+        rowsM+='<td>'+(v.tahunMatang||v.tahunRollover||'—')+'</td>';
+        rowsM+='<td><button class="btn-edit" onclick="tukarKeMatang(\''+k+'\',false)">↩️ Kembalikan</button></td>';
+        rowsM+='</tr>';
+      });
+      tbM.innerHTML=rowsM;
+    }
 
     // Render Bantuan
     var tb3=document.getElementById('tbody-bantuan');
@@ -1517,7 +1566,7 @@ function renderBerurutRows(pageData){
     rows2+='<td style="background:#e8f2ff;font-weight:600;">RM '+ki.kadar.toLocaleString()+'</td>';
     rows2+='<td style="background:#e8f2ff;font-weight:700;">RM '+bantuan.toFixed(2)+'</td>';
     rows2+='<td style="background:#e8f2ff;color:'+(baki>=0?'#1e7a56':'#c0392b')+';font-weight:700;">RM '+baki.toFixed(2)+'</td>';
-    rows2+='<td><button class="btn-edit" onclick="editTanam(\''+k+'\')">✏️ Edit</button> <button class="btn-del" onclick="openDelModal(\'tanam\',\''+k+'\',\''+v.nama.replace(/'/g,'')+'\')">🗑️</button></td>';
+    rows2+='<td><button class="btn-edit" onclick="editTanam(\''+k+'\')">✏️ Edit</button> <button class="btn-del" onclick="openDelModal(\'tanam\',\''+k+'\',\''+v.nama.replace(/'/g,'')+'\')">🗑️</button>'+(parseInt(v.ansuran)>=5?' <button style="padding:3px 8px;background:#6d4c41;color:#fff;border:none;border-radius:6px;font-size:10px;cursor:pointer;" onclick="tukarKeMatang(\''+k+'\',true)">🌳 Matang</button>':'')+'</td>';
     rows2+='</tr>';
   });
   tb2.innerHTML=rows2;
@@ -1832,6 +1881,8 @@ window.doLogin = function(){
         document.getElementById('rollover-section').style.display='block';
         var f=document.getElementById('fix2025-bar');
         if(f) f.style.display='flex';
+        // Auto detect kebun matang
+        setTimeout(autoDetectMatang, 3000);
         document.getElementById('nav-kadar').style.display='flex';
       }
       if(ud.role!=='admin') document.getElementById('nav-users').style.display='none';
@@ -1887,6 +1938,62 @@ function updateKPIHektar(allRecs){
   if(el) el.textContent=totalLuas.toFixed(1);
   if(fill) fill.style.width=pct+'%';
   if(pctEl) pctEl.textContent=pct+'% daripada sasaran 100 ha';
+}
+
+// ===== KEBUN MATANG =====
+window.tukarKeMatang = function(key, toMatang){
+  if(toMatang===undefined) toMatang=true;
+  var msg = toMatang
+    ? 'Tukar rekod ini ke KEBUN MATANG?\n\nPekebun ini akan dipindah ke tab Kebun Matang.'
+    : 'Kembalikan rekod ini ke BERTURUT?\n\nPekebun ini akan dipindah balik ke tab Berturut.';
+  var modal=document.getElementById('modal-fix2025');
+  document.getElementById('fix2025-msg').innerHTML=msg.replace(/\n/g,'<br>');
+  document.getElementById('fix2025-msg').style.display='block';
+  document.getElementById('fix2025-progress').style.display='none';
+  document.getElementById('fix2025-actions').style.display='flex';
+  document.getElementById('fix2025-actions').innerHTML=
+    '<button style="padding:10px 20px;background:var(--cream);border:1px solid var(--border);border-radius:9px;font-family:\'Plus Jakarta Sans\',sans-serif;font-size:13px;cursor:pointer;" onclick="document.getElementById(\'modal-fix2025\').classList.remove(\'show\')">Batal</button>'+
+    '<button style="padding:10px 20px;background:'+(toMatang?'#6d4c41':'#1a6eb5')+';color:#fff;border:none;border-radius:9px;font-family:\'Plus Jakarta Sans\',sans-serif;font-size:13px;font-weight:700;cursor:pointer;" onclick="confirmTukarMatang(\''+key+'\','+(toMatang?'true':'false')+')">Ya, Tukar!</button>';
+  modal.classList.add('show');
+};
+
+window.confirmTukarMatang = function(key, toMatang){
+  var tahunSemasa=new Date().getFullYear();
+  var updateData = toMatang
+    ? {jenisTanam:'matang', tahunMatang:tahunSemasa}
+    : {jenisTanam:'berturut'};
+  update(ref(db,'tanam/'+key), updateData).then(function(){
+    document.getElementById('modal-fix2025').classList.remove('show');
+    showToast(toMatang?'🌳 Rekod dipindah ke Kebun Matang!':'↩️ Rekod dikembalikan ke Berturut!');
+    loadTanam();
+  }).catch(function(e){ showToast('❌ Error: '+e.message, true); });
+};
+
+// ===== AUTO DETECT KEBUN MATANG =====
+function autoDetectMatang(){
+  var tahunSemasa=new Date().getFullYear();
+  onValue(ref(db,'tanam'),function(snap){
+    if(!snap.exists()) return;
+    var updates={};
+    var count=0;
+    Object.entries(snap.val()).forEach(function([key,val]){
+      var jenis=val.jenisTanam||'semasa';
+      var ansuran=parseInt(val.ansuran)||0;
+      var tahunDaftar=parseInt(val.tahunDaftar)||tahunSemasa;
+      // Auto tukar ke matang jika ansuran 5 dan sudah melebihi tahun daftar lebih 5 tahun
+      if(jenis==='berturut' && ansuran>=5 && (tahunSemasa - tahunDaftar)>=5){
+        updates['tanam/'+key+'/jenisTanam']='matang';
+        updates['tanam/'+key+'/tahunMatang']=tahunSemasa;
+        count++;
+      }
+    });
+    if(count>0){
+      update(ref(db,'/'),updates).then(function(){
+        showToast('🌳 '+count+' pekebun auto dipindah ke Kebun Matang!');
+        loadTanam();
+      });
+    }
+  },{onlyOnce:true});
 }
 
 // ===== FIX DATA 2025 =====
@@ -1977,7 +2084,7 @@ window.openRolloverModal = function(){
         var ansNext=ansCurr+1;
         var selesai=ansNext>5;
         html+='<div class="rollover-item'+(selesai?' will-selesai':'')+'"><div><strong>'+(v.nama||'')+'</strong><br><span style="color:var(--text-light);">'+v.lot+' • '+v.ppk+' • Ansuran '+ansCurr+'</span></div>';
-        html+='<span style="font-size:11px;font-weight:600;color:'+(selesai?'#c0392b':'#1a6eb5')+';">'+(selesai?'→ SELESAI':'→ Berturut Ansuran '+ansNext)+'</span></div>';
+        html+='<span style="font-size:11px;font-weight:600;color:'+(selesai?'#6d4c41':'#1a6eb5')+';">'+(selesai?'→ 🌳 Kebun Matang':'→ Berturut Ansuran '+ansNext)+'</span></div>';
       });
       listEl.innerHTML=html;
     }
@@ -2001,10 +2108,11 @@ window.doRollover = function(){
     var ansNext=ansCurr+1;
     var selesai=ansNext>5;
     var updateData={
-      jenisTanam: selesai?'selesai':'berturut',
+      jenisTanam: selesai?'matang':'berturut',
       ansuran: selesai?'5':String(ansNext),
       statusPermohonan: selesai?'Selesai':v.statusPermohonan,
-      tahunRollover: tahunSemasa
+      tahunRollover: tahunSemasa,
+      tahunMatang: selesai?tahunSemasa:v.tahunMatang
     };
     return update(ref(db,'tanam/'+k), updateData);
   });
